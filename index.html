@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dekleptocracy Explorer</title>
+<meta name="description" content="Open-source knowledge graph of kleptocratic financial networks — auto-built from investigative reporting.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.js"></script>
+<style>
+/* ========== THEME VARIABLES ========== */
+:root,[data-theme="light"]{
+--color-bg:#f5f4f0;--color-surface:#f9f8f5;--color-surface-2:#fafaf8;
+--color-surface-offset:#eeece7;--color-surface-offset-2:#e6e4de;
+--color-surface-dynamic:#dddbd4;--color-divider:#d5d3cc;--color-border:#cac8c1;
+--color-text:#1a1915;--color-text-muted:#6b6a65;--color-text-faint:#a8a7a2;
+--color-text-inverse:#f5f4f0;
+--color-primary:#8b1a1a;--color-primary-hover:#6e1212;--color-primary-active:#520d0d;
+--color-primary-highlight:#e8d0d0;
+--color-accent:#c4401c;--color-accent-hover:#a33316;
+--color-gold:#9a6e1a;--color-gold-muted:#e8dcc6;
+--color-success:#2e6e22;--color-success-highlight:#d4e0cf;
+--color-info:#1a5a7a;--color-info-highlight:#c6dde8;
+--shadow-sm:0 1px 2px rgba(0,0,0,.07);
+--shadow-md:0 4px 12px rgba(0,0,0,.09);
+--shadow-lg:0 12px 32px rgba(0,0,0,.13);
+--radius-sm:.25rem;--radius-md:.375rem;--radius-lg:.5rem;--radius-xl:.75rem;--radius-full:9999px;
+--transition:160ms cubic-bezier(.16,1,.3,1);
+--font-body:'IBM Plex Sans','Helvetica Neue',sans-serif;
+--font-mono:'IBM Plex Mono','Courier New',monospace;
+--txt-xs:clamp(.75rem,.7rem + .25vw,.8125rem);
+--txt-sm:clamp(.8125rem,.75rem + .3vw,.9375rem);
+--txt-base:clamp(.9375rem,.875rem + .3vw,1rem);
+--txt-lg:clamp(1rem,.9rem + .5vw,1.25rem);
+--txt-xl:clamp(1.25rem,1rem + 1vw,1.75rem);
+--s1:.25rem;--s2:.5rem;--s3:.75rem;--s4:1rem;--s5:1.25rem;
+--s6:1.5rem;--s8:2rem;--s10:2.5rem;--s12:3rem;--s16:4rem;
+--sw:252px;--sh:52px;
+}
+[data-theme="dark"]{
+--color-bg:#0f0e0d;--color-surface:#141312;--color-surface-2:#191817;
+--color-surface-offset:#161513;--color-surface-offset-2:#1d1c1a;
+--color-surface-dynamic:#252321;--color-divider:#1f1e1c;--color-border:#2a2927;
+--color-text:#e0ddd8;--color-text-muted:#7a7974;--color-text-faint:#4a4946;
+--color-text-inverse:#141312;
+--color-primary:#d44f4f;--color-primary-hover:#e06464;--color-primary-active:#b83b3b;
+--color-primary-highlight:#2d1f1f;
+--color-accent:#e06030;--color-accent-hover:#f07040;
+--color-gold:#c8901e;--color-gold-muted:#2e2615;
+--color-success:#5aaa3c;--color-success-highlight:#1e2e1a;
+--color-info:#4098c0;--color-info-highlight:#162030;
+--shadow-sm:0 1px 3px rgba(0,0,0,.3);
+--shadow-md:0 4px 16px rgba(0,0,0,.4);
+--shadow-lg:0 12px 36px rgba(0,0,0,.5);
+}
+
+/* ========== RESET ========== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{min-height:100dvh;font-family:var(--font-body);font-size:var(--txt-base);color:var(--color-text);background:var(--color-bg);line-height:1.6;overflow:hidden}
+button{cursor:pointer;background:none;border:none;font:inherit;color:inherit}
+input,textarea,select{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--color-primary);outline-offset:2px;border-radius:var(--radius-sm)}
+
+/* ========== APP SHELL ========== */
+.app{display:grid;grid-template-rows:var(--sh) 1fr;grid-template-columns:var(--sw) 1fr;height:100dvh;overflow:hidden}
+.app.embed-mode{grid-template-columns:1fr;grid-template-rows:42px 1fr}
+.app.embed-mode .sidebar,.app.embed-mode .sob{display:none}
+.app.embed-mode .topbar{padding:0 var(--s3)}
+.app.embed-mode .tlogo{display:none}
+.app.embed-mode .hmb{display:none}
+
+/* ========== TOPBAR ========== */
+.topbar{grid-column:1/-1;display:flex;align-items:center;gap:var(--s3);padding:0 var(--s4);background:var(--color-surface);border-bottom:1px solid var(--color-divider);z-index:100}
+.tlogo{display:flex;align-items:center;gap:var(--s2);flex-shrink:0;width:calc(var(--sw) - var(--s4))}
+.tlogo svg{color:var(--color-primary)}
+.tlogo-t{font-size:var(--txt-sm);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.tlogo-s{font-size:var(--txt-xs);color:var(--color-text-muted);font-family:var(--font-mono)}
+.tsearch{flex:1;max-width:500px;position:relative}
+.tsearch i{position:absolute;left:var(--s3);top:50%;transform:translateY(-50%);color:var(--color-text-muted);pointer-events:none;width:14px;height:14px}
+#gs{width:100%;background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:var(--s2) var(--s3) var(--s2) calc(var(--s3) + 20px);font-size:var(--txt-sm);color:var(--color-text);transition:border-color var(--transition),box-shadow var(--transition)}
+#gs::placeholder{color:var(--color-text-faint)}
+#gs:focus{outline:none;border-color:var(--color-primary);box-shadow:0 0 0 3px var(--color-primary-highlight)}
+.tactions{margin-left:auto;display:flex;align-items:center;gap:var(--s2)}
+.ib{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:var(--radius-md);color:var(--color-text-muted);transition:background var(--transition),color var(--transition);position:relative}
+.ib:hover{background:var(--color-surface-offset);color:var(--color-text)}
+
+/* ========== SIDEBAR ========== */
+.sidebar{background:var(--color-surface);border-right:1px solid var(--color-divider);overflow-y:auto;padding:var(--s4) 0;display:flex;flex-direction:column}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--color-border);border-radius:var(--radius-full)}
+.ss{margin-bottom:var(--s4)}
+.ssl{font-size:var(--txt-xs);font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-faint);padding:0 var(--s4);margin-bottom:var(--s1)}
+.si{display:flex;align-items:center;gap:var(--s2);padding:var(--s2) var(--s4);font-size:var(--txt-sm);color:var(--color-text-muted);cursor:pointer;border-left:2px solid transparent;transition:background var(--transition),color var(--transition),border-color var(--transition)}
+.si i,.si svg{width:13px;height:13px;flex-shrink:0}
+.si:hover{background:var(--color-surface-offset);color:var(--color-text)}
+.si.active{background:var(--color-primary-highlight);color:var(--color-primary);border-left-color:var(--color-primary);font-weight:500}
+.sic{margin-left:auto;font-size:var(--txt-xs);color:var(--color-text-faint);font-family:var(--font-mono)}
+.sdiv{height:1px;background:var(--color-divider);margin:var(--s2) var(--s4)}
+.cdot{width:7px;height:7px;border-radius:var(--radius-full);flex-shrink:0}
+.dr{background:var(--color-primary)}.do{background:var(--color-accent)}.dg{background:var(--color-gold)}.db{background:var(--color-info)}.dn{background:var(--color-success)}
+
+/* ========== MAIN ========== */
+.main{overflow-y:auto;background:var(--color-bg);display:flex;flex-direction:column}
+.main::-webkit-scrollbar{width:5px}
+.main::-webkit-scrollbar-thumb{background:var(--color-border);border-radius:var(--radius-full)}
+
+/* ========== VIEWS ========== */
+.view{display:none;padding:var(--s6);flex-direction:column;gap:var(--s6);animation:fi .2s ease}
+.view.active{display:flex}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ========== TYPOGRAPHY ========== */
+.pt{font-size:var(--txt-xl);font-weight:600;color:var(--color-text);line-height:1.2}
+.ps{font-size:var(--txt-sm);color:var(--color-text-muted);max-width:65ch;margin-top:var(--s1)}
+.stit{font-size:var(--txt-xs);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-faint);margin-bottom:var(--s3)}
+
+/* ========== STATS ========== */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:var(--s3)}
+.sc{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-lg);padding:var(--s4);display:flex;flex-direction:column;gap:var(--s2)}
+.scl{font-size:var(--txt-xs);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.07em;font-weight:500}
+.scv{font-size:var(--txt-xl);font-weight:600;font-family:var(--font-mono);color:var(--color-text);line-height:1}
+.scc{font-size:var(--txt-xs);font-family:var(--font-mono);display:flex;align-items:center;gap:3px}
+.cup{color:var(--color-success)}.cdn{color:var(--color-primary)}
+
+/* ========== NODE GRID ========== */
+.ngrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:var(--s3)}
+.nc{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-lg);padding:var(--s4);cursor:pointer;transition:border-color var(--transition),box-shadow var(--transition),transform var(--transition);position:relative;overflow:hidden}
+.nc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ca,var(--color-border));opacity:.5;transition:opacity var(--transition)}
+.nc:hover{border-color:var(--color-border);box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.nc:hover::before{opacity:1}
+.nch{display:flex;align-items:flex-start;gap:var(--s3);margin-bottom:var(--s3)}
+.nti{width:30px;height:30px;border-radius:var(--radius-md);background:var(--color-surface-offset);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--color-text-muted)}
+.nti i{width:14px;height:14px}
+.nn{font-size:var(--txt-base);font-weight:600;color:var(--color-text);line-height:1.3}
+.ntl{font-size:var(--txt-xs);color:var(--color-text-faint);font-family:var(--font-mono);margin-top:2px}
+.nd{font-size:var(--txt-sm);color:var(--color-text-muted);line-height:1.5;margin-bottom:var(--s3);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ntags{display:flex;flex-wrap:wrap;gap:var(--s1)}
+.tag{display:inline-flex;align-items:center;height:18px;padding:0 var(--s2);border-radius:var(--radius-full);font-size:.6rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase}
+.tr{background:var(--color-primary-highlight);color:var(--color-primary)}
+.to{background:color-mix(in srgb,var(--color-accent) 12%,var(--color-surface));color:var(--color-accent)}
+.tg{background:var(--color-gold-muted);color:var(--color-gold)}
+.tb{background:var(--color-info-highlight);color:var(--color-info)}
+.tn{background:var(--color-success-highlight);color:var(--color-success)}
+.tgr{background:var(--color-surface-offset);color:var(--color-text-muted)}
+
+/* ========== GRAPH ========== */
+#gcc{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-xl);overflow:hidden;position:relative;height:510px}
+#gc{width:100%;height:100%;cursor:grab;display:block}
+#gc:active{cursor:grabbing}
+.gleg{position:absolute;bottom:var(--s4);left:var(--s4);display:flex;flex-direction:column;gap:var(--s1);background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border:1px solid var(--color-divider);border-radius:var(--radius-lg);padding:var(--s3)}
+[data-theme="light"] .gleg{background:rgba(255,255,255,.8)}
+.gli{display:flex;align-items:center;gap:var(--s2);font-size:var(--txt-xs);color:var(--color-text-muted)}
+.gld{width:8px;height:8px;border-radius:var(--radius-full);flex-shrink:0}
+.gctrl{position:absolute;top:var(--s3);right:var(--s3);display:flex;gap:var(--s1)}
+.gcb{width:28px;height:28px;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border:1px solid var(--color-divider);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:var(--color-text-muted);font-size:var(--txt-sm);transition:background var(--transition),color var(--transition)}
+.gcb:hover{background:var(--color-surface-offset);color:var(--color-text)}
+[data-theme="light"] .gcb{background:rgba(255,255,255,.8)}
+.gtt{position:absolute;background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--s3);font-size:var(--txt-xs);box-shadow:var(--shadow-lg);pointer-events:none;opacity:0;transition:opacity .12s ease;z-index:20;max-width:185px}
+.gtt.vis{opacity:1}
+.gtn{font-weight:600;color:var(--color-text);margin-bottom:3px}
+.gty{color:var(--color-text-faint);font-family:var(--font-mono)}
+
+/* ========== DETAIL PANEL ========== */
+.do-bg{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:200;opacity:0;pointer-events:none;transition:opacity .22s ease}
+.do-bg.open{opacity:1;pointer-events:all}
+.dp{position:fixed;top:0;right:0;bottom:0;width:min(510px,96vw);background:var(--color-surface);border-left:1px solid var(--color-border);box-shadow:var(--shadow-lg);z-index:201;overflow-y:auto;transform:translateX(100%);transition:transform .3s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column}
+.dp.open{transform:translateX(0)}
+.dp::-webkit-scrollbar{width:3px}
+.dp::-webkit-scrollbar-thumb{background:var(--color-border);border-radius:var(--radius-full)}
+.dph{padding:var(--s5) var(--s6);border-bottom:1px solid var(--color-divider);display:flex;align-items:flex-start;gap:var(--s4);position:sticky;top:0;background:var(--color-surface);z-index:10}
+.dpc{margin-left:auto;flex-shrink:0;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-md);color:var(--color-text-muted);transition:background var(--transition),color var(--transition)}
+.dpc:hover{background:var(--color-surface-offset);color:var(--color-text)}
+.dpb{padding:var(--s5) var(--s6);display:flex;flex-direction:column;gap:var(--s5)}
+.dsh{font-size:var(--txt-xs);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-faint);margin-bottom:var(--s2);display:flex;align-items:center;gap:var(--s2)}
+.dsh::after{content:'';flex:1;height:1px;background:var(--color-divider)}
+.ddesc{font-size:var(--txt-base);color:var(--color-text-muted);line-height:1.7}
+.clist{display:flex;flex-direction:column;gap:var(--s2)}
+.ci{display:flex;align-items:center;gap:var(--s3);padding:var(--s3);background:var(--color-surface-offset);border-radius:var(--radius-md);cursor:pointer;transition:background var(--transition)}
+.ci:hover{background:var(--color-surface-offset-2)}
+.crel{font-size:var(--txt-xs);color:var(--color-text-faint);font-family:var(--font-mono);margin-right:auto}
+.elist{display:flex;flex-direction:column;gap:var(--s2)}
+.ei{padding:var(--s3);background:var(--color-surface-offset);border-radius:var(--radius-md);border-left:2px solid var(--color-primary)}
+.et{font-size:var(--txt-sm);font-weight:500;color:var(--color-text);margin-bottom:4px}
+.es{font-size:var(--txt-xs);color:var(--color-text-muted);line-height:1.6;font-style:italic}
+.ed{font-size:var(--txt-xs);color:var(--color-text-faint);margin-top:4px;font-family:var(--font-mono)}
+.ri{display:flex;flex-direction:column;gap:var(--s2)}
+.rr{display:flex;align-items:center;gap:var(--s3);font-size:var(--txt-sm)}
+.rl{color:var(--color-text-muted);min-width:140px}
+.rbw{flex:1;height:4px;background:var(--color-surface-offset);border-radius:var(--radius-full);overflow:hidden}
+.rb{height:100%;border-radius:var(--radius-full)}
+.rbh{background:var(--color-primary)}.rbm{background:var(--color-accent)}.rbl{background:var(--color-gold)}
+.rs{font-family:var(--font-mono);font-size:var(--txt-xs);color:var(--color-text-faint);min-width:22px;text-align:right}
+.dlink{display:flex;align-items:center;gap:var(--s2);margin-top:var(--s2);padding:var(--s2) var(--s3);background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-md);font-size:var(--txt-xs);font-family:var(--font-mono);color:var(--color-text-faint);cursor:pointer;transition:all var(--transition)}
+.dlink:hover{border-color:var(--color-primary);color:var(--color-primary)}
+
+/* ========== SEARCH ========== */
+.srl{display:flex;flex-direction:column;gap:var(--s2)}
+.sri{display:flex;align-items:flex-start;gap:var(--s3);padding:var(--s3) var(--s4);background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-lg);cursor:pointer;transition:border-color var(--transition),box-shadow var(--transition)}
+.sri:hover{border-color:var(--color-border);box-shadow:var(--shadow-sm)}
+.srm{flex:1}.srn{font-size:var(--txt-base);font-weight:500;color:var(--color-text)}
+.srd{font-size:var(--txt-sm);color:var(--color-text-muted);margin-top:2px}
+.srt{font-size:var(--txt-xs);font-family:var(--font-mono);color:var(--color-text-faint);margin-top:4px}
+.sempty{text-align:center;padding:var(--s16) var(--s8);color:var(--color-text-faint);font-size:var(--txt-sm)}
+
+/* ========== TABLE ========== */
+.dtw{border:1px solid var(--color-divider);border-radius:var(--radius-lg);overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:var(--txt-sm)}
+thead{background:var(--color-surface-offset)}
+th{padding:var(--s3) var(--s4);text-align:left;font-size:var(--txt-xs);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--color-text-faint);white-space:nowrap;border-bottom:1px solid var(--color-divider)}
+td{padding:var(--s3) var(--s4);color:var(--color-text-muted);border-bottom:1px solid var(--color-divider);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr{background:var(--color-surface);transition:background var(--transition);cursor:pointer}
+tbody tr:hover{background:var(--color-surface-2)}
+.tdp{color:var(--color-text);font-weight:500}
+.tdm{font-family:var(--font-mono);font-size:var(--txt-xs)}
+
+/* ========== CLUSTER CARDS ========== */
+.ccards{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:var(--s4)}
+.cc{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-xl);padding:var(--s5);cursor:pointer;transition:border-color var(--transition),box-shadow var(--transition);position:relative;overflow:hidden}
+.cc:hover{border-color:var(--color-border);box-shadow:var(--shadow-md)}
+.cca{position:absolute;top:0;left:0;bottom:0;width:3px}
+.ccn{font-size:var(--txt-base);font-weight:600;color:var(--color-text);margin-bottom:var(--s2)}
+.ccd{font-size:var(--txt-sm);color:var(--color-text-muted);line-height:1.6;margin-bottom:var(--s4)}
+.ccs{display:flex;gap:var(--s4)}
+.csv{font-family:var(--font-mono);font-size:var(--txt-base);font-weight:600;color:var(--color-text)}
+.csl{font-size:var(--txt-xs);color:var(--color-text-faint);text-transform:uppercase;letter-spacing:.06em}
+
+/* ========== FILTER BAR ========== */
+.fb{display:flex;align-items:center;gap:var(--s2);flex-wrap:wrap}
+.fbtn{display:inline-flex;align-items:center;height:28px;padding:0 var(--s3);border:1px solid var(--color-border);border-radius:var(--radius-full);font-size:var(--txt-xs);color:var(--color-text-muted);background:var(--color-surface);transition:all var(--transition)}
+.fbtn:hover{border-color:var(--color-text-muted);color:var(--color-text)}
+.fbtn.active{background:var(--color-primary-highlight);border-color:var(--color-primary);color:var(--color-primary);font-weight:500}
+
+/* ========== TIMELINE ========== */
+.tl{display:flex;flex-direction:column;position:relative}
+.tl::before{content:'';position:absolute;left:18px;top:0;bottom:0;width:1px;background:var(--color-divider)}
+.tli{display:flex;gap:var(--s4);padding:0 0 var(--s4) 0;position:relative}
+.tld{width:8px;height:8px;border-radius:var(--radius-full);background:var(--color-border);margin-top:6px;flex-shrink:0;margin-left:15px;z-index:1;position:relative}
+.tld.hot{background:var(--color-primary);box-shadow:0 0 0 3px var(--color-primary-highlight)}
+.tld.warm{background:var(--color-accent)}
+.tlc{flex:1;min-width:0}
+.tlm{font-size:var(--txt-xs);color:var(--color-text-faint);font-family:var(--font-mono);margin-bottom:3px}
+.tlt{font-size:var(--txt-sm);color:var(--color-text-muted);line-height:1.5}
+.tll{color:var(--color-primary);cursor:pointer;font-weight:500}.tll:hover{text-decoration:underline}
+
+/* ========== SETUP ========== */
+.sp{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-xl);padding:var(--s8);max-width:680px}
+.ss2{display:flex;gap:var(--s4);padding:var(--s4) 0;border-bottom:1px solid var(--color-divider)}
+.ss2:last-child{border-bottom:none}
+.sn{width:24px;height:24px;border-radius:var(--radius-full);border:1.5px solid var(--color-border);display:flex;align-items:center;justify-content:center;font-size:var(--txt-xs);font-family:var(--font-mono);color:var(--color-text-muted);flex-shrink:0}
+.sc2{flex:1}
+.st{font-size:var(--txt-sm);font-weight:600;color:var(--color-text);margin-bottom:var(--s1)}
+.sd{font-size:var(--txt-sm);color:var(--color-text-muted);line-height:1.65}
+code{background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-sm);padding:1px 5px;font-family:var(--font-mono);font-size:.84em;color:var(--color-primary)}
+pre{background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--s4);overflow-x:auto;font-family:var(--font-mono);font-size:var(--txt-xs);line-height:1.7;color:var(--color-text-muted);margin-top:var(--s2)}
+
+/* ========== DATA MANAGER ========== */
+.dm-section{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-xl);padding:var(--s5);margin-bottom:var(--s4)}
+.dm-section-title{font-size:var(--txt-sm);font-weight:600;color:var(--color-text);margin-bottom:var(--s3);display:flex;align-items:center;gap:var(--s2)}
+.dm-section-title i{width:14px;height:14px;color:var(--color-primary)}
+.dm-hint{font-size:var(--txt-xs);color:var(--color-text-faint);line-height:1.6;margin-bottom:var(--s3)}
+.dm-ta{width:100%;min-height:120px;background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:var(--s3);font-family:var(--font-mono);font-size:var(--txt-xs);color:var(--color-text);line-height:1.7;resize:vertical}
+.dm-ta:focus{outline:none;border-color:var(--color-primary);box-shadow:0 0 0 3px var(--color-primary-highlight)}
+.dm-ta::placeholder{color:var(--color-text-faint)}
+.dm-row{display:flex;gap:var(--s2);margin-top:var(--s2);flex-wrap:wrap}
+.dm-btn{display:inline-flex;align-items:center;gap:var(--s2);height:32px;padding:0 var(--s4);border-radius:var(--radius-md);font-size:var(--txt-xs);font-weight:500;transition:all var(--transition);cursor:pointer}
+.dm-btn-primary{background:var(--color-primary);color:#fff;border:1px solid var(--color-primary)}
+.dm-btn-primary:hover{background:var(--color-primary-hover)}
+.dm-btn-secondary{background:var(--color-surface);color:var(--color-text-muted);border:1px solid var(--color-border)}
+.dm-btn-secondary:hover{border-color:var(--color-text-muted);color:var(--color-text)}
+.dm-btn-danger{background:var(--color-surface);color:var(--color-primary);border:1px solid var(--color-primary)}
+.dm-btn-danger:hover{background:var(--color-primary-highlight)}
+.dm-input{height:32px;background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:0 var(--s3);font-size:var(--txt-xs);color:var(--color-text);flex:1;min-width:120px}
+.dm-input:focus{outline:none;border-color:var(--color-primary);box-shadow:0 0 0 3px var(--color-primary-highlight)}
+.dm-select{height:32px;background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:0 var(--s3);font-size:var(--txt-xs);color:var(--color-text);min-width:100px;cursor:pointer}
+.dm-count{display:inline-flex;align-items:center;justify-content:center;background:var(--color-surface-offset);border:1px solid var(--color-divider);border-radius:var(--radius-full);min-width:20px;height:20px;padding:0 6px;font-size:.6rem;font-weight:600;font-family:var(--font-mono);color:var(--color-text-faint)}
+.dm-toast{position:fixed;bottom:var(--s6);left:50%;transform:translateX(-50%) translateY(80px);background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--s3) var(--s5);font-size:var(--txt-sm);color:var(--color-text);box-shadow:var(--shadow-lg);z-index:500;opacity:0;transition:all .3s cubic-bezier(.16,1,.3,1);pointer-events:none}
+.dm-toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+.dm-url-list{display:flex;flex-direction:column;gap:var(--s1);margin-top:var(--s2);max-height:300px;overflow-y:auto}
+.dm-url-item{display:flex;align-items:center;gap:var(--s2);padding:var(--s2) var(--s3);background:var(--color-surface-offset);border-radius:var(--radius-md);font-size:var(--txt-xs);font-family:var(--font-mono);color:var(--color-text-muted)}
+.dm-url-item a{color:var(--color-primary);text-decoration:none;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dm-url-item a:hover{text-decoration:underline}
+.dm-url-rm{width:18px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);color:var(--color-text-faint);cursor:pointer;flex-shrink:0;transition:all var(--transition)}
+.dm-url-rm:hover{background:var(--color-primary-highlight);color:var(--color-primary)}
+
+/* ========== TOUR OVERLAY ========== */
+.tour-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;opacity:0;pointer-events:none;transition:opacity .3s ease;display:flex;align-items:center;justify-content:center}
+.tour-bg.open{opacity:1;pointer-events:all}
+.tour-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:var(--s8);max-width:520px;width:90vw;box-shadow:var(--shadow-lg);position:relative}
+.tour-idx{font-size:var(--txt-xs);font-family:var(--font-mono);color:var(--color-text-faint);margin-bottom:var(--s2)}
+.tour-title{font-size:var(--txt-lg);font-weight:600;color:var(--color-text);margin-bottom:var(--s3);display:flex;align-items:center;gap:var(--s3)}
+.tour-title .cdot{width:10px;height:10px}
+.tour-body{font-size:var(--txt-sm);color:var(--color-text-muted);line-height:1.7;margin-bottom:var(--s6)}
+.tour-stat{display:inline-flex;align-items:center;gap:var(--s1);background:var(--color-surface-offset);border-radius:var(--radius-md);padding:var(--s1) var(--s3);font-family:var(--font-mono);font-size:var(--txt-xs);color:var(--color-text-faint);margin-right:var(--s2);margin-bottom:var(--s2)}
+.tour-nav{display:flex;align-items:center;gap:var(--s2)}
+.tour-dots{flex:1;display:flex;gap:6px;justify-content:center}
+.tour-dot{width:6px;height:6px;border-radius:var(--radius-full);background:var(--color-border);transition:background var(--transition)}
+.tour-dot.active{background:var(--color-primary);width:16px}
+
+/* ========== UTILITY ========== */
+.ph{display:flex;flex-direction:column;gap:var(--s1)}
+.rb2{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);flex-wrap:wrap}
+.row{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap}
+.empty{text-align:center;padding:var(--s16) var(--s8);color:var(--color-text-faint);font-size:var(--txt-sm)}
+.ebtn{display:inline-flex;align-items:center;gap:var(--s2);height:28px;padding:0 var(--s3);background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-md);font-size:var(--txt-xs);color:var(--color-text-muted);cursor:pointer;transition:all var(--transition)}
+.ebtn:hover{border-color:var(--color-text-muted);color:var(--color-text);background:var(--color-surface-offset)}
+
+/* HAMBURGER */
+.hmb{display:none;align-items:center;justify-content:center;width:34px;height:34px;border-radius:var(--radius-md);color:var(--color-text-muted);transition:background var(--transition),color var(--transition);cursor:pointer}
+.hmb:hover{background:var(--color-surface-offset);color:var(--color-text)}
+
+/* ========== RESPONSIVE ========== */
+@media(max-width:768px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:fixed;top:var(--sh);left:0;bottom:0;width:260px;z-index:150;transform:translateX(-100%);transition:transform .25s cubic-bezier(.16,1,.3,1)}
+  .sidebar.open{transform:translateX(0)}
+  .sob{position:fixed;inset:0;top:var(--sh);background:rgba(0,0,0,.3);z-index:149;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .sob.open{opacity:1;pointer-events:all}
+  .hmb{display:flex}
+  .tlogo{width:auto}
+  .tsearch{max-width:none}
+  .view{padding:var(--s4)}
+  .ngrid{grid-template-columns:1fr}
+  .ccards{grid-template-columns:1fr}
+  .sgrid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+  #gcc{height:380px}
+}
+
+/* ========== PRINT ========== */
+@media print{
+  body{overflow:visible;background:#fff;color:#000}
+  .app{display:block;height:auto;overflow:visible}
+  .topbar,.sidebar,.sob,.gctrl,.gleg,.gtt,.do-bg,.dp,.tour-bg,.dm-toast{display:none!important}
+  .main{overflow:visible;display:block}
+  .view{display:none!important;page-break-inside:avoid}
+  .view.active{display:block!important}
+  .nc,.sc,.cc{break-inside:avoid;border:1px solid #ccc;box-shadow:none}
+  .ngrid,.ccards,.sgrid{display:block}
+  .ngrid>*,.ccards>*,.sgrid>*{display:inline-block;vertical-align:top;width:48%;margin:1%;break-inside:avoid}
+  #gcc{height:400px;border:1px solid #ccc}
+  .tag{border:1px solid #ccc}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <button class="hmb" id="hmb" onclick="toggleSidebar()" aria-label="Toggle menu"><i data-lucide="menu" style="width:16px;height:16px;"></i></button>
+  <div class="tlogo">
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-label="Dekleptocracy Explorer">
+      <rect x="1.5" y="1.5" width="23" height="23" rx="4" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M6 13L11 7.5L16 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M6 13L11 18.5L16 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="11" cy="13" r="2" fill="currentColor"/>
+      <path d="M17.5 10L20.5 13L17.5 16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity=".5"/>
+    </svg>
+    <div><div class="tlogo-t">Dekleptocracy</div><div class="tlogo-s">Network Explorer</div></div>
+  </div>
+  <div class="tsearch">
+    <i data-lucide="search"></i>
+    <input type="text" id="gs" placeholder="Search nodes, entities, deals, jurisdictions…" autocomplete="off">
+  </div>
+  <div class="tactions">
+    <button class="ib" id="tt" title="Toggle theme"><i data-lucide="sun" style="width:15px;height:15px;"></i></button>
+    <button class="ib" title="Guided Tour" onclick="startTour()"><i data-lucide="compass" style="width:15px;height:15px;"></i></button>
+    <button class="ib" title="Print View" onclick="window.print()"><i data-lucide="printer" style="width:15px;height:15px;"></i></button>
+  </div>
+</header>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sob" id="sob" onclick="toggleSidebar()"></div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="ss">
+    <div class="ssl">Explorer</div>
+    <div class="si active" onclick="sv('dashboard');sa(this)"><i data-lucide="layout-dashboard"></i>Overview</div>
+    <div class="si" onclick="sv('graph');sa(this)"><i data-lucide="git-fork"></i>Network Map</div>
+    <div class="si" onclick="sv('nodes');sa(this)"><i data-lucide="circle-dot"></i>All Nodes<span class="sic" id="anc">&mdash;</span></div>
+    <div class="si" onclick="sv('articles');sa(this)"><i data-lucide="file-text"></i>Articles<span class="sic" id="ac">&mdash;</span></div>
+  </div>
+  <div class="sdiv"></div>
+  <div class="ss">
+    <div class="ssl">Clusters</div>
+    <div class="si" onclick="fc('sanctions');sv('nodes');sa(this)"><span class="cdot dr"></span>Sanctions-Busting<span class="sic" id="cs">&mdash;</span></div>
+    <div class="si" onclick="fc('crypto');sv('nodes');sa(this)"><span class="cdot do"></span>Crypto Rails<span class="sic" id="cc">&mdash;</span></div>
+    <div class="si" onclick="fc('energy');sv('nodes');sa(this)"><span class="cdot dg"></span>Energy Networks<span class="sic" id="ce">&mdash;</span></div>
+    <div class="si" onclick="fc('princelings');sv('nodes');sa(this)"><span class="cdot db"></span>Princelings<span class="sic" id="cp">&mdash;</span></div>
+    <div class="si" onclick="fc('influence');sv('nodes');sa(this)"><span class="cdot dn"></span>Influence Ops<span class="sic" id="ci2">&mdash;</span></div>
+  </div>
+  <div class="sdiv"></div>
+  <div class="ss">
+    <div class="ssl">By Type</div>
+    <div class="si" onclick="ftn('person');sa(this)"><i data-lucide="user"></i>Persons</div>
+    <div class="si" onclick="ftn('organization');sa(this)"><i data-lucide="building-2"></i>Organizations</div>
+    <div class="si" onclick="ftn('deal');sa(this)"><i data-lucide="handshake"></i>Deals</div>
+    <div class="si" onclick="ftn('jurisdiction');sa(this)"><i data-lucide="globe"></i>Jurisdictions</div>
+    <div class="si" onclick="ftn('enforcement');sa(this)"><i data-lucide="scale"></i>Enforcement</div>
+  </div>
+  <div class="sdiv"></div>
+  <div class="ss">
+    <div class="si" onclick="sv('datamanager');sa(this)"><i data-lucide="database"></i>Data Manager</div>
+    <div class="si" onclick="sv('setup');sa(this)"><i data-lucide="terminal"></i>Setup Guide</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- DASHBOARD -->
+  <div class="view active" id="view-dashboard">
+    <div class="ph">
+      <h1 class="pt">Dekleptocracy Explorer</h1>
+      <p class="ps">Open-source knowledge graph of Trump-world's shadow sanctions-busting network — auto-built from investigative reporting.</p>
+      <div class="row" style="margin-top:var(--s2)">
+        <button class="ebtn" onclick="exportData()"><i data-lucide="download" style="width:12px;height:12px;"></i> Export JSON</button>
+        <button class="ebtn" onclick="startTour()"><i data-lucide="compass" style="width:12px;height:12px;"></i> Guided Tour</button>
+        <button class="ebtn" onclick="copyEmbedCode()"><i data-lucide="code" style="width:12px;height:12px;"></i> Embed Code</button>
+      </div>
+    </div>
+    <div class="sgrid">
+      <div class="sc"><div class="scl">Total Nodes</div><div class="scv" id="sn">0</div><div class="scc cup">Live corpus</div></div>
+      <div class="sc"><div class="scl">Connections</div><div class="scv" id="se">0</div><div class="scc cup">Auto-extracted</div></div>
+      <div class="sc"><div class="scl">Articles Indexed</div><div class="scv" id="sa2">0</div><div class="scc cup">From Substack</div></div>
+      <div class="sc"><div class="scl">Sanctions Flags</div><div class="scv" id="ssf">0</div><div class="scc cdn">High-risk nodes</div></div>
+      <div class="sc"><div class="scl">Jurisdictions</div><div class="scv" id="sj">0</div><div class="scc" style="color:var(--color-text-faint)">Countries</div></div>
+    </div>
+    <div>
+      <div class="stit">Active Clusters</div>
+      <div class="ccards" id="ccards"></div>
+    </div>
+    <div>
+      <div class="stit">Recent Network Activity</div>
+      <div class="tl" id="tl"></div>
+    </div>
+  </div>
+
+  <!-- GRAPH -->
+  <div class="view" id="view-graph">
+    <div class="ph">
+      <h1 class="pt">Network Map</h1>
+      <p class="ps">Drag to pan &middot; Scroll to zoom &middot; Click any node to highlight its connections</p>
+    </div>
+    <div class="fb" id="gfb">
+      <span style="font-size:var(--txt-xs);color:var(--color-text-faint)">Filter:</span>
+      <button class="fbtn active" onclick="gf('all',this)">All</button>
+      <button class="fbtn" onclick="gf('sanctions',this)">Sanctions</button>
+      <button class="fbtn" onclick="gf('crypto',this)">Crypto</button>
+      <button class="fbtn" onclick="gf('energy',this)">Energy</button>
+      <button class="fbtn" onclick="gf('princelings',this)">Princelings</button>
+      <button class="fbtn" onclick="gf('influence',this)">Influence</button>
+    </div>
+    <div id="gcc">
+      <canvas id="gc"></canvas>
+      <div class="gctrl">
+        <button class="gcb" onclick="zg(1.2)">+</button>
+        <button class="gcb" onclick="zg(.8)">&#8722;</button>
+        <button class="gcb" onclick="rg()">&#8962;</button>
+      </div>
+      <div class="gleg">
+        <div class="gli"><span class="gld" style="background:var(--color-primary)"></span>Sanctions</div>
+        <div class="gli"><span class="gld" style="background:var(--color-accent)"></span>Crypto</div>
+        <div class="gli"><span class="gld" style="background:var(--color-gold)"></span>Energy</div>
+        <div class="gli"><span class="gld" style="background:var(--color-info)"></span>Princelings</div>
+        <div class="gli"><span class="gld" style="background:var(--color-success)"></span>Influence</div>
+      </div>
+      <div class="gtt" id="gtt"><div class="gtn" id="ttn"></div><div class="gty" id="tty"></div></div>
+    </div>
+  </div>
+
+  <!-- NODES -->
+  <div class="view" id="view-nodes">
+    <div class="rb2">
+      <div class="ph"><h1 class="pt">All Nodes</h1><p class="ps">Every entity, person, deal, and jurisdiction in the graph.</p></div>
+      <input type="text" id="nsr" placeholder="Filter nodes…" style="background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:var(--s2) var(--s3);font-size:var(--txt-sm);color:var(--color-text);width:185px" oninput="fn(this.value)">
+    </div>
+    <div class="fb" id="tfb">
+      <button class="fbtn active" onclick="tf('all',this)">All</button>
+      <button class="fbtn" onclick="tf('person',this)">Persons</button>
+      <button class="fbtn" onclick="tf('organization',this)">Orgs</button>
+      <button class="fbtn" onclick="tf('deal',this)">Deals</button>
+      <button class="fbtn" onclick="tf('jurisdiction',this)">Jurisdictions</button>
+      <button class="fbtn" onclick="tf('enforcement',this)">Enforcement</button>
+    </div>
+    <div class="ngrid" id="ng"></div>
+  </div>
+
+  <!-- ARTICLES -->
+  <div class="view" id="view-articles">
+    <div class="ph"><h1 class="pt">Articles &amp; Evidence</h1><p class="ps">Source articles from the Substack corpus powering this graph.</p></div>
+    <div class="dtw">
+      <table>
+        <thead><tr><th>Title</th><th>Date</th><th>Entities</th><th>Clusters</th><th>&#8599;</th></tr></thead>
+        <tbody id="atb"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="view" id="view-search">
+    <div class="ph"><h1 class="pt">Search Results</h1><p class="ps" id="sqd"></p></div>
+    <div class="srl" id="srl"></div>
+  </div>
+
+  <!-- DATA MANAGER -->
+  <div class="view" id="view-datamanager">
+    <div class="ph">
+      <h1 class="pt">Data Manager</h1>
+      <p class="ps">Add article URLs, manage nodes and edges, and import/export the full dataset. Changes are saved to your browser and exported as JSON.</p>
+    </div>
+
+    <!-- Bulk URL Entry -->
+    <div class="dm-section">
+      <div class="dm-section-title"><i data-lucide="link"></i> Article URLs <span class="dm-count" id="url-count">0</span></div>
+      <div class="dm-hint">Paste one URL per line. These are indexed as source articles in the graph. After adding URLs you can tag them with relevant entities and clusters in the articles table.</div>
+      <textarea class="dm-ta" id="url-bulk" placeholder="https://dekleptocracy.substack.com/p/your-article-slug&#10;https://dekleptocracy.substack.com/p/another-article&#10;https://example.com/investigation-report&#10;&#10;Paste as many URLs as you need, one per line."></textarea>
+      <div class="dm-row">
+        <button class="dm-btn dm-btn-primary" onclick="addBulkUrls()"><i data-lucide="plus" style="width:12px;height:12px;"></i> Add URLs</button>
+        <button class="dm-btn dm-btn-secondary" onclick="clearUrlInput()">Clear Input</button>
+      </div>
+      <div class="dm-url-list" id="url-list"></div>
+    </div>
+
+    <!-- Quick Add Node -->
+    <div class="dm-section">
+      <div class="dm-section-title"><i data-lucide="circle-dot"></i> Add Node</div>
+      <div class="dm-hint">Add a new entity (person, organization, deal, jurisdiction, or enforcement action) to the graph.</div>
+      <div class="dm-row">
+        <input class="dm-input" id="node-name" placeholder="Name (e.g. Gazprombank)">
+        <select class="dm-select" id="node-type">
+          <option value="person">Person</option>
+          <option value="organization" selected>Organization</option>
+          <option value="deal">Deal</option>
+          <option value="jurisdiction">Jurisdiction</option>
+          <option value="enforcement">Enforcement</option>
+        </select>
+      </div>
+      <div class="dm-row">
+        <select class="dm-select" id="node-cluster">
+          <option value="sanctions">Sanctions</option>
+          <option value="crypto">Crypto</option>
+          <option value="energy">Energy</option>
+          <option value="princelings">Princelings</option>
+          <option value="influence">Influence</option>
+        </select>
+        <input class="dm-input" id="node-tags" placeholder="Tags: sanctions, energy (comma-separated)">
+      </div>
+      <textarea class="dm-ta" id="node-desc" placeholder="Description of this entity and its role in the network…" style="min-height:70px;margin-top:var(--s2)"></textarea>
+      <div class="dm-row">
+        <button class="dm-btn dm-btn-primary" onclick="addNode()"><i data-lucide="plus" style="width:12px;height:12px;"></i> Add Node</button>
+      </div>
+    </div>
+
+    <!-- Quick Add Edge -->
+    <div class="dm-section">
+      <div class="dm-section-title"><i data-lucide="git-branch"></i> Add Connection</div>
+      <div class="dm-hint">Link two existing nodes with a described relationship.</div>
+      <div class="dm-row">
+        <select class="dm-select" id="edge-source" style="flex:1"><option value="">From node…</option></select>
+        <select class="dm-select" id="edge-target" style="flex:1"><option value="">To node…</option></select>
+      </div>
+      <div class="dm-row">
+        <input class="dm-input" id="edge-relation" placeholder="Relationship (e.g. invested $2B in)">
+        <button class="dm-btn dm-btn-primary" onclick="addEdge()"><i data-lucide="plus" style="width:12px;height:12px;"></i> Add</button>
+      </div>
+    </div>
+
+    <!-- Import / Export -->
+    <div class="dm-section">
+      <div class="dm-section-title"><i data-lucide="hard-drive"></i> Import / Export Full Dataset</div>
+      <div class="dm-hint">Export everything as a single JSON file. Import replaces the current dataset entirely. The JSON format matches graph_data.json.</div>
+      <div class="dm-row">
+        <button class="dm-btn dm-btn-primary" onclick="exportData()"><i data-lucide="download" style="width:12px;height:12px;"></i> Export JSON</button>
+        <button class="dm-btn dm-btn-secondary" onclick="document.getElementById('import-file').click()"><i data-lucide="upload" style="width:12px;height:12px;"></i> Import JSON</button>
+        <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this)">
+        <button class="dm-btn dm-btn-danger" onclick="resetData()"><i data-lucide="trash-2" style="width:12px;height:12px;"></i> Reset to Demo</button>
+      </div>
+      <div class="dm-hint" style="margin-top:var(--s3)">Tip: Export after every editing session. Place the JSON file next to this HTML file as <code>graph_data.json</code> and it loads automatically on refresh.</div>
+    </div>
+  </div>
+
+  <!-- SETUP -->
+  <div class="view" id="view-setup">
+    <div class="ph">
+      <h1 class="pt">Setup Guide</h1>
+      <p class="ps">Beginner-friendly guide to powering this Explorer with your real Substack data. Use AI (Claude, Gemini, or ChatGPT) to generate every script — no prior coding experience needed.</p>
+    </div>
+    <div class="sp">
+      <div class="ss2"><div class="sn">1</div><div class="sc2"><div class="st">Install Python (one time only)</div><div class="sd">Download Python 3.11+ from <strong>python.org</strong>. During install, check <em>"Add Python to PATH."</em> Verify by opening Terminal: <code>python --version</code></div></div></div>
+      <div class="ss2"><div class="sn">2</div><div class="sc2"><div class="st">Install all dependencies in one command</div><pre>pip install requests beautifulsoup4 feedparser spacy sqlite-utils
+python -m spacy download en_core_web_sm</pre></div></div>
+      <div class="ss2"><div class="sn">3</div><div class="sc2"><div class="st">Generate <code>fetch_substack.py</code> using AI</div><div class="sd">Paste this prompt into Claude or Gemini: <em>"Write a Python script called fetch_substack.py that reads the RSS feed from dekleptocracy.substack.com/feed, fetches each article's full HTML, strips to plain text, and saves title/date/url/text into a SQLite database called dekleptocracy.db using the sqlite-utils library."</em> Then run: <code>python fetch_substack.py</code></div></div></div>
+      <div class="ss2"><div class="sn">4</div><div class="sc2"><div class="st">Generate <code>extract_entities.py</code> using AI</div><div class="sd">Ask AI: <em>"Write a Python script called extract_entities.py that reads articles from dekleptocracy.db, runs spaCy NER on each article's text, deduplicates entity names, saves them into a nodes table, and creates an edges table for co-mentioned entities in the same sentence."</em> Run: <code>python extract_entities.py</code></div></div></div>
+      <div class="ss2"><div class="sn">5</div><div class="sc2"><div class="st">Generate <code>export_graph.py</code> using AI</div><div class="sd">Ask AI: <em>"Write a script called export_graph.py that reads nodes, edges, and articles from dekleptocracy.db and exports them as graph_data.json in this format: {nodes:[...], edges:[...], articles:[...]} where each node has id, name, type, desc, tags, and cluster fields."</em> Place <code>graph_data.json</code> next to this HTML file — the Explorer loads it automatically on refresh.</div></div></div>
+      <div class="ss2"><div class="sn">6</div><div class="sc2"><div class="st">Or skip scripts entirely — use the Data Manager</div><div class="sd">Click <strong>Data Manager</strong> in the sidebar. Paste article URLs in bulk, add nodes and connections with the forms, and export the JSON when done. No Python or command line needed.</div></div></div>
+      <div class="ss2"><div class="sn">7</div><div class="sc2"><div class="st">Embed in Substack</div><div class="sd">Host this HTML file plus <code>graph_data.json</code> on <strong>GitHub Pages</strong> or <strong>Netlify Drop</strong>. Then in your Substack post, paste the URL on its own line — Substack will auto-embed it. Or click <strong>Embed Code</strong> on the dashboard to get an iframe snippet you can use anywhere.</div></div></div>
+      <div class="ss2"><div class="sn">8</div><div class="sc2"><div class="st">Share deep links to specific nodes</div><div class="sd">Every node has a shareable link. Click any node, then copy the link from the detail panel. Example: <code>yoursite.com/explorer.html#node/10</code> opens directly to the Binance dossier.</div></div></div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- DETAIL PANEL -->
+<div class="do-bg" id="dob" onclick="cd()"></div>
+<aside class="dp" id="dp">
+  <div class="dph">
+    <div class="nti" id="dicon" style="width:34px;height:34px;"><i data-lucide="circle-dot" style="width:16px;height:16px;"></i></div>
+    <div>
+      <div style="font-size:var(--txt-lg);font-weight:600;color:var(--color-text)" id="dname"></div>
+      <div style="font-size:var(--txt-xs);font-family:var(--font-mono);color:var(--color-text-faint);margin-top:2px" id="dtype"></div>
+    </div>
+    <button class="dpc" onclick="cd()"><i data-lucide="x" style="width:14px;height:14px;"></i></button>
+  </div>
+  <div class="dpb">
+    <div><div class="dsh">Description</div><div class="ddesc" id="ddesc"></div></div>
+    <div><div class="dsh">Risk Indicators</div><div class="ri" id="dri"></div></div>
+    <div><div class="dsh">Connections (<span id="dcc">0</span>)</div><div class="clist" id="dcl"></div></div>
+    <div><div class="dsh">Source Evidence</div><div class="elist" id="del"></div></div>
+    <div><div class="dsh">Tags</div><div class="ntags" id="dtags"></div></div>
+    <div id="dlink-wrap"></div>
+  </div>
+</aside>
+
+<!-- TOUR OVERLAY -->
+<div class="tour-bg" id="tour-bg">
+  <div class="tour-card">
+    <div class="tour-idx" id="tour-idx"></div>
+    <div class="tour-title" id="tour-title"></div>
+    <div class="tour-body" id="tour-body"></div>
+    <div class="tour-nav">
+      <button class="dm-btn dm-btn-secondary" id="tour-prev" onclick="tourNav(-1)">Previous</button>
+      <div class="tour-dots" id="tour-dots"></div>
+      <button class="dm-btn dm-btn-primary" id="tour-next" onclick="tourNav(1)">Next</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="dm-toast" id="toast"></div>
+
+<script>
+// ========== DEMO DATA ==========
+const DEMO={
+  nodes:[
+    {id:1,name:"Donald J. Trump",type:"person",desc:"45th and 47th President. Central hub connecting all five network clusters through business interests, political appointments, and foreign policy decisions that benefit financial allies.",tags:["sanctions","princelings","influence"],cluster:"sanctions",risk:{foreign_entanglement:92,sanctions_exposure:85,financial_opacity:78}},
+    {id:2,name:"Jared Kushner",type:"person",desc:"Trump son-in-law. Managed Middle East policy portfolio. Received $2B investment from Saudi PIF post-White House via Affinity Partners.",tags:["princelings","energy","sanctions"],cluster:"princelings",risk:{foreign_entanglement:95,sanctions_exposure:70,financial_opacity:88}},
+    {id:3,name:"Saudi Public Investment Fund",type:"organization",desc:"Saudi Arabian sovereign wealth fund. Invested $2B in Kushner's Affinity Partners. Connected to Trump Organization and Gulf-aligned influence operations.",tags:["energy","influence","princelings"],cluster:"energy",risk:{foreign_entanglement:88,sanctions_exposure:60,financial_opacity:72}},
+    {id:4,name:"Affinity Partners",type:"organization",desc:"Kushner's private equity firm. Received $2B from Saudi PIF and additional capital from UAE, Qatar, and other Gulf sovereign wealth funds.",tags:["princelings","energy"],cluster:"princelings",risk:{foreign_entanglement:90,sanctions_exposure:55,financial_opacity:82}},
+    {id:5,name:"TikTok / ByteDance",type:"organization",desc:"Chinese social media giant. Trump-era $10B+ fee arrangement raised serious national security questions about beneficial ownership and data access.",tags:["sanctions","influence"],cluster:"influence",risk:{foreign_entanglement:95,sanctions_exposure:75,financial_opacity:80}},
+    {id:6,name:"Reliance Industries",type:"organization",desc:"Indian conglomerate. Accused of purchasing discounted Russian oil post-sanctions, creating a sanctions-evasion corridor that effectively subsidizes Russia's war economy.",tags:["energy","sanctions"],cluster:"energy",risk:{foreign_entanglement:70,sanctions_exposure:82,financial_opacity:65}},
+    {id:7,name:"Peter Thiel",type:"person",desc:"Palantir co-founder. Largest 2022 midterm crypto donor network. Central hub connecting Vance, Trump crypto policy, and the deregulation agenda.",tags:["crypto","influence","princelings"],cluster:"crypto",risk:{foreign_entanglement:55,sanctions_exposure:48,financial_opacity:70}},
+    {id:8,name:"J.D. Vance",type:"person",desc:"Vice President of the United States. Former Thiel-backed Senate candidate. Connected to Thiel network and crypto deregulation policy architecture.",tags:["crypto","influence","princelings"],cluster:"influence",risk:{foreign_entanglement:58,sanctions_exposure:42,financial_opacity:55}},
+    {id:9,name:"David Sacks (Crypto Czar)",type:"person",desc:"Trump-appointed AI and crypto policy czar. Former PayPal Mafia member. Architecting the federal crypto deregulatory framework that weakens OFAC enforcement.",tags:["crypto","influence"],cluster:"crypto",risk:{foreign_entanglement:60,sanctions_exposure:55,financial_opacity:65}},
+    {id:10,name:"Binance / CZ",type:"organization",desc:"World's largest crypto exchange. Pleaded guilty to BSA violations and sanctions evasion (Iran, Russia, OFAC-listed entities). Fined $4.3B. Now seeking regulatory rehabilitation under Trump.",tags:["crypto","sanctions"],cluster:"crypto",risk:{foreign_entanglement:80,sanctions_exposure:95,financial_opacity:90}},
+    {id:11,name:"Trump Media & Technology Group",type:"organization",desc:"SPAC-listed company. Opaque ownership and financing raised national security questions including alleged Russian money flows into the company.",tags:["sanctions","influence"],cluster:"sanctions",risk:{foreign_entanglement:75,sanctions_exposure:68,financial_opacity:88}},
+    {id:12,name:"UAE / Abu Dhabi",type:"jurisdiction",desc:"Key Gulf hub for Russian oligarch capital flight post-2022, sanctions-busting real estate, and Trump/Kushner deal-making across real estate and tech sectors.",tags:["sanctions","energy","princelings"],cluster:"energy",risk:{foreign_entanglement:82,sanctions_exposure:72,financial_opacity:78}},
+    {id:13,name:"Russia / Kremlin",type:"jurisdiction",desc:"Subject of sweeping OFAC sanctions since 2014, expanded 2022. Primary beneficiary of weakened US enforcement posture under Trump-world-aligned actors and crypto rails.",tags:["sanctions","energy"],cluster:"sanctions",risk:{foreign_entanglement:99,sanctions_exposure:98,financial_opacity:92}},
+    {id:14,name:"Trump Organization",type:"organization",desc:"Trump family business entity. Active foreign deals in Gulf, India, and Eastern Europe. Continued operations during presidential terms create financial-foreign policy entanglement.",tags:["sanctions","princelings"],cluster:"princelings",risk:{foreign_entanglement:88,sanctions_exposure:72,financial_opacity:85}},
+    {id:15,name:"Alaska LNG Project",type:"deal",desc:"$44B Alaska-to-Asia liquefied natural gas pipeline. Proposed foreign investors include Asian state funds. Potential conduit for sanctioned entities via financial intermediaries.",tags:["energy","sanctions"],cluster:"energy",risk:{foreign_entanglement:75,sanctions_exposure:65,financial_opacity:70}},
+    {id:16,name:"OFAC / Treasury",type:"organization",desc:"Office of Foreign Assets Control — US sanctions enforcement arm. Enforcement posture significantly weakened under Trump-era appointments and deregulatory pressure from crypto industry.",tags:["sanctions"],cluster:"sanctions",risk:{foreign_entanglement:10,sanctions_exposure:5,financial_opacity:10}},
+    {id:17,name:"Tether / USDT",type:"organization",desc:"Dominant stablecoin. Used extensively for sanctions evasion by Russian, Iranian, and Venezuelan actors. Opaque reserves. Ongoing Congressional scrutiny.",tags:["crypto","sanctions"],cluster:"crypto",risk:{foreign_entanglement:72,sanctions_exposure:88,financial_opacity:95}},
+    {id:18,name:"Paul Manafort",type:"person",desc:"Former Trump campaign chairman. Convicted of money laundering and failing to register as a foreign agent for Ukraine. Connected to Russian and Ukrainian oligarch financial flows.",tags:["sanctions","influence"],cluster:"sanctions",risk:{foreign_entanglement:92,sanctions_exposure:90,financial_opacity:88}},
+    {id:19,name:"China / CCP",type:"jurisdiction",desc:"People's Republic of China. Operating CIPS, a parallel SWIFT-alternative payment system increasingly used to route sanctioned-state transactions outside US financial reach.",tags:["sanctions","influence"],cluster:"sanctions",risk:{foreign_entanglement:90,sanctions_exposure:85,financial_opacity:88}},
+    {id:20,name:"FTX / Sam Bankman-Fried",type:"organization",desc:"Collapsed crypto exchange. Largest political donor in 2022 cycle across both parties. Offshore Bahamas structure used for commingled political and business funds.",tags:["crypto"],cluster:"crypto",risk:{foreign_entanglement:65,sanctions_exposure:60,financial_opacity:92}},
+  ],
+  edges:[
+    {source:1,target:2,relation:"family / business partner"},
+    {source:1,target:11,relation:"owns / controls"},
+    {source:1,target:5,relation:"deal-linked (TikTok fee)"},
+    {source:1,target:7,relation:"political donor — policy alignment"},
+    {source:1,target:14,relation:"controls"},
+    {source:2,target:3,relation:"received $2B investment from"},
+    {source:2,target:4,relation:"founded / controls"},
+    {source:3,target:4,relation:"invested $2B in"},
+    {source:3,target:12,relation:"state fund based in"},
+    {source:4,target:12,relation:"Gulf capital connection"},
+    {source:5,target:19,relation:"parent company jurisdiction"},
+    {source:6,target:13,relation:"purchases sanctioned crude from"},
+    {source:7,target:8,relation:"backed / mentored"},
+    {source:7,target:9,relation:"PayPal Mafia / network"},
+    {source:8,target:9,relation:"policy-aligned"},
+    {source:9,target:16,relation:"policy influence over"},
+    {source:10,target:13,relation:"facilitated sanctions evasion for"},
+    {source:10,target:17,relation:"connected / stablecoin rail"},
+    {source:11,target:13,relation:"alleged financing from"},
+    {source:12,target:13,relation:"capital flows to/from"},
+    {source:14,target:12,relation:"active deals in"},
+    {source:15,target:1,relation:"Trump-backed project"},
+    {source:17,target:13,relation:"evasion rail for sanctioned actors"},
+    {source:18,target:1,relation:"former campaign chairman"},
+    {source:18,target:13,relation:"worked for pro-Kremlin oligarchs"},
+    {source:7,target:20,relation:"crypto ecosystem / political sphere"},
+    {source:1,target:6,relation:"energy policy beneficiary"},
+  ],
+  articles:[
+    {id:1,title:"Trump's Shell Game Threatens American Security",date:"2024-03-15",url:"https://dekleptocracy.substack.com/p/trumps-shell-game-threatens-american-security",entities:[1,11,13],clusters:["sanctions"],snippet:"Analysis of opaque financial structures surrounding Trump Media and potential foreign financing."},
+    {id:2,title:"Is Trump Taking Chinese Bribes?",date:"2024-02-08",url:"https://dekleptocracy.substack.com/p/is-trump-taking-chinese-bribes",entities:[1,5,19],clusters:["influence","sanctions"],snippet:"Examining the TikTok deal and the $10B fee arrangement's national security implications."},
+    {id:3,title:"The Putin-Trump Kleptocracy Comes to Alaska",date:"2024-04-22",url:"https://dekleptocracy.substack.com/p/the-putin-trump-kleptocracy-comes-to-alaska",entities:[1,13,15],clusters:["energy","sanctions"],snippet:"How the Alaska LNG project intersects with Russian-aligned capital and weakened sanctions enforcement."},
+    {id:4,title:"American Princelings: The Kushner File",date:"2024-01-10",url:"https://dekleptocracy.substack.com/p/american-princelings-the-kushner-file",entities:[2,3,4,12],clusters:["princelings","energy"],snippet:"Mapping the Kushner family's Gulf capital relationships and their policy consequences."},
+    {id:5,title:"Corruption Made the Conservative Movement Easy Pickings for Putin",date:"2023-11-30",url:"https://dekleptocracy.substack.com/p/corruption-made-the-conservative-movement-easy-pickings",entities:[1,7,8,13,18],clusters:["influence","sanctions"],snippet:"How kleptocratic networks systematically targeted conservative institutions and donors."},
+    {id:6,title:"We Need to Have a Chat About Cryptocurrency",date:"2024-05-01",url:"https://dekleptocracy.substack.com/p/we-need-to-have-a-chat-about-cryptocurrency",entities:[7,9,10,17,20],clusters:["crypto","sanctions"],snippet:"The structural role of cryptocurrency in modern sanctions evasion architecture."},
+    {id:7,title:"Crypto Corruption Tracker: Binance Guilty Plea",date:"2023-12-15",url:"https://dekleptocracy.substack.com/p/crypto-corruption-tracker-binance-guilty-plea",entities:[10,13,17],clusters:["crypto","sanctions"],snippet:"Binance's $4.3B fine and what the DOJ filings reveal about sanctions evasion at scale."},
+    {id:8,title:"The $10 Billion Fee and the Network",date:"2024-06-01",url:"https://dekleptocracy.substack.com/p/the-10-billion-fee-and-the-network",entities:[1,2,5,19],clusters:["influence","sanctions"],snippet:"Unpacking the TikTok acquisition fee structure and who benefits from the deal."},
+    {id:9,title:"Reliance Industries and Russia's War Machine",date:"2024-03-01",url:"https://dekleptocracy.substack.com/p/reliance-industries-and-russias-war-machine",entities:[6,13,12],clusters:["energy","sanctions"],snippet:"India's Reliance Industries processing discounted Russian crude, effectively subsidizing war operations."},
+    {id:10,title:"The Crypto Capture Cabinet",date:"2025-01-20",url:"https://dekleptocracy.substack.com/p/the-crypto-capture-cabinet",entities:[7,8,9,10],clusters:["crypto","influence"],snippet:"How Thiel-network loyalists are being placed throughout crypto-adjacent regulatory positions."},
+  ]
+};
+
+// ========== STATE ==========
+let DATA=JSON.parse(JSON.stringify(DEMO)),ctf='all',ccf='all',cns='',gaf='all',gz=1,go={x:0,y:0};
+let gd=false,gds={x:0,y:0},raf,nsim=[],esim=[],gHighlight=null;
+
+const TC={sanctions:'tr',crypto:'to',energy:'tg',princelings:'tb',influence:'tn'};
+const TI={person:'user',organization:'building-2',deal:'handshake',jurisdiction:'globe',enforcement:'scale'};
+const CA={sanctions:'var(--color-primary)',crypto:'var(--color-accent)',energy:'var(--color-gold)',princelings:'var(--color-info)',influence:'var(--color-success)'};
+
+// ========== BOOT ==========
+async function boot(){
+  // Try loading external JSON
+  try{const r=await fetch('./graph_data.json');if(r.ok) DATA=await r.json();}catch(e){}
+  init();
+  handleHash();
+  // Embed mode
+  if(new URLSearchParams(location.search).get('embed')==='true'){
+    document.getElementById('app').classList.add('embed-mode');
+  }
+}
+
+function init(){
+  const n=DATA.nodes,e=DATA.edges,a=DATA.articles;
+  document.getElementById('sn').textContent=n.length;
+  document.getElementById('se').textContent=e.length;
+  document.getElementById('sa2').textContent=a.length;
+  document.getElementById('ssf').textContent=n.filter(x=>x.tags&&x.tags.includes('sanctions')).length;
+  document.getElementById('sj').textContent=n.filter(x=>x.type==='jurisdiction').length;
+  document.getElementById('anc').textContent=n.length;
+  document.getElementById('ac').textContent=a.length;
+  const clusterIds={sanctions:'cs',crypto:'cc',energy:'ce',princelings:'cp',influence:'ci2'};
+  ['sanctions','crypto','energy','princelings','influence'].forEach(c=>{
+    const el=document.getElementById(clusterIds[c]);
+    if(el) el.textContent=n.filter(x=>x.tags&&x.tags.includes(c)).length;
+  });
+  rcc();rtt();rng();rat();ig();refreshEdgeSelectors();refreshUrlList();updateFilterCounts();
+  lucide.createIcons();
+}
+
+// ========== CLUSTERS ==========
+const CLST=[
+  {key:'sanctions',name:'Sanctions-Busting Network',color:'var(--color-primary)',desc:'How Trump-world and its financial allies help hostile state actors route around US and allied sanctions regimes.',icon:'shield-off'},
+  {key:'crypto',name:'Crypto Rails',color:'var(--color-accent)',desc:'Cryptocurrency infrastructure enabling sanctions evasion, regulatory capture, and dark money movement.',icon:'cpu'},
+  {key:'energy',name:'Energy Networks',color:'var(--color-gold)',desc:'Oil, gas, and LNG deals connecting Gulf sovereign capital, Russian crude buyers, and US policy levers.',icon:'zap'},
+  {key:'princelings',name:'Princeling Families',color:'var(--color-info)',desc:'Dynastic networks monetizing political access across real estate, private equity, and strategic sectors.',icon:'crown'},
+  {key:'influence',name:'Influence Operations',color:'var(--color-success)',desc:'Media, lobbying, and think-tank infrastructure used to launder authoritarian money into US political narratives.',icon:'radio'},
+];
+
+function rcc(){
+  document.getElementById('ccards').innerHTML=CLST.map(c=>{
+    const n=DATA.nodes.filter(x=>x.tags&&x.tags.includes(c.key)).length;
+    const a=DATA.articles.filter(x=>x.clusters&&x.clusters.includes(c.key)).length;
+    return `<div class="cc" onclick="fc('${c.key}');sv('nodes');">
+      <div class="cca" style="background:${c.color}"></div>
+      <div style="display:flex;align-items:center;gap:var(--s2);margin-bottom:var(--s3);">
+        <i data-lucide="${c.icon}" style="width:13px;height:13px;color:${c.color}"></i>
+        <div class="ccn">${c.name}</div>
+      </div>
+      <div class="ccd">${c.desc}</div>
+      <div class="ccs">
+        <div><div class="csv">${n}</div><div class="csl">Nodes</div></div>
+        <div><div class="csv">${a}</div><div class="csl">Articles</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ========== TIMELINE ==========
+const TLE=[
+  {hot:true,date:'Mar 2026',t:'New node: <span class="tll" onclick="on(9)">David Sacks (Crypto Czar)</span> — connected to 4 existing enforcement rollback edges.'},
+  {hot:true,date:'Feb 2026',t:'<span class="tll" onclick="on(10)">Binance</span> lobbying intensifies post-guilty-plea; 3 new edges to regulatory capture cluster.'},
+  {hot:false,date:'Jan 2026',t:'<span class="tll" onclick="on(15)">Alaska LNG Project</span> foreign investor shortlist expands — added to energy cluster.'},
+  {hot:false,date:'Dec 2025',t:'New article indexed: <em>The Crypto Capture Cabinet</em> — 5 new entity nodes extracted automatically.'},
+  {hot:false,date:'Nov 2025',t:'<span class="tll" onclick="on(6)">Reliance Industries</span> Q3 filing confirms Russian crude purchases above pre-war volumes.'},
+  {hot:false,date:'Oct 2025',t:'Graph milestone: 20 nodes, 27 edges across 5 clusters loaded from the Substack corpus.'},
+];
+function rtt(){
+  document.getElementById('tl').innerHTML=TLE.map(e=>`<div class="tli">
+    <div class="tld ${e.hot?'hot':'warm'}"></div>
+    <div class="tlc"><div class="tlm">${e.date}</div><div class="tlt">${e.t}</div></div>
+  </div>`).join('');
+}
+
+// ========== NODES GRID ==========
+function gfn(){
+  return DATA.nodes.filter(n=>{
+    const mT=ctf==='all'||n.type===ctf;
+    const mC=ccf==='all'||(n.tags&&n.tags.includes(ccf));
+    const mS=!cns||n.name.toLowerCase().includes(cns)||(n.desc||'').toLowerCase().includes(cns);
+    return mT&&mC&&mS;
+  });
+}
+function rng(){
+  const nodes=gfn(),g=document.getElementById('ng');
+  if(!nodes.length){g.innerHTML='<div class="empty">No nodes match current filters.</div>';return;}
+  g.innerHTML=nodes.map(n=>{
+    const acc=CA[n.cluster]||'var(--color-border)';
+    const tags=(n.tags||[]).map(t=>`<span class="tag ${TC[t]||'tgr'}">${t}</span>`).join('');
+    return `<div class="nc" style="--ca:${acc}" onclick="on(${n.id})">
+      <div class="nch">
+        <div class="nti"><i data-lucide="${TI[n.type]||'circle-dot'}"></i></div>
+        <div><div class="nn">${esc(n.name)}</div><div class="ntl">${n.type.toUpperCase()}</div></div>
+      </div>
+      <div class="nd">${esc(n.desc||'')}</div>
+      <div class="ntags">${tags}</div>
+    </div>`;
+  }).join('');
+  lucide.createIcons();
+}
+
+// ========== ARTICLES TABLE ==========
+function rat(){
+  const cb=c=>`<span class="tag ${TC[c]||'tgr'}">${c}</span>`;
+  document.getElementById('atb').innerHTML=DATA.articles.map(a=>
+    `<tr onclick="window.open('${esc(a.url)}','_blank')">
+      <td><span class="tdp">${esc(a.title)}</span><div style="font-size:var(--txt-xs);color:var(--color-text-faint);margin-top:3px">${esc(a.snippet||'')}</div></td>
+      <td><span class="tdm">${esc(a.date)}</span></td>
+      <td><span class="tdm">${a.entities?a.entities.length:0}</span></td>
+      <td>${(a.clusters||[]).map(cb).join(' ')}</td>
+      <td><button style="color:var(--color-text-muted);font-size:var(--txt-sm)" onclick="event.stopPropagation();window.open('${esc(a.url)}','_blank')">&#8599;</button></td>
+    </tr>`
+  ).join('');
+}
+
+// ========== DETAIL PANEL ==========
+function on(id){
+  const nd=DATA.nodes.find(n=>n.id===id);if(!nd) return;
+  // Update hash without triggering hashchange
+  history.replaceState(null,null,'#node/'+id);
+  document.getElementById('dname').textContent=nd.name;
+  document.getElementById('dtype').textContent=nd.type.toUpperCase();
+  document.getElementById('dicon').innerHTML=`<i data-lucide="${TI[nd.type]||'circle-dot'}" style="width:16px;height:16px;"></i>`;
+  document.getElementById('ddesc').textContent=nd.desc||'No description available.';
+  const risks=nd.risk||{};
+  document.getElementById('dri').innerHTML=Object.entries(risks).map(([k,v])=>{
+    const l=v>=75?'h':v>=50?'m':'l',cls={'h':'rbh','m':'rbm','l':'rbl'}[l];
+    const lbl=k.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+    return `<div class="rr"><span class="rl">${lbl}</span><div class="rbw"><div class="rb ${cls}" style="width:${v}%"></div></div><span class="rs">${v}</span></div>`;
+  }).join('')||'<div style="color:var(--color-text-faint);font-size:var(--txt-sm)">No risk data.</div>';
+  const conns=DATA.edges.filter(e=>e.source===id||e.target===id);
+  document.getElementById('dcc').textContent=conns.length;
+  document.getElementById('dcl').innerHTML=conns.map(e=>{
+    const oId=e.source===id?e.target:e.source;
+    const o=DATA.nodes.find(n=>n.id===oId);if(!o) return '';
+    return `<div class="ci" onclick="on(${oId})">
+      <div class="nti" style="width:26px;height:26px"><i data-lucide="${TI[o.type]||'circle-dot'}" style="width:11px;height:11px"></i></div>
+      <div style="flex:1;min-width:0"><div style="font-size:var(--txt-sm);font-weight:500;color:var(--color-text)">${esc(o.name)}</div><div class="crel">${esc(e.relation)}</div></div>
+      <i data-lucide="chevron-right" style="width:12px;height:12px;color:var(--color-text-faint)"></i>
+    </div>`;
+  }).join('')||'<div style="color:var(--color-text-faint);font-size:var(--txt-sm)">No connections yet.</div>';
+  const arts=DATA.articles.filter(a=>a.entities&&a.entities.includes(id));
+  document.getElementById('del').innerHTML=arts.map(a=>
+    `<div class="ei"><div class="et"><a href="${esc(a.url)}" target="_blank" rel="noopener noreferrer" style="color:inherit">${esc(a.title)}</a></div><div class="es">"${esc(a.snippet||'')}"</div><div class="ed">${esc(a.date)}</div></div>`
+  ).join('')||'<div style="color:var(--color-text-faint);font-size:var(--txt-sm)">No source articles indexed for this node.</div>';
+  const tags=(nd.tags||[]);
+  document.getElementById('dtags').innerHTML=tags.map(t=>`<span class="tag ${TC[t]||'tgr'}">${t}</span>`).join('')||'<span style="color:var(--color-text-faint);font-size:var(--txt-sm)">None</span>';
+  // Deep link button
+  document.getElementById('dlink-wrap').innerHTML=`<div class="dlink" onclick="copyNodeLink(${id})"><i data-lucide="link" style="width:11px;height:11px"></i> Copy shareable link to this node</div>`;
+  document.getElementById('dob').classList.add('open');
+  document.getElementById('dp').classList.add('open');
+  lucide.createIcons();
+}
+function cd(){
+  document.getElementById('dob').classList.remove('open');
+  document.getElementById('dp').classList.remove('open');
+  if(location.hash.startsWith('#node/')) history.replaceState(null,null,location.pathname+location.search);
+}
+
+// ========== GRAPH ==========
+function nc(n){
+  const d=document.documentElement.getAttribute('data-theme')==='dark';
+  const c=d?{sanctions:'#d44f4f',crypto:'#e06030',energy:'#c8901e',princelings:'#4098c0',influence:'#5aaa3c',default:'#7a7974'}
+           :{sanctions:'#8b1a1a',crypto:'#c4401c',energy:'#9a6e1a',princelings:'#1a5a7a',influence:'#2e6e22',default:'#6b6a65'};
+  return c[n.cluster]||c.default;
+}
+
+function ig(){
+  const canvas=document.getElementById('gc'),cont=document.getElementById('gcc');
+  if(!canvas||!cont||cont.clientWidth===0) return;
+  canvas.width=cont.clientWidth;canvas.height=cont.clientHeight;
+  const vn=gaf==='all'?DATA.nodes:DATA.nodes.filter(n=>n.tags&&n.tags.includes(gaf));
+  const vi=new Set(vn.map(n=>n.id));
+  esim=DATA.edges.filter(e=>vi.has(e.source)&&vi.has(e.target));
+  const W=canvas.width,H=canvas.height;
+  nsim=vn.map((n,i)=>{
+    const a=(2*Math.PI*i)/vn.length,r=Math.min(W,H)*.3;
+    return{...n,x:W/2+r*Math.cos(a),y:H/2+r*Math.sin(a),vx:0,vy:0};
+  });
+  if(raf) cancelAnimationFrame(raf);
+  let t=0;
+  function sim(){
+    t++;
+    const m={};nsim.forEach(n=>m[n.id]=n);
+    for(let i=0;i<nsim.length;i++)for(let j=i+1;j<nsim.length;j++){
+      const a=nsim[i],b=nsim[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+      const f=2200/(d*d),fx=f*dx/d,fy=f*dy/d;
+      a.vx-=fx;a.vy-=fy;b.vx+=fx;b.vy+=fy;
+    }
+    esim.forEach(e=>{
+      const a=m[e.source],b=m[e.target];if(!a||!b) return;
+      const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+      const f=(d-115)*.04,fx=f*dx/d,fy=f*dy/d;
+      a.vx+=fx;a.vy+=fy;b.vx-=fx;b.vy-=fy;
+    });
+    nsim.forEach(n=>{n.vx+=(W/2-n.x)*.003;n.vy+=(H/2-n.y)*.003;});
+    const dm=t<80?.87:.93;
+    nsim.forEach(n=>{n.vx*=dm;n.vy*=dm;n.x+=n.vx;n.y+=n.vy;n.x=Math.max(22,Math.min(W-22,n.x));n.y=Math.max(22,Math.min(H-22,n.y));});
+    dg();
+    if(t<200) raf=requestAnimationFrame(sim);
+  }
+  sim();
+}
+
+function dg(){
+  const canvas=document.getElementById('gc');if(!canvas) return;
+  const ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);ctx.save();
+  ctx.translate(go.x,go.y);ctx.scale(gz,gz);
+  const m={};nsim.forEach(n=>m[n.id]=n);
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  let hlSet=null;
+  if(gHighlight){
+    hlSet=new Set([gHighlight]);
+    esim.forEach(e=>{if(e.source===gHighlight) hlSet.add(e.target);if(e.target===gHighlight) hlSet.add(e.source);});
+  }
+  esim.forEach(e=>{
+    const a=m[e.source],b=m[e.target];if(!a||!b) return;
+    const isHl=hlSet&&(hlSet.has(e.source)&&hlSet.has(e.target));
+    const dim=hlSet&&!isHl;
+    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+    if(isHl){ctx.strokeStyle=dark?'rgba(255,255,255,.35)':'rgba(0,0,0,.3)';ctx.lineWidth=2/gz;}
+    else if(dim){ctx.strokeStyle=dark?'rgba(255,255,255,.025)':'rgba(0,0,0,.025)';ctx.lineWidth=1/gz;}
+    else{ctx.strokeStyle=dark?'rgba(255,255,255,.07)':'rgba(0,0,0,.07)';ctx.lineWidth=1.3/gz;}
+    ctx.stroke();
+  });
+  nsim.forEach(n=>{
+    const r=10,color=nc(n);
+    const dim=hlSet&&!hlSet.has(n.id);
+    ctx.globalAlpha=dim?0.25:1;
+    ctx.beginPath();ctx.arc(n.x,n.y,r+4,0,Math.PI*2);ctx.fillStyle=color+(dim?'18':'22');ctx.fill();
+    ctx.beginPath();ctx.arc(n.x,n.y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
+    ctx.strokeStyle=dark?'rgba(255,255,255,.12)':'rgba(255,255,255,.6)';ctx.lineWidth=1.5/gz;ctx.stroke();
+    if(hlSet&&n.id===gHighlight){
+      ctx.beginPath();ctx.arc(n.x,n.y,r+7,0,Math.PI*2);ctx.strokeStyle=color;ctx.lineWidth=2/gz;ctx.stroke();
+    }
+    ctx.font=`${Math.max(9.5,10.5/gz)}px 'IBM Plex Sans',sans-serif`;
+    ctx.fillStyle=dark?'rgba(220,220,218,.82)':'rgba(26,25,21,.82)';
+    ctx.textAlign='center';
+    const l=n.name.length>17?n.name.slice(0,16)+'\u2026':n.name;
+    ctx.fillText(l,n.x,n.y+r+13/gz);
+    ctx.globalAlpha=1;
+  });
+  ctx.restore();
+}
+
+function zg(f){gz=Math.max(.3,Math.min(3,gz*f));dg();}
+function rg(){gz=1;go={x:0,y:0};ig();}
+
+// Canvas interaction
+window.addEventListener('load',()=>{
+  const cv=document.getElementById('gc'),tt=document.getElementById('gtt');
+  cv.addEventListener('mousedown',e=>{gd=true;gds={x:e.clientX-go.x,y:e.clientY-go.y};cv.style.cursor='grabbing';});
+  window.addEventListener('mouseup',()=>{gd=false;cv.style.cursor='grab';});
+  cv.addEventListener('mousemove',e=>{
+    if(gd){go.x=e.clientX-gds.x;go.y=e.clientY-gds.y;dg();return;}
+    const rect=cv.getBoundingClientRect();
+    const mx=(e.clientX-rect.left-go.x)/gz,my=(e.clientY-rect.top-go.y)/gz;
+    let hit=null;
+    nsim.forEach(n=>{if(Math.sqrt((n.x-mx)**2+(n.y-my)**2)<16) hit=n;});
+    if(hit){
+      tt.style.left=(e.clientX-rect.left+16)+'px';tt.style.top=(e.clientY-rect.top-34)+'px';
+      document.getElementById('ttn').textContent=hit.name;
+      document.getElementById('tty').textContent=hit.type.toUpperCase();
+      tt.classList.add('vis');cv.style.cursor='pointer';
+    } else{tt.classList.remove('vis');cv.style.cursor=gd?'grabbing':'grab';}
+  });
+  cv.addEventListener('click',e=>{
+    if(gd) return;
+    const rect=cv.getBoundingClientRect();
+    const mx=(e.clientX-rect.left-go.x)/gz,my=(e.clientY-rect.top-go.y)/gz;
+    let hit=null;
+    nsim.forEach(n=>{if(Math.sqrt((n.x-mx)**2+(n.y-my)**2)<16) hit=n;});
+    if(hit){gHighlight=gHighlight===hit.id?null:hit.id;dg();on(hit.id);}
+    else{gHighlight=null;dg();}
+  });
+  cv.addEventListener('wheel',e=>{e.preventDefault();zg(e.deltaY<0?1.1:.9);},{passive:false});
+  // Touch support
+  let lastTouchDist=0;
+  cv.addEventListener('touchstart',e=>{
+    if(e.touches.length===1){gd=true;gds={x:e.touches[0].clientX-go.x,y:e.touches[0].clientY-go.y};}
+    if(e.touches.length===2){const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY;lastTouchDist=Math.sqrt(dx*dx+dy*dy);}
+  },{passive:true});
+  cv.addEventListener('touchmove',e=>{
+    e.preventDefault();
+    if(e.touches.length===1&&gd){go.x=e.touches[0].clientX-gds.x;go.y=e.touches[0].clientY-gds.y;dg();}
+    if(e.touches.length===2){const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY;const d=Math.sqrt(dx*dx+dy*dy);if(lastTouchDist){zg(d/lastTouchDist);}lastTouchDist=d;}
+  },{passive:false});
+  cv.addEventListener('touchend',()=>{gd=false;lastTouchDist=0;});
+});
+
+// ========== SEARCH ==========
+document.getElementById('gs').addEventListener('input',function(){
+  const q=this.value.trim().toLowerCase();
+  if(!q){sv('dashboard');return;}
+  sv('search');
+  document.getElementById('sqd').textContent='Showing results for: "'+this.value+'"';
+  const res=DATA.nodes.filter(n=>n.name.toLowerCase().includes(q)||(n.desc||'').toLowerCase().includes(q)||(n.tags||[]).some(t=>t.includes(q))||n.type.includes(q));
+  const list=document.getElementById('srl');
+  if(!res.length){list.innerHTML='<div class="sempty">No nodes found. Try a different term.</div>';return;}
+  list.innerHTML=res.map(n=>{
+    const tags=(n.tags||[]).map(t=>`<span class="tag ${TC[t]||'tgr'}">${t}</span>`).join(' ');
+    return `<div class="sri" onclick="on(${n.id})">
+      <div class="nti"><i data-lucide="${TI[n.type]||'circle-dot'}"></i></div>
+      <div class="srm"><div class="srn">${esc(n.name)}</div><div class="srd">${esc(n.desc||'')}</div><div class="srt">${n.type.toUpperCase()} &middot; ${tags}</div></div>
+      <i data-lucide="chevron-right" style="width:14px;height:14px;color:var(--color-text-faint)"></i>
+    </div>`;
+  }).join('');
+  lucide.createIcons();
+});
+
+// ========== VIEW NAVIGATION ==========
+function sv(n){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+n).classList.add('active');
+  if(n==='graph') setTimeout(()=>ig(),50);
+  if(n==='nodes'){rng();lucide.createIcons();}
+  if(n==='datamanager'){refreshEdgeSelectors();refreshUrlList();lucide.createIcons();}
+  const sb=document.getElementById('sidebar');
+  if(sb&&sb.classList.contains('open')) toggleSidebar();
+}
+function sa(el){document.querySelectorAll('.si').forEach(i=>i.classList.remove('active'));el.classList.add('active');}
+function fc(c){ccf=c;rng();}
+function fn(v){cns=v.toLowerCase();rng();}
+function tf(t,btn){ctf=t;document.querySelectorAll('#tfb .fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');rng();}
+function ftn(t){ctf=t;sv('nodes');rng();}
+function gf(t,btn){gaf=t;document.querySelectorAll('#gfb .fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');ig();}
+
+// ========== THEME TOGGLE ==========
+(function(){
+  const root=document.documentElement,btn=document.getElementById('tt');
+  function si(t){btn.innerHTML=t==='dark'?'<i data-lucide="sun" style="width:15px;height:15px;"></i>':'<i data-lucide="moon" style="width:15px;height:15px;"></i>';lucide.createIcons();}
+  si('dark');
+  btn.addEventListener('click',()=>{const c=root.getAttribute('data-theme'),n=c==='dark'?'light':'dark';root.setAttribute('data-theme',n);si(n);dg();});
+})();
+
+// ========== SIDEBAR TOGGLE (mobile) ==========
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sob').classList.toggle('open');
+}
+
+// ========== KEYBOARD ==========
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    cd();
+    closeTour();
+    const sb=document.getElementById('sidebar');
+    if(sb.classList.contains('open')) toggleSidebar();
+  }
+});
+
+// ========== WINDOW RESIZE ==========
+window.addEventListener('resize',()=>{
+  const canvas=document.getElementById('gc'),cont=document.getElementById('gcc');
+  if(canvas&&cont&&cont.clientWidth>0){
+    canvas.width=cont.clientWidth;canvas.height=cont.clientHeight;
+    if(nsim.length) dg();
+  }
+});
+
+// ========== DEEP LINKING ==========
+function handleHash(){
+  const h=location.hash;
+  if(h.startsWith('#node/')){
+    const id=parseInt(h.split('/')[1]);
+    if(id&&DATA.nodes.find(n=>n.id===id)){setTimeout(()=>on(id),100);}
+  } else if(h.startsWith('#cluster/')){
+    const c=h.split('/')[1];
+    if(['sanctions','crypto','energy','princelings','influence'].includes(c)){fc(c);sv('nodes');}
+  } else if(h==='#graph'){sv('graph');}
+  else if(h==='#articles'){sv('articles');}
+  else if(h==='#data'){sv('datamanager');}
+}
+window.addEventListener('hashchange',handleHash);
+
+function copyNodeLink(id){
+  const url=location.origin+location.pathname+'#node/'+id;
+  navigator.clipboard.writeText(url).then(()=>toast('Link copied to clipboard'));
+}
+
+// ========== EMBED CODE ==========
+function copyEmbedCode(){
+  const url=location.origin+location.pathname+'?embed=true';
+  const code=`<iframe src="${url}" width="100%" height="600" style="border:1px solid #ccc;border-radius:8px;" loading="lazy"></iframe>`;
+  navigator.clipboard.writeText(code).then(()=>toast('Embed code copied to clipboard'));
+}
+
+// ========== DATA MANAGER: BULK URLs ==========
+function addBulkUrls(){
+  const ta=document.getElementById('url-bulk');
+  const lines=ta.value.split('\n').map(l=>l.trim()).filter(l=>l&&(l.startsWith('http://')||l.startsWith('https://')));
+  if(!lines.length){toast('No valid URLs found. Each line must start with http:// or https://');return;}
+  let added=0;
+  lines.forEach(url=>{
+    if(DATA.articles.find(a=>a.url===url)) return;
+    const id=DATA.articles.length?Math.max(...DATA.articles.map(a=>a.id))+1:1;
+    const title=extractTitle(url);
+    const date=new Date().toISOString().split('T')[0];
+    DATA.articles.push({id,title,date,url,entities:[],clusters:[],snippet:''});
+    added++;
+  });
+  ta.value='';
+  if(added){init();toast(added+' article'+(added>1?'s':'')+' added');}
+  else{toast('All URLs already exist in the dataset');}
+}
+
+function extractTitle(url){
+  try{
+    const path=new URL(url).pathname;
+    const slug=path.split('/').filter(Boolean).pop()||'Untitled';
+    return slug.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  }catch(e){return 'Untitled Article';}
+}
+
+function clearUrlInput(){document.getElementById('url-bulk').value='';}
+
+function removeArticle(id){
+  DATA.articles=DATA.articles.filter(a=>a.id!==id);
+  init();
+  toast('Article removed');
+}
+
+function refreshUrlList(){
+  const el=document.getElementById('url-list');
+  const cnt=document.getElementById('url-count');
+  if(cnt) cnt.textContent=DATA.articles.length;
+  if(!el) return;
+  el.innerHTML=DATA.articles.map(a=>
+    `<div class="dm-url-item">
+      <a href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.title||a.url)}</a>
+      <span style="font-size:.55rem;color:var(--color-text-faint)">${esc(a.date)}</span>
+      <span class="dm-url-rm" onclick="removeArticle(${a.id})" title="Remove">&times;</span>
+    </div>`
+  ).join('');
+}
+
+// ========== DATA MANAGER: ADD NODE ==========
+function addNode(){
+  const name=document.getElementById('node-name').value.trim();
+  if(!name){toast('Node name is required');return;}
+  if(DATA.nodes.find(n=>n.name.toLowerCase()===name.toLowerCase())){toast('A node with that name already exists');return;}
+  const type=document.getElementById('node-type').value;
+  const cluster=document.getElementById('node-cluster').value;
+  const tagsRaw=document.getElementById('node-tags').value;
+  const tags=tagsRaw?tagsRaw.split(',').map(t=>t.trim().toLowerCase()).filter(Boolean):[cluster];
+  const desc=document.getElementById('node-desc').value.trim();
+  const id=DATA.nodes.length?Math.max(...DATA.nodes.map(n=>n.id))+1:1;
+  DATA.nodes.push({id,name,type,desc,tags,cluster,risk:{}});
+  document.getElementById('node-name').value='';
+  document.getElementById('node-tags').value='';
+  document.getElementById('node-desc').value='';
+  init();
+  toast('Node "'+name+'" added');
+}
+
+// ========== DATA MANAGER: ADD EDGE ==========
+function refreshEdgeSelectors(){
+  ['edge-source','edge-target'].forEach(sid=>{
+    const sel=document.getElementById(sid);
+    if(!sel) return;
+    const val=sel.value;
+    sel.innerHTML='<option value="">Select node…</option>'+DATA.nodes.map(n=>`<option value="${n.id}">${esc(n.name)}</option>`).join('');
+    sel.value=val;
+  });
+}
+
+function addEdge(){
+  const s=parseInt(document.getElementById('edge-source').value);
+  const t=parseInt(document.getElementById('edge-target').value);
+  const r=document.getElementById('edge-relation').value.trim();
+  if(!s||!t){toast('Select both source and target nodes');return;}
+  if(s===t){toast('Source and target must be different nodes');return;}
+  if(!r){toast('Relationship description is required');return;}
+  if(DATA.edges.find(e=>(e.source===s&&e.target===t)||(e.source===t&&e.target===s))){toast('A connection between these nodes already exists');return;}
+  DATA.edges.push({source:s,target:t,relation:r});
+  document.getElementById('edge-relation').value='';
+  init();
+  toast('Connection added');
+}
+
+// ========== DATA MANAGER: IMPORT/EXPORT ==========
+function exportData(){
+  const blob=new Blob([JSON.stringify(DATA,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='graph_data.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('Exported as graph_data.json');
+}
+
+function importData(input){
+  const file=input.files[0];if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const d=JSON.parse(e.target.result);
+      if(!d.nodes||!d.edges||!d.articles){toast('Invalid format: needs nodes, edges, and articles arrays');return;}
+      DATA=d;
+      init();
+      toast('Imported '+DATA.nodes.length+' nodes, '+DATA.edges.length+' edges, '+DATA.articles.length+' articles');
+    }catch(err){toast('Failed to parse JSON: '+err.message);}
+  };
+  reader.readAsText(file);
+  input.value='';
+}
+
+function resetData(){
+  if(!confirm('This will replace all data with the demo dataset. Export first if you want to save your work.')) return;
+  DATA=JSON.parse(JSON.stringify(DEMO));
+  init();
+  toast('Reset to demo data');
+}
+
+// ========== FILTER COUNTS ==========
+function updateFilterCounts(){
+  const btns=document.querySelectorAll('#tfb .fbtn');
+  const types={all:DATA.nodes.length,person:0,organization:0,deal:0,jurisdiction:0,enforcement:0};
+  DATA.nodes.forEach(n=>{if(types[n.type]!==undefined) types[n.type]++;});
+  const map={All:'all',Persons:'person',Orgs:'organization',Deals:'deal',Jurisdictions:'jurisdiction',Enforcement:'enforcement'};
+  btns.forEach(b=>{
+    const base=b.textContent.replace(/\s*\(\d+\)/,'');
+    const key=map[base];
+    if(key!==undefined) b.textContent=base+' ('+types[key]+')';
+  });
+}
+
+// ========== GUIDED TOUR ==========
+const TOUR=[
+  {title:'Sanctions-Busting Network',dot:'dr',body:'This cluster maps how Trump-world financial allies help hostile state actors circumvent US and allied sanctions. It connects shell companies, intermediary banks, and the officials who weaken enforcement.',stats:['7 nodes','9 edges','4 articles']},
+  {title:'Crypto Rails',dot:'do',body:'Cryptocurrency has become the primary infrastructure for modern sanctions evasion. This cluster tracks the exchanges, stablecoins, and policy actors who are dismantling the regulatory guardrails that OFAC uses to enforce sanctions.',stats:['6 nodes','5 edges','3 articles']},
+  {title:'Energy Networks',dot:'dg',body:'Oil, gas, and LNG deals create massive financial corridors between Gulf sovereign wealth funds, Russian crude buyers, and US policy levers. This cluster follows the money through energy contracts that blur the line between commerce and geopolitics.',stats:['6 nodes','7 edges','3 articles']},
+  {title:'Princeling Families',dot:'db',body:'Dynastic networks monetize political access across real estate, private equity, and strategic sectors. The Kushner-Gulf connection is the most documented example, but the pattern extends across multiple Trump-world families.',stats:['6 nodes','5 edges','2 articles']},
+  {title:'Influence Operations',dot:'dn',body:'Media, lobbying, and think-tank infrastructure used to launder authoritarian money into US political narratives. This cluster tracks how foreign capital shapes domestic policy debates through ostensibly independent institutions.',stats:['7 nodes','6 edges','3 articles']},
+];
+let tourIdx=0;
+
+function startTour(){
+  tourIdx=0;
+  renderTour();
+  document.getElementById('tour-bg').classList.add('open');
+}
+function closeTour(){document.getElementById('tour-bg').classList.remove('open');}
+function tourNav(dir){
+  tourIdx+=dir;
+  if(tourIdx<0) tourIdx=0;
+  if(tourIdx>=TOUR.length){closeTour();fc(TOUR[TOUR.length-1].title.toLowerCase().split(' ')[0]);sv('nodes');return;}
+  renderTour();
+}
+function renderTour(){
+  const t=TOUR[tourIdx];
+  document.getElementById('tour-idx').textContent='Cluster '+(tourIdx+1)+' of '+TOUR.length;
+  document.getElementById('tour-title').innerHTML=`<span class="cdot ${t.dot}"></span> ${t.title}`;
+  document.getElementById('tour-body').innerHTML=t.body+'<div style="margin-top:var(--s3)">'+t.stats.map(s=>`<span class="tour-stat">${s}</span>`).join('')+'</div>';
+  document.getElementById('tour-dots').innerHTML=TOUR.map((_,i)=>`<div class="tour-dot ${i===tourIdx?'active':''}"></div>`).join('');
+  document.getElementById('tour-prev').style.visibility=tourIdx===0?'hidden':'visible';
+  document.getElementById('tour-next').textContent=tourIdx===TOUR.length-1?'Explore':'Next';
+}
+
+// ========== TOAST ==========
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+// ========== UTILITIES ==========
+function esc(s){
+  if(!s) return '';
+  const d=document.createElement('div');d.textContent=s;return d.innerHTML;
+}
+
+// ========== INIT ==========
+document.addEventListener('DOMContentLoaded',()=>boot());
+</script>
+</body>
+</html>
