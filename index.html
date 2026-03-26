@@ -236,6 +236,24 @@ a{color:inherit;text-decoration:none}
 .inv-label{font-size:var(--txt-sm);font-weight:500;color:var(--color-text)}
 .inv-desc{font-size:var(--txt-xs);color:var(--color-text-faint);margin-top:1px}
 
+/* ── FEC DONATIONS ── */
+.fec-wrap{display:flex;flex-direction:column;gap:var(--s2)}
+.fec-loading{font-size:var(--txt-xs);color:var(--color-text-faint);font-family:var(--font-mono);padding:var(--s2) 0;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+.fec-summary{display:flex;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--s2)}
+.fec-stat{background:var(--color-surface-offset);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:var(--s2) var(--s3);min-width:80px}
+.fec-stat-v{font-size:var(--txt-base);font-weight:600;font-family:var(--font-mono);color:var(--color-text);line-height:1.2}
+.fec-stat-l{font-size:var(--txt-xs);color:var(--color-text-faint);margin-top:2px}
+.fec-row{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s3);padding:var(--s2) 0;border-bottom:1px solid var(--color-divider);font-size:var(--txt-xs)}
+.fec-row:last-child{border-bottom:none}
+.fec-recipient{color:var(--color-text-muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fec-amount{font-family:var(--font-mono);color:var(--color-text);flex-shrink:0;font-weight:500}
+.fec-date{color:var(--color-text-faint);flex-shrink:0;font-family:var(--font-mono)}
+.fec-none{font-size:var(--txt-xs);color:var(--color-text-faint);font-style:italic}
+.fec-more{font-size:var(--txt-xs);color:var(--color-primary);font-family:var(--font-mono);text-decoration:none;margin-top:var(--s1);display:inline-block}
+.fec-more:hover{text-decoration:underline}
+.fec-error{font-size:var(--txt-xs);color:var(--color-text-faint);font-style:italic}
+
 /* ========== SEARCH ========== */
 .srl{display:flex;flex-direction:column;gap:var(--s2)}
 .sri{display:flex;align-items:flex-start;gap:var(--s3);padding:var(--s3) var(--s4);background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-lg);cursor:pointer;transition:border-color var(--transition),box-shadow var(--transition)}
@@ -680,6 +698,7 @@ python -m spacy download en_core_web_sm</pre></div></div>
   <div class="dpb">
     <div><div class="dsh">Description</div><div class="ddesc" id="ddesc"></div></div>
     <div id="dinv-wrap"></div>
+    <div id="dfec-wrap"></div>
     <div><div class="dsh">Risk Indicators</div><div class="ri" id="dri"></div></div>
     <div><div class="dsh">Connections (<span id="dcc">0</span>)</div><div class="clist" id="dcl"></div></div>
     <div><div class="dsh">Source Evidence</div><div class="elist" id="del"></div></div>
@@ -965,6 +984,8 @@ function on(id){
         <i data-lucide="external-link" style="width:12px;height:12px;color:var(--color-text-faint);margin-left:auto;flex-shrink:0"></i>
       </a>
     </div>`;
+  // FEC political donation data
+  loadFEC(nd.name, nd.type);
   // Deep link button + Find on Map button
   document.getElementById('dlink-wrap').innerHTML=`<div class="dlink" onclick="copyNodeLink(${id})"><i data-lucide="link" style="width:11px;height:11px"></i> Copy shareable link to this node</div><div class="find-map-btn" onclick="findOnMap(${id})"><i data-lucide="map-pin" style="width:11px;height:11px"></i> Find on network map</div>`;
   // Analytics: track node view
@@ -973,6 +994,104 @@ function on(id){
   document.getElementById('dp').classList.add('open');
   lucide.createIcons();
 }
+// ========== FEC DONATION LOOKUP ==========
+// Uses the public FEC API (api.fec.gov). DEMO_KEY = 30 req/hr/IP.
+// For higher volume get a free key at https://api.data.gov/signup/
+const FEC_KEY = 'DEMO_KEY';
+
+function fmt$(n){
+  if(!n&&n!==0) return '—';
+  if(Math.abs(n)>=1e6) return '$'+(n/1e6).toFixed(1)+'M';
+  if(Math.abs(n)>=1e3) return '$'+(n/1e3).toFixed(0)+'K';
+  return '$'+Math.round(n).toLocaleString();
+}
+
+async function loadFEC(name, nodeType){
+  const wrap=document.getElementById('dfec-wrap');
+  if(!wrap) return;
+  // Only meaningful for persons and organizations, skip jurisdictions/enforcement
+  if(nodeType==='jurisdiction'||nodeType==='enforcement'){wrap.innerHTML='';return;}
+  wrap.innerHTML='<div class="dsh">FEC Political Donations</div><div class="fec-loading">Loading FEC data…</div>';
+
+  // Strip common suffixes that trip up FEC name search
+  const searchName=name.replace(/\s*\/.*$/,'') // strip "/ CZ" etc
+                        .replace(/\s*\(.*?\)/g,'') // strip parentheticals
+                        .trim();
+  const encN=encodeURIComponent(searchName);
+  const fecSearchUrl=`https://www.fec.gov/data/receipts/?contributor_name=${encN}`;
+
+  try {
+    // 1. Fetch individual contributions made by this person/org (Schedule A)
+    const r=await fetch(
+      `https://api.fec.gov/v1/schedules/schedule_a/?contributor_name=${encN}&sort=-contribution_receipt_amount&per_page=8&api_key=${FEC_KEY}`,
+      {signal:AbortSignal.timeout(8000)}
+    );
+    if(!r.ok) throw new Error('FEC API '+r.status);
+    const data=await r.json();
+    const results=data.results||[];
+    const total=data.pagination?.count||0;
+
+    if(results.length===0){
+      // Try as committee name (PACs, LLCs, orgs)
+      const r2=await fetch(
+        `https://api.fec.gov/v1/committees/?q=${encN}&sort=-receipts&per_page=3&api_key=${FEC_KEY}`,
+        {signal:AbortSignal.timeout(8000)}
+      );
+      if(!r2.ok) throw new Error('FEC committees '+r2.status);
+      const d2=await r2.json();
+      const committees=d2.results||[];
+      if(committees.length===0){
+        wrap.innerHTML=`<div class="dsh">FEC Political Donations</div><div class="fec-wrap"><div class="fec-none">No FEC records found for this entity. <a class="fec-more" href="https://www.fec.gov/data/receipts/?contributor_name=${encN}" target="_blank" rel="noopener noreferrer">Search FEC directly →</a></div></div>`;
+        return;
+      }
+      // Show committee summary cards
+      let html='<div class="dsh">FEC Political Donations</div><div class="fec-wrap">';
+      html+='<div style="font-size:var(--txt-xs);color:var(--color-text-faint);margin-bottom:var(--s2)">Found as registered committee</div>';
+      html+='<div class="fec-summary">';
+      committees.forEach(c=>{
+        html+=`<div class="fec-stat"><div class="fec-stat-v">${fmt$(c.total_receipts||0)}</div><div class="fec-stat-l">Total raised</div></div>`;
+        html+=`<div class="fec-stat"><div class="fec-stat-v">${fmt$(c.total_disbursements||0)}</div><div class="fec-stat-l">Total spent</div></div>`;
+      });
+      html+='</div>';
+      committees.forEach(c=>{
+        html+=`<div style="font-size:var(--txt-xs);color:var(--color-text-muted);font-family:var(--font-mono)">${esc(c.name||'')} · ${esc(c.committee_type_full||'')} · ${esc(c.state||'')}</div>`;
+      });
+      html+=`<a class="fec-more" href="https://www.fec.gov/data/committees/?q=${encN}" target="_blank" rel="noopener noreferrer">View full FEC committee record →</a>`;
+      html+='</div>';
+      wrap.innerHTML=html;
+      return;
+    }
+
+    // Summarise contributions
+    const totalAmt=results.reduce((s,r)=>s+(r.contribution_receipt_amount||0),0);
+    const uniqueRecipients=new Set(results.map(r=>r.committee_name||r.committee?.name||''));
+
+    let html='<div class="dsh">FEC Political Donations</div><div class="fec-wrap">';
+    html+=`<div class="fec-summary">
+      <div class="fec-stat"><div class="fec-stat-v">${fmt$(totalAmt)}</div><div class="fec-stat-l">Top ${results.length} donations</div></div>
+      <div class="fec-stat"><div class="fec-stat-v">${total.toLocaleString()}</div><div class="fec-stat-l">Total FEC records</div></div>
+    </div>`;
+    results.slice(0,6).forEach(row=>{
+      const recipient=row.committee_name||row.committee?.name||'Unknown committee';
+      const amt=row.contribution_receipt_amount||0;
+      const date=(row.contribution_receipt_date||'').slice(0,7); // YYYY-MM
+      html+=`<div class="fec-row">
+        <span class="fec-recipient" title="${esc(recipient)}">${esc(recipient)}</span>
+        <span class="fec-amount">${fmt$(amt)}</span>
+        <span class="fec-date">${esc(date)}</span>
+      </div>`;
+    });
+    if(total>6){
+      html+=`<a class="fec-more" href="${fecSearchUrl}" target="_blank" rel="noopener noreferrer">View all ${total.toLocaleString()} FEC records →</a>`;
+    }
+    html+='</div>';
+    wrap.innerHTML=html;
+
+  } catch(err){
+    wrap.innerHTML=`<div class="dsh">FEC Political Donations</div><div class="fec-wrap"><div class="fec-error">Could not load FEC data. <a class="fec-more" href="${fecSearchUrl}" target="_blank" rel="noopener noreferrer">Search FEC directly →</a></div></div>`;
+  }
+}
+
 function cd(){
   document.getElementById('dob').classList.remove('open');
   document.getElementById('dp').classList.remove('open');
