@@ -1,0 +1,3885 @@
+{
+  "nodes": [
+    {
+      "id": 1,
+      "name": "Donald J. Trump",
+      "type": "person",
+      "desc": "45th and 47th President. Central hub connecting all five network clusters through business interests, political appointments, and foreign policy decisions that benefit financial allies.",
+      "tags": [
+        "sanctions",
+        "princelings",
+        "influence",
+        "energy"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 92,
+        "sanctions_exposure": 85,
+        "financial_opacity": 78
+      }
+    },
+    {
+      "id": 2,
+      "name": "Jared Kushner",
+      "type": "person",
+      "desc": "Trump son-in-law. Founded Affinity Partners the day after leaving the White House. Received $2B from Saudi PIF. Collected $157M in management fees from foreign clients while distributing zero returns to investors.",
+      "tags": [
+        "princelings",
+        "energy",
+        "sanctions"
+      ],
+      "cluster": "princelings",
+      "risk": {
+        "foreign_entanglement": 95,
+        "sanctions_exposure": 70,
+        "financial_opacity": 88
+      }
+    },
+    {
+      "id": 3,
+      "name": "Saudi Public Investment Fund",
+      "type": "organization",
+      "desc": "Saudi Arabian sovereign wealth fund controlled by Crown Prince Mohammed bin Salman. Invested $2B in Kushner's Affinity Partners despite internal screening panel rating Kushner's operations unsatisfactory.",
+      "tags": [
+        "energy",
+        "influence",
+        "princelings"
+      ],
+      "cluster": "energy",
+      "risk": {
+        "foreign_entanglement": 88,
+        "sanctions_exposure": 60,
+        "financial_opacity": 72
+      }
+    },
+    {
+      "id": 4,
+      "name": "Affinity Partners",
+      "type": "organization",
+      "desc": "Kushner's private equity firm founded January 2021. Received $2B from Saudi PIF and Gulf sovereign wealth funds. Collected $157M in fees, $87M from Saudi Arabia alone, with zero returns to investors.",
+      "tags": [
+        "princelings",
+        "energy"
+      ],
+      "cluster": "princelings",
+      "risk": {
+        "foreign_entanglement": 90,
+        "sanctions_exposure": 55,
+        "financial_opacity": 82
+      }
+    },
+    {
+      "id": 5,
+      "name": "TikTok / ByteDance",
+      "type": "organization",
+      "desc": "Chinese social media giant. Trump-era $10B+ fee arrangement raised national security questions about beneficial ownership and data access.",
+      "tags": [
+        "sanctions",
+        "influence"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 95,
+        "sanctions_exposure": 75,
+        "financial_opacity": 80
+      }
+    },
+    {
+      "id": 6,
+      "name": "Reliance Industries",
+      "type": "organization",
+      "desc": "Indian conglomerate and world's largest single buyer of Russian crude in 2024-2025. Also Russia's largest provider of oil-refining catalysts. Financing America First Refining in Brownsville, Texas.",
+      "tags": [
+        "energy",
+        "sanctions"
+      ],
+      "cluster": "energy",
+      "risk": {
+        "foreign_entanglement": 70,
+        "sanctions_exposure": 82,
+        "financial_opacity": 65
+      }
+    },
+    {
+      "id": 7,
+      "name": "Peter Thiel",
+      "type": "person",
+      "desc": "PayPal co-founder and Palantir co-founder. Bankrolled Trump's rise and helped install JD Vance. Back pumping millions into Republican PACs for 2026 midterms. Has stated freedom and democracy are not compatible.",
+      "tags": [
+        "crypto",
+        "influence",
+        "princelings"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 55,
+        "sanctions_exposure": 48,
+        "financial_opacity": 70
+      }
+    },
+    {
+      "id": 8,
+      "name": "J.D. Vance",
+      "type": "person",
+      "desc": "Vice President. Former Thiel-backed Senate candidate. Connected to Thiel network and crypto deregulation policy architecture.",
+      "tags": [
+        "crypto",
+        "influence",
+        "princelings"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 58,
+        "sanctions_exposure": 42,
+        "financial_opacity": 55
+      }
+    },
+    {
+      "id": 9,
+      "name": "David Sacks",
+      "type": "person",
+      "desc": "Trump-appointed AI and crypto policy czar. PayPal Mafia member. Retains 7.8% stake in BitGo while architecting federal crypto deregulatory framework that weakens OFAC enforcement.",
+      "tags": [
+        "crypto",
+        "influence"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 60,
+        "sanctions_exposure": 55,
+        "financial_opacity": 65
+      }
+    },
+    {
+      "id": 10,
+      "name": "Binance / CZ",
+      "type": "organization",
+      "desc": "World's largest crypto exchange. Pleaded guilty to BSA violations and sanctions evasion. Fined $4.3B. Trump business partner now seeking regulatory rehabilitation under his administration.",
+      "tags": [
+        "crypto",
+        "sanctions"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 80,
+        "sanctions_exposure": 95,
+        "financial_opacity": 90
+      }
+    },
+    {
+      "id": 11,
+      "name": "Trump Media & Technology Group",
+      "type": "organization",
+      "desc": "SPAC-listed company with opaque ownership and financing. Allegations of Russian money flows into the company.",
+      "tags": [
+        "sanctions",
+        "influence"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 75,
+        "sanctions_exposure": 68,
+        "financial_opacity": 88
+      }
+    },
+    {
+      "id": 12,
+      "name": "UAE / Abu Dhabi",
+      "type": "jurisdiction",
+      "desc": "Key Gulf hub for Russian oligarch capital flight, sanctions-busting real estate, and Trump/Kushner deal-making. Home of MGX and the Aqua 1 Foundation shell entity.",
+      "tags": [
+        "sanctions",
+        "energy",
+        "princelings"
+      ],
+      "cluster": "energy",
+      "risk": {
+        "foreign_entanglement": 82,
+        "sanctions_exposure": 72,
+        "financial_opacity": 78
+      }
+    },
+    {
+      "id": 13,
+      "name": "Russia / Kremlin",
+      "type": "jurisdiction",
+      "desc": "Subject of sweeping OFAC sanctions since 2014, expanded 2022. Primary beneficiary of weakened US enforcement posture under Trump-world-aligned actors and crypto rails.",
+      "tags": [
+        "sanctions",
+        "energy"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 99,
+        "sanctions_exposure": 98,
+        "financial_opacity": 92
+      }
+    },
+    {
+      "id": 14,
+      "name": "Trump Organization",
+      "type": "organization",
+      "desc": "Trump family business entity. Active foreign deals in Gulf, India, and Eastern Europe. Continued operations during presidential terms create financial-foreign policy entanglement.",
+      "tags": [
+        "sanctions",
+        "princelings"
+      ],
+      "cluster": "princelings",
+      "risk": {
+        "foreign_entanglement": 88,
+        "sanctions_exposure": 72,
+        "financial_opacity": 85
+      }
+    },
+    {
+      "id": 15,
+      "name": "Alaska LNG Project",
+      "type": "deal",
+      "desc": "Proposed LNG megaproject in Alaska. Gentry Beach signed agreement with Russia's Novatek to develop it using Russian technology. Beach said it is known about at the highest levels in Washington and Moscow.",
+      "tags": [
+        "energy",
+        "sanctions"
+      ],
+      "cluster": "energy",
+      "risk": {
+        "foreign_entanglement": 75,
+        "sanctions_exposure": 65,
+        "financial_opacity": 70
+      }
+    },
+    {
+      "id": 16,
+      "name": "OFAC / Treasury",
+      "type": "enforcement",
+      "desc": "Office of Foreign Assets Control \u2014 US sanctions enforcement arm. Enforcement posture significantly weakened under Trump-era appointments and deregulatory pressure.",
+      "tags": [
+        "sanctions"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 10,
+        "sanctions_exposure": 5,
+        "financial_opacity": 10
+      }
+    },
+    {
+      "id": 17,
+      "name": "Tether / USDT",
+      "type": "organization",
+      "desc": "Dominant stablecoin used extensively for sanctions evasion by Russian, Iranian, and Venezuelan actors. Opaque reserves. Commerce Secretary Lutnick's firm Cantor Fitzgerald manages $80B in Tether reserves.",
+      "tags": [
+        "crypto",
+        "sanctions"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 72,
+        "sanctions_exposure": 88,
+        "financial_opacity": 95
+      }
+    },
+    {
+      "id": 18,
+      "name": "Paul Manafort",
+      "type": "person",
+      "desc": "Former Trump campaign chairman. Convicted of money laundering and failing to register as a foreign agent. Connected to Russian and Ukrainian oligarch financial flows.",
+      "tags": [
+        "sanctions",
+        "influence"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 92,
+        "sanctions_exposure": 90,
+        "financial_opacity": 88
+      }
+    },
+    {
+      "id": 19,
+      "name": "China / CCP",
+      "type": "jurisdiction",
+      "desc": "Operating CIPS parallel payment system increasingly used to route sanctioned-state transactions outside US financial reach. Source of suspect funding via Aqua 1 Foundation.",
+      "tags": [
+        "sanctions",
+        "influence"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 90,
+        "sanctions_exposure": 85,
+        "financial_opacity": 88
+      }
+    },
+    {
+      "id": 20,
+      "name": "FTX / Sam Bankman-Fried",
+      "type": "organization",
+      "desc": "Collapsed crypto exchange. Largest political donor in 2022 cycle. Offshore Bahamas structure used for commingled political and business funds.",
+      "tags": [
+        "crypto"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 65,
+        "sanctions_exposure": 60,
+        "financial_opacity": 92
+      }
+    },
+    {
+      "id": 21,
+      "name": "Paul Atkins",
+      "type": "person",
+      "desc": "SEC Chair appointed by Trump. Previously co-chaired Token Alliance, a crypto lobbying group, and held $6M in crypto assets. Oversaw the reclassification of 16 major cryptocurrencies as digital commodities, ending the crypto enforcement era.",
+      "tags": [
+        "crypto",
+        "sanctions"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 35,
+        "sanctions_exposure": 45,
+        "financial_opacity": 72
+      }
+    },
+    {
+      "id": 22,
+      "name": "Fairshake PAC",
+      "type": "organization",
+      "desc": "Crypto industry's political action committee bankrolled by Coinbase, Ripple, and Andreessen Horowitz. $193M cash on hand for 2026 midterms. Single largest outside spender in the 2024 cycle at $290M. Spent $271M total.",
+      "tags": [
+        "crypto",
+        "influence"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 40,
+        "sanctions_exposure": 30,
+        "financial_opacity": 60
+      }
+    },
+    {
+      "id": 23,
+      "name": "Steve Witkoff",
+      "type": "person",
+      "desc": "Real estate developer with no diplomatic experience appointed by Trump as Russia-Ukraine peace envoy. Maintained financial partnership with sanctioned billionaire Len Blavatnik. Leaked transcript showed him coaching a Putin aide.",
+      "tags": [
+        "sanctions",
+        "energy"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 88,
+        "sanctions_exposure": 75,
+        "financial_opacity": 80
+      }
+    },
+    {
+      "id": 24,
+      "name": "Gentry Beach",
+      "type": "person",
+      "desc": "College friend of Donald Trump Jr. and former deputy finance chairman of Trump inauguration. Signed agreement with Russia's Novatek for Alaska gas project using Russian technology. Previously involved in attempt to relaunch Nord Stream 2.",
+      "tags": [
+        "energy",
+        "sanctions"
+      ],
+      "cluster": "energy",
+      "risk": {
+        "foreign_entanglement": 82,
+        "sanctions_exposure": 70,
+        "financial_opacity": 68
+      }
+    },
+    {
+      "id": 25,
+      "name": "Michael Flynn",
+      "type": "person",
+      "desc": "Former National Security Advisor who admitted to secretly working for a foreign government. Hired by Republika Srpska at $100,000/month to lobby for Putin ally Milorad Dodik.",
+      "tags": [
+        "sanctions",
+        "influence"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 90,
+        "sanctions_exposure": 85,
+        "financial_opacity": 75
+      }
+    },
+    {
+      "id": 26,
+      "name": "Rudy Giuliani",
+      "type": "person",
+      "desc": "Former NYC mayor and Trump personal attorney. Part of the MAGA Balkans lobbying campaign. Visited Banja Luka with Make Srpska Great Again branding.",
+      "tags": [
+        "influence",
+        "sanctions"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 78,
+        "sanctions_exposure": 65,
+        "financial_opacity": 60
+      }
+    },
+    {
+      "id": 27,
+      "name": "Milorad Dodik",
+      "type": "person",
+      "desc": "Leader of Republika Srpska and Putin's closest Balkan ally. Previously US-sanctioned. Sanctions lifted by Trump administration in October 2025 following MAGA lobbying campaign.",
+      "tags": [
+        "sanctions",
+        "influence"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 92,
+        "sanctions_exposure": 88,
+        "financial_opacity": 70
+      }
+    },
+    {
+      "id": 28,
+      "name": "Len Blavatnik",
+      "type": "person",
+      "desc": "Ukrainian-sanctioned billionaire with ties to Russia. Maintained financial partnership with Steve Witkoff while Witkoff served as Russia-Ukraine peace envoy.",
+      "tags": [
+        "sanctions",
+        "energy"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 85,
+        "sanctions_exposure": 80,
+        "financial_opacity": 78
+      }
+    },
+    {
+      "id": 29,
+      "name": "Novatek",
+      "type": "organization",
+      "desc": "One of Russia's largest energy producers. No other Russian company is closer to the Kremlin. Signed Alaska gas deal with Gentry Beach. Leads consortia to build LNG megaprojects to restore Russia's global energy leverage.",
+      "tags": [
+        "energy",
+        "sanctions"
+      ],
+      "cluster": "energy",
+      "risk": {
+        "foreign_entanglement": 95,
+        "sanctions_exposure": 92,
+        "financial_opacity": 80
+      }
+    },
+    {
+      "id": 30,
+      "name": "Pam Bondi",
+      "type": "person",
+      "desc": "Attorney General. On her first day, disbanded the DOJ Kleptocracy Team that tracked Russian oligarchs' stolen money. Paused FCPA enforcement. Gutted FARA enforcement and disbanded the Foreign Influence Task Force.",
+      "tags": [
+        "sanctions",
+        "influence"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 30,
+        "sanctions_exposure": 20,
+        "financial_opacity": 55
+      }
+    },
+    {
+      "id": 31,
+      "name": "DOJ Kleptocracy Team",
+      "type": "enforcement",
+      "desc": "Department of Justice unit that tracked and recovered Russian oligarchs' stolen money. Disbanded by AG Bondi on her first day in office.",
+      "tags": [
+        "sanctions"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 5,
+        "sanctions_exposure": 5,
+        "financial_opacity": 5
+      }
+    },
+    {
+      "id": 32,
+      "name": "Palantir",
+      "type": "organization",
+      "desc": "AI defense contractor co-founded by Thiel. Stock valuation exceeds $300B. Signed strategic partnership with Israeli Defence Ministry. Its AI platform is being used in the Iran war its founders called for.",
+      "tags": [
+        "influence",
+        "crypto"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 72,
+        "sanctions_exposure": 40,
+        "financial_opacity": 55
+      }
+    },
+    {
+      "id": 33,
+      "name": "Andreessen Horowitz (a16z)",
+      "type": "organization",
+      "desc": "Venture firm that gave $70M to Fairshake PAC. Partners gave millions directly to Trump. Built a real-time war dashboard tracking strikes on Iran.",
+      "tags": [
+        "crypto",
+        "influence"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 45,
+        "sanctions_exposure": 30,
+        "financial_opacity": 50
+      }
+    },
+    {
+      "id": 34,
+      "name": "Coinbase",
+      "type": "organization",
+      "desc": "Major US crypto exchange. Core funder of Fairshake PAC alongside Ripple and a16z. Enforcement case dismissed by SEC under Atkins.",
+      "tags": [
+        "crypto"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 35,
+        "sanctions_exposure": 50,
+        "financial_opacity": 55
+      }
+    },
+    {
+      "id": 35,
+      "name": "World Liberty Financial",
+      "type": "organization",
+      "desc": "Trump family crypto venture. Trump family owns 60% and receives 75% of token sale proceeds. Received $100M from the unregistered Aqua 1 Foundation shell entity tied to the UAE.",
+      "tags": [
+        "crypto",
+        "princelings"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 88,
+        "sanctions_exposure": 65,
+        "financial_opacity": 92
+      }
+    },
+    {
+      "id": 36,
+      "name": "Aqua 1 Foundation",
+      "type": "organization",
+      "desc": "Phantom UAE-based foundation with no address, no registration, and a founder (Dave Lee) who may not exist. Wired $100M to Trump's World Liberty Financial. Website registered 12 days after Trump's UAE visit.",
+      "tags": [
+        "crypto",
+        "sanctions"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 95,
+        "sanctions_exposure": 85,
+        "financial_opacity": 98
+      }
+    },
+    {
+      "id": 37,
+      "name": "Howard Lutnick",
+      "type": "person",
+      "desc": "Commerce Secretary and former Cantor Fitzgerald CEO. Cantor Fitzgerald manages $80B in Tether reserves. Known associate of Jeffrey Epstein.",
+      "tags": [
+        "crypto",
+        "princelings"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 65,
+        "sanctions_exposure": 50,
+        "financial_opacity": 72
+      }
+    },
+    {
+      "id": 38,
+      "name": "Viktor Orban",
+      "type": "person",
+      "desc": "Hungarian PM whose government systematically paid American conservative influencers and think tanks. Heritage Foundation president called his illiberal state the model for conservative statecraft.",
+      "tags": [
+        "influence",
+        "sanctions"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 88,
+        "sanctions_exposure": 60,
+        "financial_opacity": 65
+      }
+    },
+    {
+      "id": 39,
+      "name": "Heritage Foundation",
+      "type": "organization",
+      "desc": "Conservative think tank that authored Project 2025. Signed cooperation agreement with Hungary's Danube Institute in 2022. President Kevin Roberts received a Hungarian state award.",
+      "tags": [
+        "influence"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 72,
+        "sanctions_exposure": 30,
+        "financial_opacity": 45
+      }
+    },
+    {
+      "id": 40,
+      "name": "Mukesh Ambani",
+      "type": "person",
+      "desc": "Chairman of Reliance Industries and richest man in Asia. Special guest at Trump's inauguration. Financing America First Refining in Texas while Reliance is the world's largest buyer of Russian crude.",
+      "tags": [
+        "energy",
+        "princelings"
+      ],
+      "cluster": "energy",
+      "risk": {
+        "foreign_entanglement": 80,
+        "sanctions_exposure": 70,
+        "financial_opacity": 60
+      }
+    },
+    {
+      "id": 41,
+      "name": "America First Refining",
+      "type": "deal",
+      "desc": "America's first new oil refinery in 50 years, located in Brownsville, Texas. Financed by Reliance Industries. VP is Nick Ayers, former Trump assistant. Financial advisor is Cantor Fitzgerald (Lutnick's firm).",
+      "tags": [
+        "energy",
+        "princelings"
+      ],
+      "cluster": "energy",
+      "risk": {
+        "foreign_entanglement": 78,
+        "sanctions_exposure": 60,
+        "financial_opacity": 75
+      }
+    },
+    {
+      "id": 42,
+      "name": "Ric Grenell",
+      "type": "person",
+      "desc": "Former acting DNI and Kennedy Center director. Received Order of the Serbian Flag (same decoration given to Russian FM Lavrov). Part of MAGA Balkans lobbying campaign. Business deals with pro-Kremlin Balkan politicians.",
+      "tags": [
+        "influence",
+        "sanctions"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 80,
+        "sanctions_exposure": 65,
+        "financial_opacity": 55
+      }
+    },
+    {
+      "id": 43,
+      "name": "SEC (Securities and Exchange Commission)",
+      "type": "enforcement",
+      "desc": "Federal investor protection agency. Under Atkins, issued joint interpretation reclassifying crypto as commodities. Dismissed crypto cases at 33% rate vs 4% for other cases.",
+      "tags": [
+        "crypto"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 10,
+        "sanctions_exposure": 5,
+        "financial_opacity": 10
+      }
+    },
+    {
+      "id": 44,
+      "name": "Elliott Management",
+      "type": "organization",
+      "desc": "US hedge fund reportedly considering investing in Russia's TurkStream gas pipeline. May be investing pension fund capital in strategic Russian energy assets.",
+      "tags": [
+        "energy",
+        "sanctions"
+      ],
+      "cluster": "energy",
+      "risk": {
+        "foreign_entanglement": 65,
+        "sanctions_exposure": 72,
+        "financial_opacity": 70
+      }
+    },
+    {
+      "id": 45,
+      "name": "Rod Blagojevich",
+      "type": "person",
+      "desc": "Former Illinois governor pardoned by Trump. Registered under FARA to lobby for Republika Srpska alongside Flynn and Giuliani.",
+      "tags": [
+        "influence",
+        "sanctions"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 70,
+        "sanctions_exposure": 55,
+        "financial_opacity": 50
+      }
+    },
+    {
+      "id": 46,
+      "name": "Sheikh Tahnoon bin Zayed Al Nahyan",
+      "type": "person",
+      "desc": "UAE national security advisor and brother of UAE president. Owns 49% stake in World Liberty Financial. Chairs MGX, which used WLF's USD1 stablecoin to settle a $2B investment in Binance. Oversaw $500M investment that bought 500,000 advanced US AI chips.",
+      "tags": [
+        "princelings",
+        "crypto",
+        "energy"
+      ],
+      "cluster": "princelings",
+      "risk": {
+        "foreign_entanglement": 95,
+        "sanctions_exposure": 75,
+        "financial_opacity": 88
+      }
+    },
+    {
+      "id": 47,
+      "name": "MGX",
+      "type": "organization",
+      "desc": "Abu Dhabi state-owned investment firm chaired by Sheikh Tahnoon. Holds 15% stake in TikTok US entity. Used World Liberty Financial's USD1 stablecoin to settle $2B Binance investment.",
+      "tags": [
+        "princelings",
+        "crypto"
+      ],
+      "cluster": "princelings",
+      "risk": {
+        "foreign_entanglement": 90,
+        "sanctions_exposure": 70,
+        "financial_opacity": 82
+      }
+    },
+    {
+      "id": 48,
+      "name": "Oracle / Larry Ellison",
+      "type": "organization",
+      "desc": "Co-founded by Larry Ellison, longtime Trump ally. Holds 15% stake in TikTok US entity. Part of consortium that paid $10B fee to Trump administration for the TikTok deal.",
+      "tags": [
+        "influence",
+        "princelings"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 55,
+        "sanctions_exposure": 30,
+        "financial_opacity": 45
+      }
+    },
+    {
+      "id": 49,
+      "name": "Silver Lake",
+      "type": "organization",
+      "desc": "Tech-focused private equity firm with ties to China and the Middle East. Holds 15% stake in TikTok US entity alongside Oracle and MGX.",
+      "tags": [
+        "influence",
+        "princelings"
+      ],
+      "cluster": "princelings",
+      "risk": {
+        "foreign_entanglement": 60,
+        "sanctions_exposure": 35,
+        "financial_opacity": 50
+      }
+    },
+    {
+      "id": 50,
+      "name": "G42",
+      "type": "organization",
+      "desc": "Abu Dhabi AI company controlled by Sheikh Tahnoon. Received 100,000 advanced US AI chips that Biden had blocked on national security grounds due to G42 CEO's links to Chinese companies.",
+      "tags": [
+        "influence",
+        "sanctions"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 88,
+        "sanctions_exposure": 72,
+        "financial_opacity": 78
+      }
+    },
+    {
+      "id": 51,
+      "name": "Gazprom",
+      "type": "organization",
+      "desc": "Russia's state-owned gas monopoly. Exports declined 42% since pre-invasion levels. Pipeline gas leverage over Europe weakened after Ukraine terminated transit in late 2024.",
+      "tags": [
+        "energy",
+        "sanctions"
+      ],
+      "cluster": "energy",
+      "risk": {
+        "foreign_entanglement": 92,
+        "sanctions_exposure": 95,
+        "financial_opacity": 75
+      }
+    },
+    {
+      "id": 52,
+      "name": "Arctic LNG-2",
+      "type": "deal",
+      "desc": "Novatek's multi-billion dollar LNG megaproject in Russia's Arctic. Biden administration tried to kill it with sanctions. Trump administration potentially willing to lift sanctions as part of Ukraine deal.",
+      "tags": [
+        "energy",
+        "sanctions"
+      ],
+      "cluster": "energy",
+      "risk": {
+        "foreign_entanglement": 90,
+        "sanctions_exposure": 92,
+        "financial_opacity": 80
+      }
+    },
+    {
+      "id": 53,
+      "name": "TotalEnergies",
+      "type": "organization",
+      "desc": "French energy company that held 19.4% stake in Novatek. Declared force majeure on Arctic LNG-2 in early 2024, withdrawing from the project due to sanctions.",
+      "tags": [
+        "energy",
+        "sanctions"
+      ],
+      "cluster": "energy",
+      "risk": {
+        "foreign_entanglement": 55,
+        "sanctions_exposure": 50,
+        "financial_opacity": 40
+      }
+    },
+    {
+      "id": 54,
+      "name": "Elon Musk / DOGE",
+      "type": "person",
+      "desc": "Head of Department of Government Efficiency. DOGE operatives gained access to Treasury payment systems, Social Security, Medicaid and Medicare data. Part of PayPal Mafia with Thiel and Sacks.",
+      "tags": [
+        "influence",
+        "crypto"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 60,
+        "sanctions_exposure": 35,
+        "financial_opacity": 65
+      }
+    },
+    {
+      "id": 55,
+      "name": "Kirill Dmitriev",
+      "type": "person",
+      "desc": "Russian envoy who co-authored the 28-point peace plan with Witkoff. The plan was based on a Russian-authored paper and read like a list of Kremlin demands.",
+      "tags": [
+        "sanctions",
+        "energy"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 95,
+        "sanctions_exposure": 90,
+        "financial_opacity": 75
+      }
+    },
+    {
+      "id": 56,
+      "name": "Steve Feinberg",
+      "type": "person",
+      "desc": "Deputy Secretary of Defense and co-founder of Cerberus Capital Management. Listed assets worth at least $2B. Maintains ongoing financial relationship with Cerberus while overseeing defense policy.",
+      "tags": [
+        "princelings"
+      ],
+      "cluster": "princelings",
+      "risk": {
+        "foreign_entanglement": 50,
+        "sanctions_exposure": 30,
+        "financial_opacity": 72
+      }
+    },
+    {
+      "id": 57,
+      "name": "Cerberus Capital Management",
+      "type": "organization",
+      "desc": "Private equity firm co-founded by Steve Feinberg. Feinberg maintains financial ties with Cerberus while serving as Deputy Defense Secretary.",
+      "tags": [
+        "princelings"
+      ],
+      "cluster": "princelings",
+      "risk": {
+        "foreign_entanglement": 45,
+        "sanctions_exposure": 25,
+        "financial_opacity": 60
+      }
+    },
+    {
+      "id": 58,
+      "name": "Corporate Transparency Act (CTA)",
+      "type": "enforcement",
+      "desc": "Legislation creating a federal registry of beneficial owners of US companies. Currently blocked by courts. Project 2025 and Trump allies seek to kill it permanently.",
+      "tags": [
+        "sanctions"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 5,
+        "sanctions_exposure": 5,
+        "financial_opacity": 5
+      }
+    },
+    {
+      "id": 59,
+      "name": "Task Force KleptoCapture",
+      "type": "enforcement",
+      "desc": "DOJ task force that restrained nearly $700M in Russian oligarch assets and charged 70+ individuals. Shut down by AG Bondi on her first day in office.",
+      "tags": [
+        "sanctions"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 5,
+        "sanctions_exposure": 5,
+        "financial_opacity": 5
+      }
+    },
+    {
+      "id": 60,
+      "name": "Changpeng Zhao (CZ)",
+      "type": "person",
+      "desc": "Founder of Binance who pleaded guilty to enabling money laundering. Pardoned by Trump after Sheikh Tahnoon's MGX invested $2B in Binance using Trump's crypto token.",
+      "tags": [
+        "crypto",
+        "sanctions"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 85,
+        "sanctions_exposure": 90,
+        "financial_opacity": 88
+      }
+    },
+    {
+      "id": 61,
+      "name": "Delyan Peevski",
+      "type": "person",
+      "desc": "Bulgarian oligarch designated under the Global Magnitsky Act by US Treasury. Allegedly threatened and smeared European prosecutors investigating corruption.",
+      "tags": [
+        "sanctions",
+        "energy"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 80,
+        "sanctions_exposure": 85,
+        "financial_opacity": 75
+      }
+    },
+    {
+      "id": 62,
+      "name": "CFPB",
+      "type": "enforcement",
+      "desc": "Consumer Financial Protection Bureau. Enforcement division slashed from 248 to 50 employees. Consumer complaints surged 89%. Senate estimated attacks on CFPB cost Americans $19B.",
+      "tags": [
+        "sanctions"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 5,
+        "sanctions_exposure": 5,
+        "financial_opacity": 5
+      }
+    },
+    {
+      "id": 63,
+      "name": "Ripple",
+      "type": "organization",
+      "desc": "Crypto company and core funder of Fairshake PAC alongside Coinbase and a16z. SEC enforcement case dismissed under Atkins.",
+      "tags": [
+        "crypto"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 35,
+        "sanctions_exposure": 45,
+        "financial_opacity": 50
+      }
+    },
+    {
+      "id": 64,
+      "name": "AfriForum",
+      "type": "organization",
+      "desc": "Afrikaner-rights group aligned with Elon Musk. Lobbied the Trump administration since 2018 to target South Africa over land reform. Influenced the February 2025 executive order freezing bilateral aid.",
+      "tags": [
+        "influence"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 55,
+        "sanctions_exposure": 20,
+        "financial_opacity": 35
+      }
+    },
+    {
+      "id": 65,
+      "name": "Cyril Ramaphosa",
+      "type": "person",
+      "desc": "South African President and 2025 G20 host. Targeted by Trump executive order freezing bilateral aid over land reform law, partly due to AfriForum-Musk lobbying.",
+      "tags": [
+        "influence"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 40,
+        "sanctions_exposure": 15,
+        "financial_opacity": 20
+      }
+    },
+    {
+      "id": 66,
+      "name": "Marco Rubio",
+      "type": "person",
+      "desc": "Secretary of State. Boycotted first G20 foreign ministerial meeting in South Africa.",
+      "tags": [
+        "influence"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 30,
+        "sanctions_exposure": 15,
+        "financial_opacity": 20
+      }
+    },
+    {
+      "id": 67,
+      "name": "Scott Bessent",
+      "type": "person",
+      "desc": "Treasury Secretary. Refused to attend G20 finance ministers meeting in Cape Town.",
+      "tags": [
+        "influence",
+        "sanctions"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 35,
+        "sanctions_exposure": 20,
+        "financial_opacity": 30
+      }
+    },
+    {
+      "id": 68,
+      "name": "CREW",
+      "type": "organization",
+      "desc": "Citizens for Responsibility and Ethics in Washington. Documented over 3,700 conflicts of interest in the first Trump administration.",
+      "tags": [
+        "sanctions"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 5,
+        "sanctions_exposure": 5,
+        "financial_opacity": 5
+      }
+    },
+    {
+      "id": 69,
+      "name": "Sarah Chayes",
+      "type": "person",
+      "desc": "Anti-corruption expert and author of On Corruption in America, documenting how Washington is run by a system of self-dealing elites straddling public and private sectors.",
+      "tags": [
+        "influence"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 5,
+        "sanctions_exposure": 5,
+        "financial_opacity": 5
+      }
+    },
+    {
+      "id": 70,
+      "name": "Transparency International",
+      "type": "organization",
+      "desc": "Berlin-based anticorruption organization. Dropped America to score of 64/100 on 2026 CPI -- lowest ever, behind Lithuania, Barbados, and Uruguay.",
+      "tags": [
+        "sanctions"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 5,
+        "sanctions_exposure": 5,
+        "financial_opacity": 5
+      }
+    },
+    {
+      "id": 71,
+      "name": "Qorvis",
+      "type": "organization",
+      "desc": "Communications firm paid $1.2M by Novatek in 2014-17 for lobbying. Part of the Russian LNG lobby ecosystem in Washington.",
+      "tags": [
+        "energy",
+        "influence"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 60,
+        "sanctions_exposure": 40,
+        "financial_opacity": 50
+      }
+    },
+    {
+      "id": 72,
+      "name": "Denis Solovyov",
+      "type": "person",
+      "desc": "Senior Novatek executive dispatched to Washington in December 2024 to engage US lobbyists seeking sanctions relief for Arctic LNG-2.",
+      "tags": [
+        "energy",
+        "sanctions"
+      ],
+      "cluster": "energy",
+      "risk": {
+        "foreign_entanglement": 85,
+        "sanctions_exposure": 80,
+        "financial_opacity": 65
+      }
+    },
+    {
+      "id": 73,
+      "name": "Steve Bannon",
+      "type": "person",
+      "desc": "Former Trump strategist. Hired by Hungarian state-funded foundation for $60,000 in 2018 alongside Milo Yiannopoulos as part of Orban's influence operation to buy American conservatives.",
+      "tags": [
+        "influence"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 72,
+        "sanctions_exposure": 40,
+        "financial_opacity": 55
+      }
+    },
+    {
+      "id": 74,
+      "name": "Danube Institute",
+      "type": "organization",
+      "desc": "Budapest-based conservative think tank funded by Hungarian government. Primary tool for networking in the US. Signed cooperation agreement with Heritage Foundation in 2022.",
+      "tags": [
+        "influence"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 80,
+        "sanctions_exposure": 30,
+        "financial_opacity": 55
+      }
+    },
+    {
+      "id": 75,
+      "name": "Spencer Chretien",
+      "type": "person",
+      "desc": "Co-director of Project 2025. Heavily involved in building ties between Heritage Foundation and Hungary. Featured in leaked training videos instructing appointees.",
+      "tags": [
+        "influence"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 65,
+        "sanctions_exposure": 25,
+        "financial_opacity": 40
+      }
+    },
+    {
+      "id": 76,
+      "name": "Jeffrey Epstein",
+      "type": "person",
+      "desc": "Late convicted sex offender and financier whose files revealed extensive network with MAGA figures. Cooperated with Bannon in Eastern Europe. Linked to Musk, Thiel, and Trump orbit.",
+      "tags": [
+        "influence",
+        "princelings"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 80,
+        "sanctions_exposure": 60,
+        "financial_opacity": 95
+      }
+    },
+    {
+      "id": 77,
+      "name": "Craft Ventures",
+      "type": "organization",
+      "desc": "David Sacks's venture firm. Retained 708 tech investments including 449 AI companies and 20 crypto firms in sectors where Sacks directly shapes federal policy. Holds 7.8% stake in BitGo.",
+      "tags": [
+        "crypto",
+        "influence"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 45,
+        "sanctions_exposure": 35,
+        "financial_opacity": 70
+      }
+    },
+    {
+      "id": 78,
+      "name": "BitGo",
+      "type": "organization",
+      "desc": "Crypto custody firm in which Sacks's Craft Ventures holds 7.8% stake valued at $130M+. Offers stablecoin-as-a-service. Celebrated GENIUS Act that Sacks backed. Filed for IPO.",
+      "tags": [
+        "crypto"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 40,
+        "sanctions_exposure": 45,
+        "financial_opacity": 55
+      }
+    },
+    {
+      "id": 79,
+      "name": "GENIUS Act",
+      "type": "deal",
+      "desc": "First federal regulatory framework for stablecoins. Backed by David Sacks while his firm held 7.8% in BitGo, which directly benefits. BitGo called it a defining moment.",
+      "tags": [
+        "crypto"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 15,
+        "sanctions_exposure": 10,
+        "financial_opacity": 25
+      }
+    },
+    {
+      "id": 80,
+      "name": "Miroslav Lajcak",
+      "type": "person",
+      "desc": "Former Slovak national security adviser who resigned after Epstein files showed numerous exchanges with the financier. Also in contact with Bannon.",
+      "tags": [
+        "influence"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 65,
+        "sanctions_exposure": 40,
+        "financial_opacity": 45
+      }
+    },
+    {
+      "id": 81,
+      "name": "Robert Fico",
+      "type": "person",
+      "desc": "Slovak PM with authoritarian-leaning tendencies. Recommended by Lajcak as participant in Bannon's European far-right alliance project. Lajcak told Bannon Fico would like to play Steve's game.",
+      "tags": [
+        "influence"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 70,
+        "sanctions_exposure": 45,
+        "financial_opacity": 50
+      }
+    },
+    {
+      "id": 82,
+      "name": "Nvidia",
+      "type": "organization",
+      "desc": "Leading AI chip maker. CEO Jensen Huang met Sacks in Oval Office. Sacks brokered sale of 500,000 AI chips to UAE while holding investments in AI sector.",
+      "tags": [
+        "influence",
+        "crypto"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 50,
+        "sanctions_exposure": 30,
+        "financial_opacity": 35
+      }
+    },
+    {
+      "id": 83,
+      "name": "Peter Mandelson",
+      "type": "person",
+      "desc": "UK ambassador to the US. Scandal-prone former Labour power broker who sat on the board of a Russian military-industrial group. UK betting he can work with Trump administration.",
+      "tags": [
+        "influence",
+        "energy"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 75,
+        "sanctions_exposure": 55,
+        "financial_opacity": 60
+      }
+    },
+    {
+      "id": 84,
+      "name": "Bashar al-Assad",
+      "type": "person",
+      "desc": "Former Syrian dictator whose family ran Syria as a kleptocracy for five decades. Net worth $1-2B via systematic theft. Fled to Moscow in December 2024 after rebel victory.",
+      "tags": [
+        "sanctions"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 90,
+        "sanctions_exposure": 88,
+        "financial_opacity": 85
+      }
+    },
+    {
+      "id": 85,
+      "name": "Gautam Adani",
+      "type": "person",
+      "desc": "Indian billionaire and coal magnate. Indicted by US DOJ for alleged $265M bribery scheme. Close relationship with PM Modi. Stocks tumbled 20% on indictment.",
+      "tags": [
+        "energy",
+        "influence"
+      ],
+      "cluster": "energy",
+      "risk": {
+        "foreign_entanglement": 78,
+        "sanctions_exposure": 70,
+        "financial_opacity": 72
+      }
+    },
+    {
+      "id": 86,
+      "name": "Narendra Modi",
+      "type": "person",
+      "desc": "Indian PM and BJP leader with Hindu-nationalist agenda. Close ties to Adani. Relationship with US likely to deepen under Trump, complicating anti-corruption enforcement.",
+      "tags": [
+        "influence",
+        "energy"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 65,
+        "sanctions_exposure": 40,
+        "financial_opacity": 50
+      }
+    },
+    {
+      "id": 87,
+      "name": "Calin Georgescu",
+      "type": "person",
+      "desc": "Romanian ultranationalist independent who surged to lead in presidential polls via TikTok campaign. NATO-skeptical, Russia-friendly rhetoric with MAGA vibes.",
+      "tags": [
+        "influence"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 70,
+        "sanctions_exposure": 45,
+        "financial_opacity": 55
+      }
+    },
+    {
+      "id": 88,
+      "name": "Leon Black",
+      "type": "person",
+      "desc": "Former Apollo Asset Management CEO. Paid Epstein $158-170M from 2012-2017, making him Epstein's largest known funder. Paid $62.5M to USVI for immunity from prosecution.",
+      "tags": [
+        "princelings",
+        "influence"
+      ],
+      "cluster": "princelings",
+      "risk": {
+        "foreign_entanglement": 55,
+        "sanctions_exposure": 60,
+        "financial_opacity": 80
+      }
+    },
+    {
+      "id": 89,
+      "name": "Leslie Wexner",
+      "type": "person",
+      "desc": "Victoria's Secret founder who granted Epstein full power of attorney over his fortune. Name appears 4,000+ times in Epstein files. Sat for six-hour deposition Feb 2026.",
+      "tags": [
+        "princelings",
+        "influence"
+      ],
+      "cluster": "princelings",
+      "risk": {
+        "foreign_entanglement": 50,
+        "sanctions_exposure": 55,
+        "financial_opacity": 75
+      }
+    },
+    {
+      "id": 90,
+      "name": "Deutsche Bank",
+      "type": "organization",
+      "desc": "Maintained 40+ accounts for Epstein between 2013-2018. Processed hundreds of transactions including payments to alleged co-conspirators. 97 cash withdrawals totaling $800K+.",
+      "tags": [
+        "sanctions",
+        "princelings"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 72,
+        "sanctions_exposure": 68,
+        "financial_opacity": 75
+      }
+    },
+    {
+      "id": 91,
+      "name": "Todd Blanche",
+      "type": "person",
+      "desc": "Deputy AG who holds up to $485K in personal crypto investments while managing DOJ crypto enforcement. Announced no additional Epstein prosecutions. Defended redaction failures.",
+      "tags": [
+        "crypto",
+        "influence"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 30,
+        "sanctions_exposure": 25,
+        "financial_opacity": 55
+      }
+    },
+    {
+      "id": 92,
+      "name": "Brock Pierce",
+      "type": "person",
+      "desc": "Co-founded Tether with Giancarlo Devasini. Bannon ran Pierce's company. Part of the Bannon-Tether-Epstein nexus connecting crypto infrastructure to political influence.",
+      "tags": [
+        "crypto",
+        "influence"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 65,
+        "sanctions_exposure": 55,
+        "financial_opacity": 78
+      }
+    },
+    {
+      "id": 93,
+      "name": "Azerbaijan",
+      "type": "jurisdiction",
+      "desc": "Post-Soviet petrostate that hosted COP29. Positioned to replace Russian gas transit through Ukraine to Central Europe. Another authoritarian energy dependency risk for the EU.",
+      "tags": [
+        "energy"
+      ],
+      "cluster": "energy",
+      "risk": {
+        "foreign_entanglement": 70,
+        "sanctions_exposure": 55,
+        "financial_opacity": 60
+      }
+    },
+    {
+      "id": 94,
+      "name": "Nigel Farage / Reform UK",
+      "type": "person",
+      "desc": "Reform UK leader. Musk said he wanted to put $100M into Reform UK, calling it the UK's only hope. 25% of UK voters prefer Farage in polls. Right-wing populist linked to Trump orbit.",
+      "tags": [
+        "influence"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 60,
+        "sanctions_exposure": 30,
+        "financial_opacity": 40
+      }
+    },
+    {
+      "id": 95,
+      "name": "Nick Ayers",
+      "type": "person",
+      "desc": "Incoming VP of America First Refining. Former Assistant to the President in Trump's first term. Close to Ivanka and Kushner. Co-founder of pro-Trump nonprofit America First Policies.",
+      "tags": [
+        "energy",
+        "princelings"
+      ],
+      "cluster": "princelings",
+      "risk": {
+        "foreign_entanglement": 55,
+        "sanctions_exposure": 35,
+        "financial_opacity": 50
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": 1,
+      "target": 2,
+      "relation": "family / son-in-law, business partner"
+    },
+    {
+      "source": 1,
+      "target": 11,
+      "relation": "owns / controls Trump Media"
+    },
+    {
+      "source": 1,
+      "target": 5,
+      "relation": "deal-linked ($10B TikTok fee)"
+    },
+    {
+      "source": 1,
+      "target": 7,
+      "relation": "political donor \u2014 policy alignment"
+    },
+    {
+      "source": 1,
+      "target": 14,
+      "relation": "controls Trump Organization"
+    },
+    {
+      "source": 2,
+      "target": 3,
+      "relation": "received $2B investment from Saudi PIF"
+    },
+    {
+      "source": 2,
+      "target": 4,
+      "relation": "founded Affinity Partners"
+    },
+    {
+      "source": 3,
+      "target": 4,
+      "relation": "invested $2B in Affinity Partners"
+    },
+    {
+      "source": 3,
+      "target": 12,
+      "relation": "state fund based in Gulf"
+    },
+    {
+      "source": 4,
+      "target": 12,
+      "relation": "Gulf capital connection"
+    },
+    {
+      "source": 5,
+      "target": 19,
+      "relation": "parent company jurisdiction (China)"
+    },
+    {
+      "source": 6,
+      "target": 13,
+      "relation": "world's largest buyer of Russian crude"
+    },
+    {
+      "source": 7,
+      "target": 8,
+      "relation": "bankrolled / mentored Vance"
+    },
+    {
+      "source": 7,
+      "target": 9,
+      "relation": "PayPal Mafia network"
+    },
+    {
+      "source": 8,
+      "target": 9,
+      "relation": "policy-aligned on crypto deregulation"
+    },
+    {
+      "source": 9,
+      "target": 16,
+      "relation": "policy influence weakening OFAC"
+    },
+    {
+      "source": 10,
+      "target": 13,
+      "relation": "facilitated sanctions evasion for Russia"
+    },
+    {
+      "source": 10,
+      "target": 17,
+      "relation": "connected via stablecoin rail"
+    },
+    {
+      "source": 11,
+      "target": 13,
+      "relation": "alleged Russian financing"
+    },
+    {
+      "source": 12,
+      "target": 13,
+      "relation": "capital flows to/from Russia"
+    },
+    {
+      "source": 14,
+      "target": 12,
+      "relation": "active deals in UAE"
+    },
+    {
+      "source": 15,
+      "target": 1,
+      "relation": "Trump-backed project"
+    },
+    {
+      "source": 17,
+      "target": 13,
+      "relation": "evasion rail for sanctioned actors"
+    },
+    {
+      "source": 18,
+      "target": 1,
+      "relation": "former campaign chairman"
+    },
+    {
+      "source": 18,
+      "target": 13,
+      "relation": "worked for pro-Kremlin oligarchs"
+    },
+    {
+      "source": 7,
+      "target": 20,
+      "relation": "crypto ecosystem / political sphere"
+    },
+    {
+      "source": 1,
+      "target": 6,
+      "relation": "energy policy beneficiary"
+    },
+    {
+      "source": 7,
+      "target": 22,
+      "relation": "major funder of Fairshake PAC"
+    },
+    {
+      "source": 7,
+      "target": 32,
+      "relation": "co-founded Palantir"
+    },
+    {
+      "source": 21,
+      "target": 43,
+      "relation": "appointed as SEC Chair; regulatory capture"
+    },
+    {
+      "source": 22,
+      "target": 43,
+      "relation": "$290M spent to install crypto-friendly regulators"
+    },
+    {
+      "source": 23,
+      "target": 28,
+      "relation": "maintained financial partnership while serving as peace envoy"
+    },
+    {
+      "source": 23,
+      "target": 13,
+      "relation": "coached Putin aide on packaging Russia's demands"
+    },
+    {
+      "source": 24,
+      "target": 29,
+      "relation": "signed Alaska LNG deal with Novatek"
+    },
+    {
+      "source": 24,
+      "target": 15,
+      "relation": "pursuing Alaska LNG project"
+    },
+    {
+      "source": 25,
+      "target": 27,
+      "relation": "$100K/month lobbying contract for Dodik"
+    },
+    {
+      "source": 26,
+      "target": 27,
+      "relation": "MAGA Balkans lobbying campaign"
+    },
+    {
+      "source": 42,
+      "target": 27,
+      "relation": "lobbying campaign, received Order of Serbian Flag"
+    },
+    {
+      "source": 45,
+      "target": 27,
+      "relation": "registered under FARA for Republika Srpska"
+    },
+    {
+      "source": 30,
+      "target": 31,
+      "relation": "disbanded DOJ Kleptocracy Team on day one"
+    },
+    {
+      "source": 29,
+      "target": 13,
+      "relation": "closest Russian company to the Kremlin"
+    },
+    {
+      "source": 1,
+      "target": 35,
+      "relation": "Trump family owns 60%, receives 75% of proceeds"
+    },
+    {
+      "source": 36,
+      "target": 35,
+      "relation": "$100M wire from phantom shell entity"
+    },
+    {
+      "source": 36,
+      "target": 12,
+      "relation": "purportedly UAE-based, no registration found"
+    },
+    {
+      "source": 33,
+      "target": 22,
+      "relation": "$70M to Fairshake PAC"
+    },
+    {
+      "source": 34,
+      "target": 22,
+      "relation": "core funder of Fairshake PAC"
+    },
+    {
+      "source": 37,
+      "target": 17,
+      "relation": "Cantor Fitzgerald manages $80B in Tether reserves"
+    },
+    {
+      "source": 38,
+      "target": 39,
+      "relation": "Hungarian govt funded Heritage Foundation ties"
+    },
+    {
+      "source": 40,
+      "target": 6,
+      "relation": "chairman of Reliance Industries"
+    },
+    {
+      "source": 40,
+      "target": 41,
+      "relation": "financing America First Refining"
+    },
+    {
+      "source": 6,
+      "target": 41,
+      "relation": "Reliance financing US refinery while buying Russian crude"
+    },
+    {
+      "source": 37,
+      "target": 41,
+      "relation": "Cantor Fitzgerald is financial advisor"
+    },
+    {
+      "source": 44,
+      "target": 13,
+      "relation": "considering investment in Russia's TurkStream pipeline"
+    },
+    {
+      "source": 1,
+      "target": 23,
+      "relation": "appointed Witkoff as Russia-Ukraine peace envoy"
+    },
+    {
+      "source": 24,
+      "target": 1,
+      "relation": "Beach said project known at highest levels in DC and Moscow"
+    },
+    {
+      "source": 2,
+      "target": 40,
+      "relation": "attended Ambani family wedding in Gujarat"
+    },
+    {
+      "source": 32,
+      "target": 7,
+      "relation": "Thiel co-founded, stock valuation exceeds $300B"
+    },
+    {
+      "source": 46,
+      "target": 35,
+      "relation": "owns 49% stake in World Liberty Financial"
+    },
+    {
+      "source": 46,
+      "target": 47,
+      "relation": "chairs MGX"
+    },
+    {
+      "source": 46,
+      "target": 50,
+      "relation": "controls G42"
+    },
+    {
+      "source": 47,
+      "target": 5,
+      "relation": "15% stake in TikTok US entity"
+    },
+    {
+      "source": 48,
+      "target": 5,
+      "relation": "15% stake in TikTok US entity"
+    },
+    {
+      "source": 49,
+      "target": 5,
+      "relation": "15% stake in TikTok US entity"
+    },
+    {
+      "source": 47,
+      "target": 10,
+      "relation": "$2B investment in Binance settled via WLF stablecoin"
+    },
+    {
+      "source": 50,
+      "target": 19,
+      "relation": "CEO's links to Chinese companies flagged by US intelligence"
+    },
+    {
+      "source": 1,
+      "target": 60,
+      "relation": "pardoned CZ after Tahnoon-linked $2B Binance deal"
+    },
+    {
+      "source": 23,
+      "target": 55,
+      "relation": "co-authored 28-point Russia peace plan based on Kremlin demands"
+    },
+    {
+      "source": 23,
+      "target": 46,
+      "relation": "Witkoff holds WLF equity while Tahnoon owns 49%"
+    },
+    {
+      "source": 29,
+      "target": 52,
+      "relation": "Novatek's flagship Arctic LNG megaproject"
+    },
+    {
+      "source": 53,
+      "target": 29,
+      "relation": "held 19.4% Novatek stake; force majeure on Arctic LNG-2"
+    },
+    {
+      "source": 51,
+      "target": 13,
+      "relation": "state-owned gas monopoly; exports declined 42%"
+    },
+    {
+      "source": 54,
+      "target": 7,
+      "relation": "PayPal Mafia alongside Thiel and Sacks"
+    },
+    {
+      "source": 54,
+      "target": 9,
+      "relation": "PayPal Mafia network"
+    },
+    {
+      "source": 56,
+      "target": 57,
+      "relation": "co-founded Cerberus; maintains financial ties as Deputy SecDef"
+    },
+    {
+      "source": 30,
+      "target": 59,
+      "relation": "shut down Task Force KleptoCapture on day one"
+    },
+    {
+      "source": 2,
+      "target": 46,
+      "relation": "Kushner sat in Geneva nuclear talks alongside Witkoff-Tahnoon partners"
+    },
+    {
+      "source": 44,
+      "target": 13,
+      "relation": "potentially investing in Russia's TurkStream pipeline via Bulgaria"
+    },
+    {
+      "source": 63,
+      "target": 22,
+      "relation": "core funder of Fairshake PAC"
+    },
+    {
+      "source": 61,
+      "target": 13,
+      "relation": "Magnitsky-designated oligarch linked to Russian interests in Bulgaria"
+    },
+    {
+      "source": 2,
+      "target": 3,
+      "relation": "Affinity and PIF jointly acquired Electronic Arts for $55B"
+    },
+    {
+      "source": 54,
+      "target": 64,
+      "relation": "Musk aligned with AfriForum on South Africa policy"
+    },
+    {
+      "source": 64,
+      "target": 65,
+      "relation": "AfriForum lobbied Trump to target Ramaphosa's government"
+    },
+    {
+      "source": 29,
+      "target": 71,
+      "relation": "Novatek paid Qorvis $1.2M for lobbying"
+    },
+    {
+      "source": 72,
+      "target": 29,
+      "relation": "senior executive dispatched to DC for sanctions relief lobbying"
+    },
+    {
+      "source": 29,
+      "target": 52,
+      "relation": "Arctic LNG-2 is Novatek's flagship megaproject"
+    },
+    {
+      "source": 73,
+      "target": 38,
+      "relation": "hired by Hungarian state foundation for $60K"
+    },
+    {
+      "source": 74,
+      "target": 39,
+      "relation": "signed cooperation agreement with Heritage in 2022"
+    },
+    {
+      "source": 38,
+      "target": 74,
+      "relation": "Hungarian govt funds Danube Institute for US influence"
+    },
+    {
+      "source": 75,
+      "target": 39,
+      "relation": "co-directed Project 2025 while building Hungary ties"
+    },
+    {
+      "source": 46,
+      "target": 47,
+      "relation": "chairs MGX state-owned investment firm"
+    },
+    {
+      "source": 1,
+      "target": 65,
+      "relation": "executive order freezing South Africa bilateral aid"
+    },
+    {
+      "source": 73,
+      "target": 76,
+      "relation": "cooperated in Eastern Europe; Bannon tried to leverage Epstein connections and funding for far-right"
+    },
+    {
+      "source": 73,
+      "target": 38,
+      "relation": "Bannon boasted of advising Orban ahead of 2018 Hungarian elections"
+    },
+    {
+      "source": 73,
+      "target": 80,
+      "relation": "Bannon in contact with Lajcak via Epstein network"
+    },
+    {
+      "source": 80,
+      "target": 76,
+      "relation": "numerous exchanges revealed in Epstein files; resigned after exposure"
+    },
+    {
+      "source": 80,
+      "target": 81,
+      "relation": "recommended Fico for Bannon's European project"
+    },
+    {
+      "source": 9,
+      "target": 77,
+      "relation": "Sacks's venture firm retaining 708 investments while shaping policy"
+    },
+    {
+      "source": 77,
+      "target": 78,
+      "relation": "Craft Ventures holds 7.8% stake in BitGo"
+    },
+    {
+      "source": 9,
+      "target": 79,
+      "relation": "Sacks backed GENIUS Act while Craft held BitGo stake"
+    },
+    {
+      "source": 78,
+      "target": 79,
+      "relation": "BitGo directly benefits from GENIUS Act; filed for IPO"
+    },
+    {
+      "source": 9,
+      "target": 82,
+      "relation": "Sacks brokered 500K AI chip sale to UAE; met Nvidia CEO in Oval Office"
+    },
+    {
+      "source": 9,
+      "target": 12,
+      "relation": "brokered $500M AI chip sale to UAE in May 2025"
+    },
+    {
+      "source": 84,
+      "target": 13,
+      "relation": "Putin's client state; Assad fled to Moscow after regime fell"
+    },
+    {
+      "source": 85,
+      "target": 86,
+      "relation": "close relationship; Adani's wealth linked to Modi's BJP"
+    },
+    {
+      "source": 54,
+      "target": 94,
+      "relation": "Musk offered $100M to Reform UK; called it UK's only hope"
+    },
+    {
+      "source": 83,
+      "target": 13,
+      "relation": "sat on board of Russian military-industrial group"
+    },
+    {
+      "source": 76,
+      "target": 88,
+      "relation": "Epstein's largest funder at $158-170M"
+    },
+    {
+      "source": 76,
+      "target": 89,
+      "relation": "Epstein held full power of attorney over Wexner's fortune"
+    },
+    {
+      "source": 76,
+      "target": 90,
+      "relation": "Deutsche Bank maintained 40+ accounts for Epstein"
+    },
+    {
+      "source": 76,
+      "target": 73,
+      "relation": "Bannon-Epstein cooperation in Eastern Europe; Bannon sought Epstein funding"
+    },
+    {
+      "source": 92,
+      "target": 17,
+      "relation": "co-founded Tether"
+    },
+    {
+      "source": 73,
+      "target": 92,
+      "relation": "Bannon ran Pierce's company"
+    },
+    {
+      "source": 37,
+      "target": 76,
+      "relation": "Lutnick visited Epstein island in 2012; contradicted prior denials under oath"
+    },
+    {
+      "source": 91,
+      "target": 76,
+      "relation": "announced no additional Epstein prosecutions despite 3.5M pages"
+    },
+    {
+      "source": 95,
+      "target": 41,
+      "relation": "incoming VP of America First Refining"
+    },
+    {
+      "source": 95,
+      "target": 2,
+      "relation": "close to Ivanka and Kushner"
+    },
+    {
+      "source": 51,
+      "target": 93,
+      "relation": "Azerbaijani gas could replace Russian gas transit via Ukraine"
+    },
+    {
+      "source": 87,
+      "target": 13,
+      "relation": "Russia-friendly candidate surging in Romania via TikTok"
+    },
+    {
+      "source": 6,
+      "target": 40,
+      "relation": "Reliance Industries chaired by Ambani"
+    }
+  ],
+  "articles": [
+    {
+      "id": 1,
+      "title": "CRYPTO CORRUPTION TRACKER",
+      "date": "2026-03-23",
+      "url": "https://dekleptocracy.substack.com/p/crypto-corruption-tracker-d50",
+      "entities": [
+        1,
+        7,
+        9,
+        10,
+        17,
+        21,
+        22,
+        34,
+        35,
+        37,
+        43
+      ],
+      "clusters": [
+        "influence",
+        "sanctions",
+        "energy",
+        "crypto",
+        "princelings"
+      ],
+      "snippet": "Week of March 17 to 23, 2026"
+    },
+    {
+      "id": 2,
+      "title": "Corruption Made the Conservative Movement Easy Pickings for Putin",
+      "date": "2026-03-23",
+      "url": "https://dekleptocracy.substack.com/p/corruption-made-the-conservative",
+      "entities": [
+        1,
+        2,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        42,
+        45
+      ],
+      "clusters": [
+        "sanctions",
+        "energy",
+        "princelings",
+        "influence"
+      ],
+      "snippet": ""
+    },
+    {
+      "id": 3,
+      "title": "American Princelings",
+      "date": "2026-03-20",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-3d5",
+      "entities": [],
+      "clusters": [],
+      "snippet": "March 20, 2026 Issue 10 "
+    },
+    {
+      "id": 4,
+      "title": "The Oil Refinery Announcement was a Tell",
+      "date": "2026-03-18",
+      "url": "https://dekleptocracy.substack.com/p/the-oil-refinery-announcement-was",
+      "entities": [
+        1,
+        2,
+        6,
+        13,
+        40,
+        41,
+        37
+      ],
+      "clusters": [
+        "influence",
+        "sanctions",
+        "energy",
+        "crypto",
+        "princelings"
+      ],
+      "snippet": "The corruption and Ukraine betrayal run deep"
+    },
+    {
+      "id": 5,
+      "title": "CRYPTO CORRUPTION TRACKER",
+      "date": "2026-03-17",
+      "url": "https://dekleptocracy.substack.com/p/crypto-corruption-tracker-79b",
+      "entities": [
+        1,
+        7,
+        9,
+        22,
+        32,
+        33,
+        34,
+        37,
+        46
+      ],
+      "clusters": [
+        "crypto",
+        "influence"
+      ],
+      "snippet": "The crypto-to-war pipeline is not metaphorical. Thiel co-founded Palantir whose AI justified the Iran strikes."
+    },
+    {
+      "id": 6,
+      "title": "The $10 Billion Fee and the Network ",
+      "date": "2026-03-16",
+      "url": "https://dekleptocracy.substack.com/p/the-10-billion-fee-and-the-network",
+      "entities": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        7,
+        9,
+        10,
+        12,
+        23,
+        35,
+        46,
+        47,
+        48,
+        49,
+        50,
+        60
+      ],
+      "clusters": [
+        "princelings",
+        "crypto",
+        "sanctions",
+        "influence"
+      ],
+      "snippet": "The documented financial trail runs from cryptocurrency through AI chips, a war in Iran, algorithm control, and a $10B fee paid to the administration."
+    },
+    {
+      "id": 7,
+      "title": "American Princelings",
+      "date": "2026-03-13",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-f96",
+      "entities": [],
+      "clusters": [],
+      "snippet": "March 13, 2026, Issue 9"
+    },
+    {
+      "id": 8,
+      "title": "The Putin-Trump Kleptocracy comes to Alaska",
+      "date": "2026-03-11",
+      "url": "https://dekleptocracy.substack.com/p/the-putin-trump-kleptocracy-comes",
+      "entities": [
+        1,
+        13,
+        15,
+        24,
+        29
+      ],
+      "clusters": [
+        "sanctions",
+        "energy",
+        "princelings",
+        "influence"
+      ],
+      "snippet": "It won't stop there"
+    },
+    {
+      "id": 9,
+      "title": "CRYPTO CORRUPTION TRACKER",
+      "date": "2026-03-10",
+      "url": "https://dekleptocracy.substack.com/p/crypto-corruption-tracker-4c5",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Week of March 4 to March 10, 2026"
+    },
+    {
+      "id": 10,
+      "title": "American Princelings (reach-back edition)",
+      "date": "2026-03-06",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-reach-back-edition",
+      "entities": [
+        1,
+        2,
+        23,
+        24,
+        29,
+        35,
+        46,
+        56,
+        57
+      ],
+      "clusters": [
+        "princelings",
+        "energy",
+        "crypto"
+      ],
+      "snippet": "ProPublica released searchable database of 3,200 financial disclosure records covering 1,500 Trump appointees -- the Princeling org chart."
+    },
+    {
+      "id": 11,
+      "title": "The Epstein Files, Part 2 of 2",
+      "date": "2026-03-04",
+      "url": "https://dekleptocracy.substack.com/p/the-epstein-files-part-2-of-2",
+      "entities": [
+        1,
+        73,
+        76
+      ],
+      "clusters": [
+        "influence"
+      ],
+      "snippet": "3.5 million pages of Epstein files. Bannon discussed invoking 25th Amendment against Trump with Epstein."
+    },
+    {
+      "id": 12,
+      "title": "CRYPTO CORRUPTION TRACKER",
+      "date": "2026-03-03",
+      "url": "https://dekleptocracy.substack.com/p/crypto-corruption-tracker-24f",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Week of February 25 to March 3, 2026"
+    },
+    {
+      "id": 13,
+      "title": "3.5 Million Pages, Zero Prosecutions, and a Minimum-Security Camp ",
+      "date": "2026-03-02",
+      "url": "https://dekleptocracy.substack.com/p/35-million-pages-zero-prosecutions",
+      "entities": [
+        1,
+        30,
+        76,
+        88,
+        89,
+        90,
+        91
+      ],
+      "clusters": [
+        "influence",
+        "princelings"
+      ],
+      "snippet": "3.5 million pages of Epstein files, a 32-count draft indictment, and zero prosecutions. The process was corrupted from the start."
+    },
+    {
+      "id": 14,
+      "title": "American Princelings",
+      "date": "2026-02-27",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-482",
+      "entities": [],
+      "clusters": [],
+      "snippet": "February 27, 2026"
+    },
+    {
+      "id": 15,
+      "title": "Transparency International's CPI Sends a Worrying and Hopeful Signal",
+      "date": "2026-02-25",
+      "url": "https://dekleptocracy.substack.com/p/transparency-internationals-cpi-sends",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Ukraine shows us how to counter a crumbling rule of law"
+    },
+    {
+      "id": 16,
+      "title": "Crypto Corruption Tracker",
+      "date": "2026-02-25",
+      "url": "https://dekleptocracy.substack.com/p/crypto-corruption-tracker-7e4",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Week of February 17 to February 24, 2026"
+    },
+    {
+      "id": 17,
+      "title": "America Just Got Its Worst Corruption Score. Ever",
+      "date": "2026-02-23",
+      "url": "https://dekleptocracy.substack.com/p/america-just-got-its-worst-corruption",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Here\u2019s What It Means for Your Wallet"
+    },
+    {
+      "id": 18,
+      "title": "American Princelings (salty edition) ",
+      "date": "2026-02-20",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-salty-edition",
+      "entities": [],
+      "clusters": [],
+      "snippet": "February 20, 2026"
+    },
+    {
+      "id": 19,
+      "title": "Bannon and Epstein Cooperated in Eastern Europe Long after Epstein\u2019s Conviction",
+      "date": "2026-02-19",
+      "url": "https://dekleptocracy.substack.com/p/bannon-and-epstein-cooperated-in",
+      "entities": [
+        1,
+        38,
+        73,
+        76,
+        80,
+        81
+      ],
+      "clusters": [
+        "influence"
+      ],
+      "snippet": "Epstein files reveal Bannon cooperated with Epstein in Eastern Europe long after his conviction. Bannon leveraged connections for European far-right alliance."
+    },
+    {
+      "id": 20,
+      "title": "CRYPTO CORRUPTION TRACKER",
+      "date": "2026-02-17",
+      "url": "https://dekleptocracy.substack.com/p/crypto-corruption-tracker-ac3",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Week of February 11 to 18, 2026"
+    },
+    {
+      "id": 21,
+      "title": "Silicon Valley closes ranks around its man in the White House",
+      "date": "2026-02-16",
+      "url": "https://dekleptocracy.substack.com/p/silicon-valley-closes-ranks-around",
+      "entities": [
+        1,
+        7,
+        9,
+        12,
+        46,
+        50,
+        77,
+        78,
+        79,
+        82
+      ],
+      "clusters": [
+        "crypto",
+        "influence",
+        "princelings"
+      ],
+      "snippet": "Sacks retained 708 investments including 449 AI companies and 20 crypto firms in sectors where he shapes federal policy. His ethics waiver amounts to graft."
+    },
+    {
+      "id": 22,
+      "title": "American Princelings",
+      "date": "2026-02-13",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-e90",
+      "entities": [
+        1,
+        2,
+        3,
+        9,
+        23,
+        35,
+        37,
+        42,
+        46,
+        73,
+        76,
+        91
+      ],
+      "clusters": [
+        "princelings",
+        "crypto",
+        "influence"
+      ],
+      "snippet": "Bannon tried to tap Epstein for European far-right funding. Lutnick admitted visiting Epstein island under oath. Grenell plans Kennedy Center closure."
+    },
+    {
+      "id": 23,
+      "title": "Trump\u2019s Most Valuable Enabler",
+      "date": "2026-02-11",
+      "url": "https://dekleptocracy.substack.com/p/trumps-most-valuable-enabler",
+      "entities": [
+        1,
+        54
+      ],
+      "clusters": [
+        "influence",
+        "crypto"
+      ],
+      "snippet": "Elon Musk is Trump's most valuable enabler."
+    },
+    {
+      "id": 24,
+      "title": "CRYPTO CORRUPTION TRACKER",
+      "date": "2026-02-10",
+      "url": "https://dekleptocracy.substack.com/p/crypto-corruption-tracker",
+      "entities": [
+        1,
+        7,
+        9,
+        17,
+        21,
+        22,
+        34,
+        35,
+        37,
+        46,
+        60,
+        77,
+        78,
+        91,
+        92
+      ],
+      "clusters": [
+        "crypto",
+        "sanctions",
+        "influence"
+      ],
+      "snippet": "Pierce co-founded Tether. Bannon ran Pierce's company. Lutnick manages Tether's $134B treasury. Every company whose SEC case was dismissed donated to Trump's inauguration."
+    },
+    {
+      "id": 25,
+      "title": "American Princelings ",
+      "date": "2026-02-06",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-bd1",
+      "entities": [],
+      "clusters": [],
+      "snippet": "February 6, 2026"
+    },
+    {
+      "id": 26,
+      "title": "Not in Our Name",
+      "date": "2026-02-04",
+      "url": "https://dekleptocracy.substack.com/p/not-in-our-name",
+      "entities": [
+        1,
+        13
+      ],
+      "clusters": [
+        "sanctions"
+      ],
+      "snippet": "A call to action against corruption and complicity."
+    },
+    {
+      "id": 27,
+      "title": "Has Trump Become a Liability for Orb\u00e1n?",
+      "date": "2026-02-02",
+      "url": "https://dekleptocracy.substack.com/p/trump-might-have-become-a-liability",
+      "entities": [],
+      "clusters": [],
+      "snippet": "The European far-right suddenly seems embarrassed by him"
+    },
+    {
+      "id": 28,
+      "title": "American Princelings ",
+      "date": "2026-01-30",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-2af",
+      "entities": [],
+      "clusters": [],
+      "snippet": "January 30, 2026"
+    },
+    {
+      "id": 29,
+      "title": "The Disinformation-to-Death Pipeline",
+      "date": "2026-01-28",
+      "url": "https://dekleptocracy.substack.com/p/the-disinformation-to-death-pipeline",
+      "entities": [
+        1
+      ],
+      "clusters": [
+        "influence"
+      ],
+      "snippet": "How disinformation campaigns fuel real-world harm."
+    },
+    {
+      "id": 30,
+      "title": "Hungary blocks EU statement on Greenland ",
+      "date": "2026-01-27",
+      "url": "https://dekleptocracy.substack.com/p/hungary-blocks-eu-statement-on-greenland",
+      "entities": [
+        38
+      ],
+      "clusters": [
+        "influence"
+      ],
+      "snippet": "Hungary's obstruction of EU foreign policy under Orban's direction."
+    },
+    {
+      "id": 31,
+      "title": "Maga Baksheesh",
+      "date": "2026-01-26",
+      "url": "https://dekleptocracy.substack.com/p/maga-backsheesh",
+      "entities": [],
+      "clusters": [],
+      "snippet": "How pardon abuse is creating a two-tier justice system"
+    },
+    {
+      "id": 32,
+      "title": "American Princelings ",
+      "date": "2026-01-23",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-239",
+      "entities": [],
+      "clusters": [],
+      "snippet": "January 23, 2026"
+    },
+    {
+      "id": 33,
+      "title": "Billionaire Grift Is Driving Trump's Foreign Policy",
+      "date": "2026-01-21",
+      "url": "https://dekleptocracy.substack.com/p/billionaire-grift-is-driving-trumps",
+      "entities": [],
+      "clusters": [],
+      "snippet": "The corruption creates an opening for Europe...if they'll use it. "
+    },
+    {
+      "id": 34,
+      "title": "American Princelings (Embarrassed for America Edition)",
+      "date": "2026-01-16",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-embarrassed",
+      "entities": [],
+      "clusters": [],
+      "snippet": "January 16, 2026"
+    },
+    {
+      "id": 35,
+      "title": "Marc Andreessen Enables North Korean Money Laundering",
+      "date": "2026-01-15",
+      "url": "https://dekleptocracy.substack.com/p/marc-andreessen-profits-from-north",
+      "entities": [],
+      "clusters": [],
+      "snippet": "He Used Those Profits to Help Buy the Presidency "
+    },
+    {
+      "id": 36,
+      "title": "American Princelings (Strongman Edition)",
+      "date": "2026-01-09",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-strongman-edition",
+      "entities": [],
+      "clusters": [],
+      "snippet": "January 9, 2026"
+    },
+    {
+      "id": 37,
+      "title": "Our 2026 Plans",
+      "date": "2026-01-06",
+      "url": "https://dekleptocracy.substack.com/p/what-we-have-planned-for-2026",
+      "entities": [
+        1,
+        13
+      ],
+      "clusters": [
+        "sanctions",
+        "influence"
+      ],
+      "snippet": "Dekleptocracy's central thesis: authoritarianism cannot exist without a corruption ecosystem that empowers it."
+    },
+    {
+      "id": 38,
+      "title": "Corruption is Fueling Noem\u2019s ICE Ecosystem",
+      "date": "2026-01-05",
+      "url": "https://dekleptocracy.substack.com/p/corruption-is-fueling-noems-ice-ecosystem",
+      "entities": [],
+      "clusters": [],
+      "snippet": "This gives states a massive opening"
+    },
+    {
+      "id": 39,
+      "title": "The American Princelings Ring in the New Year!",
+      "date": "2026-01-02",
+      "url": "https://dekleptocracy.substack.com/p/the-american-princelings-ring-in",
+      "entities": [],
+      "clusters": [],
+      "snippet": "January 2, 2026"
+    },
+    {
+      "id": 40,
+      "title": "Orb\u00e1n's Own Child Abuse Scandal",
+      "date": "2025-12-30",
+      "url": "https://dekleptocracy.substack.com/p/orbans-own-child-abuse-scandal",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Another protector of children. Another child abuse scandal."
+    },
+    {
+      "id": 41,
+      "title": "American Princelings",
+      "date": "2025-12-26",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-ae6",
+      "entities": [],
+      "clusters": [],
+      "snippet": "December 26, 2026, Christmas edition"
+    },
+    {
+      "id": 42,
+      "title": "American Princelings",
+      "date": "2025-12-19",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-cc7",
+      "entities": [],
+      "clusters": [],
+      "snippet": "December 19, 2025"
+    },
+    {
+      "id": 43,
+      "title": "Rumble and the MAGA Ecosystem",
+      "date": "2025-12-16",
+      "url": "https://dekleptocracy.substack.com/p/rumble-and-the-maga-ecosystem",
+      "entities": [],
+      "clusters": [],
+      "snippet": "The Vice President and Commerce Secretary Profit From a Platform That Spreads Lies About 9/11, Harms Americans and Poisons Our Country"
+    },
+    {
+      "id": 44,
+      "title": "MAGA has Big Plans for Europe ",
+      "date": "2025-12-15",
+      "url": "https://dekleptocracy.substack.com/p/maga-has-big-plans-for-europe",
+      "entities": [],
+      "clusters": [],
+      "snippet": "And The Heritage Foundation is helping them find the friends to execute them"
+    },
+    {
+      "id": 45,
+      "title": "American Princelings",
+      "date": "2025-12-13",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-9da",
+      "entities": [],
+      "clusters": [],
+      "snippet": "December 12, 2025"
+    },
+    {
+      "id": 46,
+      "title": "The Rule of Law for Thee and Not for Me, and all that\u2026",
+      "date": "2025-12-11",
+      "url": "https://dekleptocracy.substack.com/p/the-rule-of-law-for-thee-and-not",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Probably best to put down the sharp objects"
+    },
+    {
+      "id": 47,
+      "title": "Rumble, the Canadian MAGA Information Ecosystem Bellybutton ",
+      "date": "2025-12-09",
+      "url": "https://dekleptocracy.substack.com/p/rumble-the-canadian-maga-information",
+      "entities": [],
+      "clusters": [],
+      "snippet": "You need to understand how exceedingly strange and hostile the crypto bros are to the American Experiment "
+    },
+    {
+      "id": 48,
+      "title": "American Princelings ",
+      "date": "2025-12-06",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-6a1",
+      "entities": [],
+      "clusters": [],
+      "snippet": "December 05, 2025"
+    },
+    {
+      "id": 49,
+      "title": "The Guardian: The West is \u2018missing obscure sanctions that could set back Russia\u2019s war machine\u2019",
+      "date": "2025-12-05",
+      "url": "https://dekleptocracy.substack.com/p/the-guardian-the-west-is-missing",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Dekleptocracy in The Guardian"
+    },
+    {
+      "id": 50,
+      "title": "Howard Lutnick's Custody Relationship with Tether",
+      "date": "2025-12-04",
+      "url": "https://dekleptocracy.substack.com/p/howard-lutnicks-custody-relationship",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Part 2 of Tether, Howard Lutnick and Rumble"
+    },
+    {
+      "id": 51,
+      "title": "Is Trump Rewarding the Cryptobros with Pardons for Drug Dealers?",
+      "date": "2025-12-02",
+      "url": "https://dekleptocracy.substack.com/p/is-trump-rewarding-the-cryptobros",
+      "entities": [],
+      "clusters": [],
+      "snippet": "The cryptobros love a disgraced Honduran president who sits in a federal prison for smuggling 500 tons (!) of cocaine into the US. Some of those same cryptobros also love Trump"
+    },
+    {
+      "id": 52,
+      "title": "European Leaders Skeptical as Orb\u00e1n Makes Another Pilgrimage to Moscow ",
+      "date": "2025-12-01",
+      "url": "https://dekleptocracy.substack.com/p/european-leaders-skeptical-as-orban",
+      "entities": [],
+      "clusters": [],
+      "snippet": "The Heritage Foundation's favorite European president sows division among the pro-democracy coalition "
+    },
+    {
+      "id": 53,
+      "title": "Cryptocurrency's Assault on America",
+      "date": "2025-11-28",
+      "url": "https://dekleptocracy.substack.com/p/cryptocurrencys-assault-on-america-d10",
+      "entities": [],
+      "clusters": [],
+      "snippet": "The Tether-Lutnick-Rumble nexus - Part 1"
+    },
+    {
+      "id": 54,
+      "title": "West is \u2018missing obscure sanctions that could set back Russia\u2019s war machine\u2019",
+      "date": "2025-11-27",
+      "url": "https://dekleptocracy.substack.com/p/west-is-missing-obscure-sanctions",
+      "entities": [],
+      "clusters": [],
+      "snippet": "In the off chance the Trump administration realizes Putin is making fools of them and wants to try and end this"
+    },
+    {
+      "id": 55,
+      "title": "American Princelings ",
+      "date": "2025-11-25",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-069",
+      "entities": [],
+      "clusters": [],
+      "snippet": "November 24, 2025 "
+    },
+    {
+      "id": 56,
+      "title": "This Should Not be America",
+      "date": "2025-11-21",
+      "url": "https://dekleptocracy.substack.com/p/this-should-not-be-america",
+      "entities": [],
+      "clusters": [],
+      "snippet": "They're not even hiding it anymore"
+    },
+    {
+      "id": 57,
+      "title": "Vermont's Critical Role in Trump's Gulag Archipelago ",
+      "date": "2025-11-20",
+      "url": "https://dekleptocracy.substack.com/p/vermonts-critical-role-in-trumps",
+      "entities": [
+        1
+      ],
+      "clusters": [
+        "sanctions"
+      ],
+      "snippet": "Vermont has leverage over a company with roots in the state connected to corruption."
+    },
+    {
+      "id": 58,
+      "title": "AI\u2019s energy thirst is driving up energy bills in your town - Government Capture",
+      "date": "2025-11-18",
+      "url": "https://dekleptocracy.substack.com/p/ais-energy-thirst-is-driving-up-energy-2bf",
+      "entities": [],
+      "clusters": [],
+      "snippet": "The last installment of a our series about Peter Thiel and the tech bros' plans for your budget "
+    },
+    {
+      "id": 59,
+      "title": "American Princelings",
+      "date": "2025-11-17",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-b27",
+      "entities": [
+        1,
+        2,
+        23,
+        35,
+        46
+      ],
+      "clusters": [
+        "princelings",
+        "crypto"
+      ],
+      "snippet": "Continued tracking of princeling financial networks around the Trump orbit."
+    },
+    {
+      "id": 60,
+      "title": "Is Blagojevich Midwifing Clemency for Illinois\u2019s Most Corrupt Imprisoned Politician?",
+      "date": "2025-11-14",
+      "url": "https://dekleptocracy.substack.com/p/is-blagojevich-midwifing-clemency",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Blagojevich appears to have developed an expertise in Trump pardons"
+    },
+    {
+      "id": 61,
+      "title": "Trump Throws Orb\u00e1n an Election Lifeline ",
+      "date": "2025-11-12",
+      "url": "https://dekleptocracy.substack.com/p/trump-throws-orban-an-election-lifeline",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Trump puts his thumb on the scale in Argentina and now Hungary"
+    },
+    {
+      "id": 62,
+      "title": "American Princelings",
+      "date": "2025-11-10",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-df9",
+      "entities": [],
+      "clusters": [],
+      "snippet": "November 10, 2025 "
+    },
+    {
+      "id": 63,
+      "title": "Cryptocurrency Fleecing Retirees",
+      "date": "2025-11-07",
+      "url": "https://dekleptocracy.substack.com/p/cryptocurrency-fleecing-retirees",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Bitcoin treasuries and cryptocurrency indexes are about opening retirees' wallets"
+    },
+    {
+      "id": 64,
+      "title": "AI\u2019s Energy Thirst is Driving Up Energy Bills in Your Town",
+      "date": "2025-11-03",
+      "url": "https://dekleptocracy.substack.com/p/ais-energy-thirst-is-driving-up-energy-02a",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Part three of a our series about Peter Thiel and the tech bros' plans for you budget "
+    },
+    {
+      "id": 65,
+      "title": "American Princelings ",
+      "date": "2025-10-31",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-553",
+      "entities": [],
+      "clusters": [],
+      "snippet": "October 31, 2025"
+    },
+    {
+      "id": 66,
+      "title": "Could Orb\u00e1n\u2019s 15-year power end next April?",
+      "date": "2025-10-29",
+      "url": "https://dekleptocracy.substack.com/p/could-orbans-15-year-power-end-next",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Interesting things are happening in Budapest"
+    },
+    {
+      "id": 67,
+      "title": "AI\u2019s Energy Thirst is Driving Up Energy Bills in Your Town, Part Two",
+      "date": "2025-10-28",
+      "url": "https://dekleptocracy.substack.com/p/ais-energy-thirst-is-driving-up-energy-868",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Part two of a five part series about Peter Thiel and the tech bros' plans for you budget"
+    },
+    {
+      "id": 68,
+      "title": "Cryptocurrency's Assault on America",
+      "date": "2025-10-27",
+      "url": "https://dekleptocracy.substack.com/p/cryptocurrencys-assault-on-america",
+      "entities": [],
+      "clusters": [],
+      "snippet": "The crypto industry's capture of America's financial regulators is a national security disaster"
+    },
+    {
+      "id": 69,
+      "title": "American Princelings Foreign Activity Digest",
+      "date": "2025-10-24",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-foreign-activity",
+      "entities": [],
+      "clusters": [],
+      "snippet": "October 24, 2025 "
+    },
+    {
+      "id": 70,
+      "title": "AI\u2019s energy thirst is driving up energy bills in your town",
+      "date": "2025-10-21",
+      "url": "https://dekleptocracy.substack.com/p/ais-energy-thirst-is-driving-up-energy",
+      "entities": [],
+      "clusters": [],
+      "snippet": "All according to Peter Thiel and the tech bros' plan (but they don't think you should have a say about it)"
+    },
+    {
+      "id": 71,
+      "title": "American Princelings Reporting Digest",
+      "date": "2025-10-17",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-reporting-digest",
+      "entities": [],
+      "clusters": [],
+      "snippet": "10/17/2025"
+    },
+    {
+      "id": 72,
+      "title": "Our Chat About Cryptocurrency, vol 2. ",
+      "date": "2025-10-16",
+      "url": "https://dekleptocracy.substack.com/p/our-chat-about-cryptocurrency-vol",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Tether's White House Business Development Department"
+    },
+    {
+      "id": 73,
+      "title": "How Hungary Became a Destination for the Global Far-Right",
+      "date": "2025-10-14",
+      "url": "https://dekleptocracy.substack.com/p/how-hungary-became-a-destination",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Orb\u00e1n has positioned Hungary as the global epicenter"
+    },
+    {
+      "id": 74,
+      "title": "American Princelings",
+      "date": "2025-10-10",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-22b",
+      "entities": [],
+      "clusters": [],
+      "snippet": "October 10, 2025"
+    },
+    {
+      "id": 75,
+      "title": "We Need to Have a Chat About Cryptocurrency ",
+      "date": "2025-10-09",
+      "url": "https://dekleptocracy.substack.com/p/we-need-to-have-a-chat-about-cryptocurrency",
+      "entities": [],
+      "clusters": [],
+      "snippet": "I\u2019m sorry, I\u2019m sorry\u2026"
+    },
+    {
+      "id": 76,
+      "title": "American Princelings ",
+      "date": "2025-10-02",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-1ed",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Foreign Investigative Reporting Digest - 10/02/2025"
+    },
+    {
+      "id": 77,
+      "title": "Is Trump Taking Chinese Bribes?",
+      "date": "2025-10-01",
+      "url": "https://dekleptocracy.substack.com/p/is-trump-taking-chinese-bribes",
+      "entities": [],
+      "clusters": [],
+      "snippet": "And acting as the frontman for a massive Chinese intelligence operation? "
+    },
+    {
+      "id": 78,
+      "title": "MAHA, Inc",
+      "date": "2025-09-26",
+      "url": "https://dekleptocracy.substack.com/p/maha-inc",
+      "entities": [],
+      "clusters": [],
+      "snippet": "It profits by harming pregnant women"
+    },
+    {
+      "id": 79,
+      "title": "American Princelings ",
+      "date": "2025-09-25",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-3ef",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Investigative Reporting Digest on Trump Family Associates (mostly) in Eastern  -- 09/25/2025"
+    },
+    {
+      "id": 80,
+      "title": "The Embarrassing Spectacle at Turtle Bay",
+      "date": "2025-09-24",
+      "url": "https://dekleptocracy.substack.com/p/the-embarrassing-spectacle-at-turtle",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Trump's speech was jarring for the world"
+    },
+    {
+      "id": 81,
+      "title": "Trump's Shell Game Threatens American Security",
+      "date": "2025-09-23",
+      "url": "https://dekleptocracy.substack.com/p/trumps-shell-game-threatens-american",
+      "entities": [
+        1,
+        12,
+        19,
+        35,
+        36,
+        37
+      ],
+      "clusters": [
+        "influence",
+        "sanctions",
+        "energy",
+        "crypto",
+        "princelings"
+      ],
+      "snippet": ""
+    },
+    {
+      "id": 82,
+      "title": "American Princelings",
+      "date": "2025-09-18",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-0f5",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Foreign investigative reporting digest \u2013 09/18/2025"
+    },
+    {
+      "id": 83,
+      "title": "Trump's Strategic Corruption Threatens National Security",
+      "date": "2025-09-17",
+      "url": "https://dekleptocracy.substack.com/p/america-needs-to-focus-on-strategic",
+      "entities": [],
+      "clusters": [],
+      "snippet": "The president\u2019s business activities have undermined years of building national security protections in record time."
+    },
+    {
+      "id": 84,
+      "title": "The Return of the Kleptocracy in America Report",
+      "date": "2025-09-12",
+      "url": "https://dekleptocracy.substack.com/p/the-return-of-the-kleptocracy-in",
+      "entities": [],
+      "clusters": [],
+      "snippet": "State Round-up -- 9/12/2025"
+    },
+    {
+      "id": 85,
+      "title": "American Princelings",
+      "date": "2025-09-08",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-286",
+      "entities": [],
+      "clusters": [],
+      "snippet": "The Trump Clan in Eastern Europe 09/09/2025"
+    },
+    {
+      "id": 86,
+      "title": "American Princelings ",
+      "date": "2025-08-28",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-7cc",
+      "entities": [],
+      "clusters": [],
+      "snippet": "A foreign investigative reporting digest of the Trump family in Eastern Europe 08/28/2025"
+    },
+    {
+      "id": 87,
+      "title": "Orb\u00e1n voices rare criticism against Trump",
+      "date": "2025-08-27",
+      "url": "https://dekleptocracy.substack.com/p/orban-voices-rare-criticism-against",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Could it signal the end of their bromance?"
+    },
+    {
+      "id": 88,
+      "title": "American Princelings",
+      "date": "2025-08-21",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings",
+      "entities": [
+        1,
+        2,
+        23,
+        24,
+        46
+      ],
+      "clusters": [
+        "princelings",
+        "energy",
+        "crypto"
+      ],
+      "snippet": "The American Princelings series tracking dynastic corruption networks monetizing political access."
+    },
+    {
+      "id": 89,
+      "title": "When Big Pharma Allegedly Bought a Presidential Whisper",
+      "date": "2025-08-19",
+      "url": "https://dekleptocracy.substack.com/p/when-big-pharma-allegedly-bought",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Does Laura Loomer have a say on the FDA process?"
+    },
+    {
+      "id": 90,
+      "title": "Canada Can Silence Truth Social",
+      "date": "2025-08-18",
+      "url": "https://dekleptocracy.substack.com/p/canada-can-silence-truth-social",
+      "entities": [],
+      "clusters": [],
+      "snippet": "We took our awareness campaign to our friends to the north"
+    },
+    {
+      "id": 91,
+      "title": "Newsletter: Some Dare Call it Treason",
+      "date": "2025-08-15",
+      "url": "https://dekleptocracy.substack.com/p/newsletter-some-dare-call-it-treason",
+      "entities": [],
+      "clusters": [],
+      "snippet": "We preview Trump\u2019s forthcoming \u201csummit\u201d"
+    },
+    {
+      "id": 92,
+      "title": "Exclusive: Pro-Orban think-tank to open outpost in Washington",
+      "date": "2025-08-06",
+      "url": "https://dekleptocracy.substack.com/p/exclusive-pro-orban-think-tank-to",
+      "entities": [],
+      "clusters": [],
+      "snippet": "They Hungarian organization with links to Project 2025 is establishing a post here."
+    },
+    {
+      "id": 93,
+      "title": "Trump's DOJ for Sale to Hewlett-Packard",
+      "date": "2025-08-04",
+      "url": "https://dekleptocracy.substack.com/p/trumps-doj-for-sale-to-hewlett-packard",
+      "entities": [],
+      "clusters": [],
+      "snippet": "A Northern Californian judge has the power to reveal how much the DOJ costs"
+    },
+    {
+      "id": 94,
+      "title": "Follow the Epstein Money Through Albany",
+      "date": "2025-08-01",
+      "url": "https://dekleptocracy.substack.com/p/follow-the-epstein-money-through",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Trump has no control over Albany "
+    },
+    {
+      "id": 95,
+      "title": "Teachers\u2019 Pensions Prop Up Trump's Propaganda ",
+      "date": "2025-07-30",
+      "url": "https://dekleptocracy.substack.com/p/teachers-pensions-prop-up-trumps",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Use transparency and go on offense"
+    },
+    {
+      "id": 96,
+      "title": "Epstein's Network Exposed Our Rigged System",
+      "date": "2025-07-29",
+      "url": "https://dekleptocracy.substack.com/p/epsteins-network-exposed-our-rigged",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Trump will protect it at all costs"
+    },
+    {
+      "id": 97,
+      "title": "US planned to sanction Orban\u2019s PR chief until Trump intervened",
+      "date": "2025-07-23",
+      "url": "https://dekleptocracy.substack.com/p/us-planned-to-sanction-orbans-pr",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Attacking Democracy Takes a Back Seat to Good Relations"
+    },
+    {
+      "id": 98,
+      "title": "NY Tax Dollars Go to Contractor Building Florida's Gulag Archipelago",
+      "date": "2025-07-22",
+      "url": "https://dekleptocracy.substack.com/p/ny-tax-dollars-go-to-contractor-building",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Blue states: demand accountability with your money"
+    },
+    {
+      "id": 99,
+      "title": "Trump\u2019s Links to the Sex Trafficking Industry Underline a Global Network of Corruption",
+      "date": "2025-07-21",
+      "url": "https://dekleptocracy.substack.com/p/trumps-links-to-the-sex-trafficking",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Financial crimes leave paper trails"
+    },
+    {
+      "id": 100,
+      "title": "Thank you Mr President",
+      "date": "2025-07-17",
+      "url": "https://dekleptocracy.substack.com/p/thank-you-mr-president",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Hopefully"
+    },
+    {
+      "id": 101,
+      "title": "Hungary's Hidden Hand in Project 2025 ",
+      "date": "2025-07-16",
+      "url": "https://dekleptocracy.substack.com/p/hungarys-hidden-hand-in-project-2025",
+      "entities": [
+        38,
+        39,
+        73,
+        74,
+        75
+      ],
+      "clusters": [
+        "influence"
+      ],
+      "snippet": "Hungary's influence operation systematically paid American conservative influencers. Heritage signed cooperation with Orban's Danube Institute."
+    },
+    {
+      "id": 102,
+      "title": "How Orban Helped Shape Project 2025, ",
+      "date": "2025-07-09",
+      "url": "https://dekleptocracy.substack.com/p/how-orban-helped-shape-project-2025",
+      "entities": [
+        1,
+        38,
+        39
+      ],
+      "clusters": [
+        "sanctions",
+        "energy",
+        "princelings",
+        "influence"
+      ],
+      "snippet": "What\u2019s Next For America If Hungary Is The Model"
+    },
+    {
+      "id": 103,
+      "title": "Local Corruption State Roundup",
+      "date": "2025-07-04",
+      "url": "https://dekleptocracy.substack.com/p/local-corruption-state-roundup",
+      "entities": [],
+      "clusters": [],
+      "snippet": "What's happening locally"
+    },
+    {
+      "id": 104,
+      "title": "No MAGA left behind",
+      "date": "2025-07-03",
+      "url": "https://dekleptocracy.substack.com/p/no-maga-left-behind",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Kleptocracy in America issue number 8 national throughline recap"
+    },
+    {
+      "id": 105,
+      "title": "In the Conversation: 15 May - 25 June 2025",
+      "date": "2025-07-02",
+      "url": "https://dekleptocracy.substack.com/p/in-the-conversation-15-may-25-june",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Highlights from our local corruption roundup"
+    },
+    {
+      "id": 106,
+      "title": "They Were Paid by Orban\u2019s Think Tank. Now, They Work for the U.S. Department of State. ",
+      "date": "2025-07-01",
+      "url": "https://dekleptocracy.substack.com/p/they-were-paid-by-orbans-think-tank",
+      "entities": [],
+      "clusters": [],
+      "snippet": ""
+    },
+    {
+      "id": 107,
+      "title": "\u201cNo MAGA left behind\u201d: Kleptocracy in America",
+      "date": "2025-06-29",
+      "url": "https://dekleptocracy.substack.com/p/no-maga-left-behind-kleptocracy-in-668",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Report 8, Part 2"
+    },
+    {
+      "id": 108,
+      "title": "\u201cNo MAGA left behind\u201d: Kleptocracy in America ",
+      "date": "2025-06-27",
+      "url": "https://dekleptocracy.substack.com/p/no-maga-left-behind-kleptocracy-in",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Report 8, Part 1"
+    },
+    {
+      "id": 109,
+      "title": "THE DEKLEPTOCRACY REPORT: WAR ON IRAN FOR THE HIGHEST BIDDER",
+      "date": "2025-06-25",
+      "url": "https://dekleptocracy.substack.com/p/the-dekleptocracy-report-war-on-iran",
+      "entities": [],
+      "clusters": [],
+      "snippet": "NEWSLETTER #42"
+    },
+    {
+      "id": 110,
+      "title": "Threatening the Boundary Waters Creates Opening for Democrats",
+      "date": "2025-06-20",
+      "url": "https://dekleptocracy.substack.com/p/threatening-the-boundary-waters-creates",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Minnesota's Boundary Waters face a threat. And it involves a Chilean billionaire who was once Ivanka Trump's landlord."
+    },
+    {
+      "id": 111,
+      "title": "Is the DOJ Subsidizing Insurrection?",
+      "date": "2025-06-19",
+      "url": "https://dekleptocracy.substack.com/p/is-the-doj-subsidizing-insurrection",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Your tax dollars could be flowing to white nationalists and conspiracy theorists"
+    },
+    {
+      "id": 112,
+      "title": "DONALD TRUMP JR.\u2019S RECENT CEE VISIT COULD STRENGTHEN MAGA-ALIGNED NETWORKS IN THE REGION.",
+      "date": "2025-06-12",
+      "url": "https://dekleptocracy.substack.com/p/donald-trump-jrs-recent-cee-visit",
+      "entities": [],
+      "clusters": [],
+      "snippet": ""
+    },
+    {
+      "id": 113,
+      "title": "VU\u010cI\u0106 DEMONSTRATES HOW TO CONTAIN AMERICA WITH CORRUPTION",
+      "date": "2025-06-11",
+      "url": "https://dekleptocracy.substack.com/p/vucic-demonstrates-how-to-contain",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Corruption, not interests, appear to steer American foreign policy"
+    },
+    {
+      "id": 114,
+      "title": "HOW YOUR RETIREMENT SAVINGS MAY BE FUELING PUTIN\u2019S WAR",
+      "date": "2025-06-02",
+      "url": "https://dekleptocracy.substack.com/p/how-your-retirement-savings-may-be",
+      "entities": [
+        6,
+        13,
+        44
+      ],
+      "clusters": [
+        "sanctions",
+        "energy"
+      ],
+      "snippet": "The financial sectorsubsidizes authoritarianism"
+    },
+    {
+      "id": 115,
+      "title": "WHY THE US SHOULD FOLLOW THE UK AND INSTITUTE A MODERN SLAVERY ACT ",
+      "date": "2025-05-29",
+      "url": "https://dekleptocracy.substack.com/p/why-the-us-should-follow-the-uk-and",
+      "entities": [],
+      "clusters": [],
+      "snippet": "It would be a bipartisan win"
+    },
+    {
+      "id": 116,
+      "title": "MAKE AMERICA SMALL AGAIN: WHEN THE PRESIDENT'S LANDLORD IS A SERBIAN STRONGMAN ",
+      "date": "2025-05-19",
+      "url": "https://dekleptocracy.substack.com/p/make-america-small-again-when-the",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Sub-heading: Trump\u2019s Balkan Side Hustle Reduces America "
+    },
+    {
+      "id": 117,
+      "title": "KLEPTOCRACY IN AMERICA REPORT #7, 4 APRIL - 14 MAY 2025: SPRINGTIME FOR CORRUPTION ",
+      "date": "2025-05-16",
+      "url": "https://dekleptocracy.substack.com/p/kleptocracy-in-america-report-7-4",
+      "entities": [],
+      "clusters": [],
+      "snippet": ""
+    },
+    {
+      "id": 118,
+      "title": "TRUMP\u2019S WHITE NATIONALIST SANCTUARY",
+      "date": "2025-05-14",
+      "url": "https://dekleptocracy.substack.com/p/trumps-white-nationalist-sanctuary",
+      "entities": [],
+      "clusters": [],
+      "snippet": "It's worse than it looks"
+    },
+    {
+      "id": 119,
+      "title": "OUR AUTHORITARIAN FRIEND",
+      "date": "2025-05-08",
+      "url": "https://dekleptocracy.substack.com/p/our-authoritarian-friend",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Trump Impeded a DOJ Gang Case and Freed an MS-13 Leader to Help an Authoritarian Ally"
+    },
+    {
+      "id": 120,
+      "title": "STEPPING OFF THE CLIFF",
+      "date": "2025-05-07",
+      "url": "https://dekleptocracy.substack.com/p/stepping-off-the-cliff",
+      "entities": [
+        1,
+        13,
+        38
+      ],
+      "clusters": [
+        "sanctions",
+        "energy",
+        "princelings",
+        "influence"
+      ],
+      "snippet": "Is our economic policy reinforcing authoritarianism globally?"
+    },
+    {
+      "id": 121,
+      "title": "Elon\u2019s Use of the Familiar Enron Playbook Has Endangered American Workers ",
+      "date": "2025-05-05",
+      "url": "https://dekleptocracy.substack.com/p/elons-use-of-the-familiar-enron-playbook",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Tesla began life on corporate welfare. Not only has it come full circle, but blue states subsidize him almost entirely now"
+    },
+    {
+      "id": 122,
+      "title": "Trump Associate Corruption in the Balkans is Harming America\u2019s Reputation and Diminishing Us. ",
+      "date": "2025-04-28",
+      "url": "https://dekleptocracy.substack.com/p/trump-associate-corruption-in-the",
+      "entities": [],
+      "clusters": [],
+      "snippet": "America is playing small ball. "
+    },
+    {
+      "id": 123,
+      "title": "THE DEKLEPTOCRACY REPORT",
+      "date": "2025-04-16",
+      "url": "https://dekleptocracy.substack.com/p/the-dekleptocracy-report",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Issue #39: THE UK \u2013 IT CAN HAPPEN THERE"
+    },
+    {
+      "id": 124,
+      "title": "DONALD TRUMP\u2019S MARKETS KAYFABE & YOUR RETIREMENT FUND ",
+      "date": "2025-04-15",
+      "url": "https://dekleptocracy.substack.com/p/donald-trumps-markets-kayfabe-and",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Millennials, Boomers are Screwing You One Last Time"
+    },
+    {
+      "id": 125,
+      "title": "JARED IS BACK ",
+      "date": "2025-04-10",
+      "url": "https://dekleptocracy.substack.com/p/jared-is-back",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Welcome to the Kleptocracy"
+    },
+    {
+      "id": 126,
+      "title": "TRUMP\u2019S CRYPTO KINGDOM IS THE NEW TRUMP HOTEL ",
+      "date": "2025-04-08",
+      "url": "https://dekleptocracy.substack.com/p/trumps-crypto-kingdom-is-the-new",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Regulatory Capture Matters to You"
+    },
+    {
+      "id": 127,
+      "title": "WHY ALAN J. KUPERMAN IS WRONG ON TRUMP BEING RIGHT ON UKRAINE",
+      "date": "2025-04-03",
+      "url": "https://dekleptocracy.substack.com/p/why-alan-j-kuperman-is-wrong-on-trump-292",
+      "entities": [],
+      "clusters": [],
+      "snippet": "PART 2"
+    },
+    {
+      "id": 128,
+      "title": "WHY ALAN J. KUPERMAN IS WRONG ON TRUMP BEING RIGHT ON UKRAINE ",
+      "date": "2025-04-02",
+      "url": "https://dekleptocracy.substack.com/p/why-alan-j-kuperman-is-wrong-on-trump",
+      "entities": [],
+      "clusters": [],
+      "snippet": "PART I "
+    },
+    {
+      "id": 129,
+      "title": "Track II Envoy to Authoritarians ",
+      "date": "2025-03-28",
+      "url": "https://dekleptocracy.substack.com/p/track-ii-envoy-to-authoritarians",
+      "entities": [],
+      "clusters": [],
+      "snippet": "The Trump Family\u2019s Self-Dealing "
+    },
+    {
+      "id": 130,
+      "title": "Cheaper Competition for the Military ",
+      "date": "2025-03-27",
+      "url": "https://dekleptocracy.substack.com/p/cheaper-competition-for-the-military",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Taiwan, your democratic values do not count with Trump"
+    },
+    {
+      "id": 131,
+      "title": "It's Not the War Plans, It's the CCP's Leash ",
+      "date": "2025-03-26",
+      "url": "https://dekleptocracy.substack.com/p/its-not-the-war-plans-its-the-ccps",
+      "entities": [],
+      "clusters": [],
+      "snippet": "(And He Seems to Like It)"
+    },
+    {
+      "id": 132,
+      "title": "NY's Economic Sovereignty: Raiffeisen's Actions Demand Investigation to Assert New York\u2019s Constitutional Authority and Protect the Rule of Law ",
+      "date": "2025-03-25",
+      "url": "https://dekleptocracy.substack.com/p/nys-economic-sovereignty-raiffeisens",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Attorney General Letitia James must act swiftly and decisively "
+    },
+    {
+      "id": 133,
+      "title": "Crypto Corruption: How California Can Stop a Pay-to-Play Grift",
+      "date": "2025-03-20",
+      "url": "https://dekleptocracy.substack.com/p/crypto-corruption-how-california",
+      "entities": [],
+      "clusters": [],
+      "snippet": "By leveraging state jurisdiction over the infrastructure behind crypto transactions, California\u2019s Attorney General can crack down on the pay-to-play corruption and Trump\u2019s conflicts of interest"
+    },
+    {
+      "id": 134,
+      "title": "Trump\u2019s Untapped Trump Card: A Sanction That Could Cripple Putin",
+      "date": "2025-03-19",
+      "url": "https://dekleptocracy.substack.com/p/trumps-untapped-trump-card-a-sanction",
+      "entities": [],
+      "clusters": [],
+      "snippet": "But Trump Won\u2019t Use It"
+    },
+    {
+      "id": 135,
+      "title": "Trump\u2019s Chess Gambit: Bluffing America into Checkmate",
+      "date": "2025-03-18",
+      "url": "https://dekleptocracy.substack.com/p/trumps-chess-gambit-bluffing-america",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Reset 2.0"
+    },
+    {
+      "id": 136,
+      "title": "Welcome to The Dekleptocracy Project's Substack",
+      "date": "2025-03-13",
+      "url": "https://dekleptocracy.substack.com/p/welcome-to-the-dekleptocracy-projects",
+      "entities": [],
+      "clusters": [],
+      "snippet": "Where We Do Things Other Than Yell at Old People in Washington"
+    },
+    {
+      "id": 137,
+      "title": "Coming soon",
+      "date": "2025-03-10",
+      "url": "https://dekleptocracy.substack.com/p/coming-soon",
+      "entities": [],
+      "clusters": [],
+      "snippet": ""
+    },
+    {
+      "id": 138,
+      "title": "The king of bad ideas: reviving Nord Stream 2 (Dekleptocracy Report #37)",
+      "date": "2025-03-06",
+      "url": "https://dekleptocracy.substack.com/p/9ljwejjzerr8gmgj42c6no2wf72yqj",
+      "entities": [],
+      "clusters": [],
+      "snippet": ""
+    },
+    {
+      "id": 139,
+      "title": "Local corruption from coast to coast, Part 1",
+      "date": "2025-03-02",
+      "url": "https://dekleptocracy.substack.com/p/59oz727d24tah0h9130h5evd3dngoy",
+      "entities": [],
+      "clusters": [],
+      "snippet": ""
+    },
+    {
+      "id": 140,
+      "title": "Not Just another brics in the wall (Dekleptocracy Report #36)",
+      "date": "2025-02-21",
+      "url": "https://dekleptocracy.substack.com/p/not-just-another-brics-in-the-wall-dekleptocracy-report-36",
+      "entities": [
+        1,
+        54,
+        64,
+        65,
+        66,
+        67,
+        58
+      ],
+      "clusters": [
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "How AfriForum and Elon Musk shaped US policy toward South Africa, a microcosm of how narrow interest groups drive Trump's foreign policy."
+    },
+    {
+      "id": 141,
+      "title": "(MEME) Coin of the realm",
+      "date": "2025-02-13",
+      "url": "https://dekleptocracy.substack.com/p/ka8cwgmk907sx52i57e7l20xrvvy83",
+      "entities": [],
+      "clusters": [],
+      "snippet": ""
+    },
+    {
+      "id": 142,
+      "title": "The Corporate Transparency Act in the Crosshairs (Dekleptocracy Report #35, 7 February 2025)",
+      "date": "2025-02-06",
+      "url": "https://dekleptocracy.substack.com/p/the-corporate-transparency-act-in-the-crosshairs-dekleptocracy-report-35-7-february-2025",
+      "entities": [
+        1,
+        39,
+        54,
+        58
+      ],
+      "clusters": [
+        "sanctions",
+        "influence"
+      ],
+      "snippet": "Concerted attempts to dismantle the Corporate Transparency Act and decades of work to make America's financial markets fairer and more transparent."
+    },
+    {
+      "id": 143,
+      "title": "Rule by Thieves: Defining Kleptocracy",
+      "date": "2025-01-30",
+      "url": "https://dekleptocracy.substack.com/p/rule-by-thieves-defining-kleptocracy",
+      "entities": [
+        1,
+        70
+      ],
+      "clusters": [
+        "sanctions"
+      ],
+      "snippet": "Kleptocracy is a regime where corruption is not an externality but the basis of the system. America is on the path to becoming one."
+    },
+    {
+      "id": 144,
+      "title": "The Great Game: How a Trump deal on Ukraine could open the floodgates for Russian LNG (Dekleptocracy Report #34, 23 January 2025)",
+      "date": "2025-01-23",
+      "url": "https://dekleptocracy.substack.com/p/the-great-game-how-a-trump-deal-on-ukraine-could-open-the-floodgates-for-russian-lng-dekleptocracy-report-34-23-january-2025",
+      "entities": [
+        1,
+        13,
+        29,
+        51,
+        52,
+        53
+      ],
+      "clusters": [
+        "energy",
+        "sanctions"
+      ],
+      "snippet": "What if the new administration cuts a deal with Russia that allows the Kremlin's LNG projects to break free from sanctions and seize global market share?"
+    },
+    {
+      "id": 145,
+      "title": "Introducing the Kleptocracy in America Report",
+      "date": "2025-01-16",
+      "url": "https://dekleptocracy.substack.com/p/introducing-the-kleptocracy-in-america-report",
+      "entities": [
+        1,
+        68
+      ],
+      "clusters": [
+        "sanctions",
+        "influence"
+      ],
+      "snippet": "The incoming Trump Administration could do more than just engage in corruption -- it could institutionalize it."
+    },
+    {
+      "id": 146,
+      "title": "The UK's US envoy pick should make you very, very worried: Dekleptocracy Report #33, 6 January 2025",
+      "date": "2025-01-06",
+      "url": "https://dekleptocracy.substack.com/p/the-uks-us-envoy-pick-should-make-you-worried-dekleptocracy-report-33",
+      "entities": [
+        1,
+        54,
+        83,
+        94
+      ],
+      "clusters": [
+        "influence"
+      ],
+      "snippet": "UK named scandal-prone Peter Mandelson, who sat on a Russian military-industrial board, as ambassador to Trump's Washington."
+    },
+    {
+      "id": 147,
+      "title": "One less kleptocracy: Dekleptocracy Report #32, 18 December 2024",
+      "date": "2024-12-18",
+      "url": "https://dekleptocracy.substack.com/p/one-less-kleptocracy-dekleptocracy-report-32-18-december-2024",
+      "entities": [
+        13,
+        84
+      ],
+      "clusters": [
+        "sanctions"
+      ],
+      "snippet": "Fall of al-Assad regime was a blow to Russia's global mafia of kleptocracies and an opportunity for the US."
+    },
+    {
+      "id": 148,
+      "title": "Hot air for Ukraine and the EU from authoritarian pipeline politics: Dekleptocracy Report #31, 4 December 2024",
+      "date": "2024-12-04",
+      "url": "https://dekleptocracy.substack.com/p/hot-air-for-ukraine-and-the-eu-from-authoritarian-pipeline-politics-dekleptocracy-report-31-4-december-2024",
+      "entities": [
+        13,
+        51,
+        93
+      ],
+      "clusters": [
+        "energy",
+        "sanctions"
+      ],
+      "snippet": "Europe's energy security dilemma as Ukraine's Gazprom transit deal expires. Azerbaijan waiting in the wings but gas might still be Russian."
+    },
+    {
+      "id": 149,
+      "title": "In Brief, November 25, 2024: Adani indicted, UK and EU sanctions, and more",
+      "date": "2024-11-25",
+      "url": "https://dekleptocracy.substack.com/p/in-brief-november-25-2024-adani-indicted-uk-and-eu-sanctions-and-more",
+      "entities": [
+        85,
+        86,
+        13,
+        87
+      ],
+      "clusters": [
+        "energy",
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "Adani indicted for $265M bribery. UK rolls out new shadow fleet sanctions. Romanian far-right candidate tops polls."
+    },
+    {
+      "id": 150,
+      "title": "The war in Ukraine is a proving ground for US democracy: Dekleptocracy Report #30, 25 November 2024",
+      "date": "2024-11-25",
+      "url": "https://dekleptocracy.substack.com/p/the-war-in-ukraine-is-a-proving-ground-for-us-democracy-dekleptocracy-report-30-25-november-2024",
+      "entities": [
+        1,
+        13
+      ],
+      "clusters": [
+        "sanctions",
+        "energy"
+      ],
+      "snippet": "America's approach to Ukraine is a bellwether for its democracy. Support for Ukraine is a rare bipartisan issue."
+    },
+    {
+      "id": 151,
+      "title": "In brief, November 20, 2024: Trump teases \"maximum pressure,\" local corruption intersects with partisan politics across America, and more",
+      "date": "2024-11-20",
+      "url": "https://dekleptocracy.substack.com/p/in-brief-november-20-2024-trump-teases-maximum-pressure-local-corruption-intersects-with-partisan-politics-across-america-and-more",
+      "entities": [],
+      "clusters": [],
+      "snippet": ""
+    },
+    {
+      "id": 152,
+      "title": "After the election, a time for vigilance against corruption at home and abroad: Dekleptocracy Report #29, 14 November 2024",
+      "date": "2024-11-14",
+      "url": "https://dekleptocracy.substack.com/p/after-the-election-a-time-for-vigilance-against-corruption-at-home-and-abroad-dekleptocracy-report-29-14-november-2024",
+      "entities": [
+        1,
+        13
+      ],
+      "clusters": [
+        "sanctions",
+        "influence"
+      ],
+      "snippet": "America may now face an explosion of corruption the likes of which we haven't seen in our lifetimes."
+    },
+    {
+      "id": 153,
+      "title": "We Need a Clear Policy on Ukraine, not Oligarchic Intrigue, on Tuesday: TDR #28, 31 October 2024",
+      "date": "2024-11-01",
+      "url": "https://dekleptocracy.substack.com/p/we-need-a-clear-policy-on-ukraine-not-oligarchic-intrigue-on-tuesday-tdr-28-31-october-2024",
+      "entities": [
+        1,
+        13
+      ],
+      "clusters": [
+        "sanctions",
+        "energy"
+      ],
+      "snippet": "We need a clear policy on Ukraine, not oligarchic intrigue."
+    },
+    {
+      "id": 154,
+      "title": "In brief, October 31, 2024: Sweeping Russia sanctions, drone (supply chain) wars, and more",
+      "date": "2024-10-31",
+      "url": "https://dekleptocracy.substack.com/p/in-brief-october-31-2024-sweeping-russia-sanctions-drone-supply-chain-wars-and-more",
+      "entities": [],
+      "clusters": [],
+      "snippet": ""
+    },
+    {
+      "id": 155,
+      "title": "In brief, October 28, 2024: North Korean troops in Russia, LNG-2 halted, and more",
+      "date": "2024-10-28",
+      "url": "https://dekleptocracy.substack.com/p/in-brief-october-28-2024-north-korean-troops-in-russia-lng-2-halted-and-more",
+      "entities": [],
+      "clusters": [],
+      "snippet": ""
+    },
+    {
+      "id": 156,
+      "title": "How OSINT can save the world: TDR #27, 23 October 2024",
+      "date": "2024-10-23",
+      "url": "https://dekleptocracy.substack.com/p/how-osint-can-save-the-world-tdr-27-23-october-2024",
+      "entities": [],
+      "clusters": [],
+      "snippet": ""
+    },
+    {
+      "id": 157,
+      "title": "In brief, October 21, 2024: US sanctions Chinese firms for Russia drone collab, UK goes after shadow fleet, and more",
+      "date": "2024-10-21",
+      "url": "https://dekleptocracy.substack.com/p/in-brief-october-21-2024-us-sanctions-chinese-firms-for-russia-drone-collab-uk-goes-after-shadow-fleet-and-more",
+      "entities": [],
+      "clusters": [],
+      "snippet": ""
+    }
+  ]
+}
