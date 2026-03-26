@@ -1786,6 +1786,52 @@
         "sanctions_exposure": 38,
         "financial_opacity": 50
       }
+    },
+    {
+      "id": 114,
+      "name": "RFK Jr. / HHS",
+      "type": "person",
+      "desc": "Robert F. Kennedy Jr., Trump-appointed Health Secretary. Leads the MAHA (Make America Healthy Again) movement. Embraced by MAGA despite anti-vaccine background. Represents how Trump co-opts and corrupts adjacent movements.",
+      "tags": [
+        "influence"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 30,
+        "sanctions_exposure": 20,
+        "financial_opacity": 45
+      }
+    },
+    {
+      "id": 115,
+      "name": "Ghislaine Maxwell",
+      "type": "person",
+      "desc": "Epstein co-conspirator convicted of sex trafficking. Connected to Trump world, Russian intelligence networks, and international finance. Her prosecution and the sealed files remain central to the Epstein network investigation.",
+      "tags": [
+        "influence",
+        "sanctions"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 78,
+        "sanctions_exposure": 72,
+        "financial_opacity": 85
+      }
+    },
+    {
+      "id": 116,
+      "name": "Mathias Corvinus Collegium (MCC)",
+      "type": "organization",
+      "desc": "Hungarian government-funded think tank that runs CPAC Hungary and hosts US conservatives. Key node in Orb\u00e1n's soft-power campaign to export his illiberal model to American conservative institutions.",
+      "tags": [
+        "influence"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 82,
+        "sanctions_exposure": 45,
+        "financial_opacity": 65
+      }
     }
   ],
   "edges": [
@@ -2618,6 +2664,51 @@
       "source": 113,
       "target": 79,
       "relation": "shepherding CLARITY Act"
+    },
+    {
+      "source": 38,
+      "target": 116,
+      "relation": "funds / controls"
+    },
+    {
+      "source": 116,
+      "target": 39,
+      "relation": "cooperation agreement with"
+    },
+    {
+      "source": 8,
+      "target": 116,
+      "relation": "affiliated speaker / guest"
+    },
+    {
+      "source": 73,
+      "target": 116,
+      "relation": "affiliated speaker / collaborator"
+    },
+    {
+      "source": 76,
+      "target": 13,
+      "relation": "advised Russian officials on sanctions evasion"
+    },
+    {
+      "source": 76,
+      "target": 115,
+      "relation": "criminal enterprise partner"
+    },
+    {
+      "source": 1,
+      "target": 114,
+      "relation": "appointed to cabinet"
+    },
+    {
+      "source": 1,
+      "target": 115,
+      "relation": "documented social relationship"
+    },
+    {
+      "source": 11,
+      "target": 1,
+      "relation": "owned / controlled by"
     }
   ],
   "articles": [
@@ -3868,180 +3959,430 @@
       "title": "Trump Throws Orb\u00e1n an Election Lifeline ",
       "date": "2025-11-12",
       "url": "https://dekleptocracy.substack.com/p/trump-throws-orban-an-election-lifeline",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Trump puts his thumb on the scale in Argentina and now Hungary"
+      "entities": [
+        1,
+        38,
+        39,
+        74,
+        116
+      ],
+      "clusters": [
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "Trump throws Orb\u00e1n an election lifeline ahead of Hungary's April 2026 elections. MCC Feszt, Heritage Foundation ties, and Trump's pre-election boost to Orb\u00e1n's domestic standing."
     },
     {
       "id": 62,
       "title": "American Princelings",
       "date": "2025-11-10",
       "url": "https://dekleptocracy.substack.com/p/american-princelings-df9",
-      "entities": [],
-      "clusters": [],
-      "snippet": "November 10, 2025 "
+      "entities": [
+        1,
+        2,
+        9,
+        37,
+        54,
+        96,
+        104,
+        106,
+        107
+      ],
+      "clusters": [
+        "princelings",
+        "influence",
+        "crypto"
+      ],
+      "snippet": "American Princelings November weekly digest. Trump family crypto income, Sacks conflict of interest, Musk DOGE cuts deepening oversight gaps, Rumble propaganda ecosystem."
     },
     {
       "id": 63,
       "title": "Cryptocurrency Fleecing Retirees",
       "date": "2025-11-07",
       "url": "https://dekleptocracy.substack.com/p/cryptocurrency-fleecing-retirees",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Bitcoin treasuries and cryptocurrency indexes are about opening retirees' wallets"
+      "entities": [
+        1,
+        7,
+        9,
+        10,
+        17,
+        21,
+        22,
+        34,
+        43
+      ],
+      "clusters": [
+        "crypto",
+        "sanctions",
+        "influence"
+      ],
+      "snippet": "Cryptocurrency fleecing retirees. FTC data: $1.4B in crypto fraud losses. Atkins dismantles SEC enforcement. Fairshake captures Congress. Thiel and Sacks network benefits while retail investors lose."
     },
     {
       "id": 64,
       "title": "AI\u2019s Energy Thirst is Driving Up Energy Bills in Your Town",
       "date": "2025-11-03",
       "url": "https://dekleptocracy.substack.com/p/ais-energy-thirst-is-driving-up-energy-02a",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Part three of a our series about Peter Thiel and the tech bros' plans for you budget "
+      "entities": [
+        1,
+        48,
+        54,
+        82
+      ],
+      "clusters": [
+        "influence",
+        "energy"
+      ],
+      "snippet": "AI's energy thirst drives up energy bills. Tech companies capture local politicians to build data centers, socializing energy costs while privatizing profits. Oracle, Nvidia, Musk DOGE suppress oversight."
     },
     {
       "id": 65,
       "title": "American Princelings ",
       "date": "2025-10-31",
       "url": "https://dekleptocracy.substack.com/p/american-princelings-553",
-      "entities": [],
-      "clusters": [],
-      "snippet": "October 31, 2025"
+      "entities": [
+        1,
+        2,
+        3,
+        37,
+        46,
+        47,
+        54,
+        103,
+        106,
+        107
+      ],
+      "clusters": [
+        "princelings",
+        "crypto",
+        "energy",
+        "influence"
+      ],
+      "snippet": "American Princelings Halloween digest. Trump family crypto empire foreign investor flows, Kushner-Saudi PIF income, UAE Sheikh Tahnoon and MGX deals, USD1 stablecoin expansion."
     },
     {
       "id": 66,
       "title": "Could Orb\u00e1n\u2019s 15-year power end next April?",
       "date": "2025-10-29",
       "url": "https://dekleptocracy.substack.com/p/could-orbans-15-year-power-end-next",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Interesting things are happening in Budapest"
+      "entities": [
+        1,
+        38,
+        74,
+        94
+      ],
+      "clusters": [
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "Could Orb\u00e1n's 15-year grip on power end next April? European far-right recalibrating as Trump's Greenland threats create transatlantic rifts. Farage draws line. AfD scrambles. Orb\u00e1n now a liability."
     },
     {
       "id": 67,
       "title": "AI\u2019s Energy Thirst is Driving Up Energy Bills in Your Town, Part Two",
       "date": "2025-10-28",
       "url": "https://dekleptocracy.substack.com/p/ais-energy-thirst-is-driving-up-energy-868",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Part two of a five part series about Peter Thiel and the tech bros' plans for you budget"
+      "entities": [
+        1,
+        48,
+        54,
+        82
+      ],
+      "clusters": [
+        "influence",
+        "energy"
+      ],
+      "snippet": "AI energy thirst Part Two. Data center expansion across US drives electricity bill increases, water stress, and emissions. Tech firms capture local energy infrastructure. Oracle and Nvidia lead demand surge."
     },
     {
       "id": 68,
       "title": "Cryptocurrency's Assault on America",
       "date": "2025-10-27",
       "url": "https://dekleptocracy.substack.com/p/cryptocurrencys-assault-on-america",
-      "entities": [],
-      "clusters": [],
-      "snippet": "The crypto industry's capture of America's financial regulators is a national security disaster"
+      "entities": [
+        1,
+        7,
+        9,
+        10,
+        17,
+        21,
+        22,
+        34,
+        43
+      ],
+      "clusters": [
+        "crypto",
+        "sanctions",
+        "influence"
+      ],
+      "snippet": "Cryptocurrency's assault on America, October edition. Regulatory capture pipeline: Thiel money \u2192 Vance/Sacks appointments \u2192 Atkins SEC \u2192 Fairshake PAC \u2192 Congress. Binance seeking rehabilitation. Tether evasion rail."
     },
     {
       "id": 69,
       "title": "American Princelings Foreign Activity Digest",
       "date": "2025-10-24",
       "url": "https://dekleptocracy.substack.com/p/american-princelings-foreign-activity",
-      "entities": [],
-      "clusters": [],
-      "snippet": "October 24, 2025 "
+      "entities": [
+        1,
+        2,
+        3,
+        12,
+        23,
+        37,
+        40,
+        46,
+        85,
+        86,
+        106
+      ],
+      "clusters": [
+        "princelings",
+        "energy",
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "American Princelings Foreign Activity Digest. Kushner-Saudi PIF, UAE deals, Ambani-Modi-India connections, Trump Organization active foreign deals, Witkoff Russia shuttle diplomacy."
     },
     {
       "id": 70,
       "title": "AI\u2019s energy thirst is driving up energy bills in your town",
       "date": "2025-10-21",
       "url": "https://dekleptocracy.substack.com/p/ais-energy-thirst-is-driving-up-energy",
-      "entities": [],
-      "clusters": [],
-      "snippet": "All according to Peter Thiel and the tech bros' plan (but they don't think you should have a say about it)"
+      "entities": [
+        1,
+        48,
+        54,
+        82
+      ],
+      "clusters": [
+        "influence",
+        "energy"
+      ],
+      "snippet": "AI energy thirst original series. Cryptocurrency mining's energy demand dwarfs many countries. Data centers for AI far larger. Biden EIA data collection order reversed by Trump. States bear costs."
     },
     {
       "id": 71,
       "title": "American Princelings Reporting Digest",
       "date": "2025-10-17",
       "url": "https://dekleptocracy.substack.com/p/american-princelings-reporting-digest",
-      "entities": [],
-      "clusters": [],
-      "snippet": "10/17/2025"
+      "entities": [
+        1,
+        2,
+        3,
+        23,
+        37,
+        46,
+        54,
+        66,
+        85,
+        86,
+        106
+      ],
+      "clusters": [
+        "princelings",
+        "influence",
+        "energy",
+        "sanctions"
+      ],
+      "snippet": "American Princelings Reporting Digest mid-October. Witkoff Russia dealings, Kushner-Saudi PIF, Ambani-Modi connections, Rubio foreign policy as princeling instrument, DOGE conflicts."
     },
     {
       "id": 72,
       "title": "Our Chat About Cryptocurrency, vol 2. ",
       "date": "2025-10-16",
       "url": "https://dekleptocracy.substack.com/p/our-chat-about-cryptocurrency-vol",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Tether's White House Business Development Department"
+      "entities": [
+        1,
+        7,
+        9,
+        10,
+        17,
+        20,
+        21,
+        22,
+        34
+      ],
+      "clusters": [
+        "crypto",
+        "sanctions",
+        "influence"
+      ],
+      "snippet": "Our Chat About Cryptocurrency vol 2. Thiel-Sacks-Vance pipeline to crypto deregulation. FTX collapse and its political aftermath. Fairshake PAC architecture. Tether as sanctions evasion infrastructure."
     },
     {
       "id": 73,
       "title": "How Hungary Became a Destination for the Global Far-Right",
       "date": "2025-10-14",
       "url": "https://dekleptocracy.substack.com/p/how-hungary-became-a-destination",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Orb\u00e1n has positioned Hungary as the global epicenter"
+      "entities": [
+        38,
+        39,
+        73,
+        74,
+        75,
+        116
+      ],
+      "clusters": [
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "How Hungary became destination for the global far-right. MCC as hub for US conservative exchange. Heritage Foundation cooperation agreement with Danube Institute. Bannon, Spencer Chretien, Project 2025 origins in Hungarian model."
     },
     {
       "id": 74,
       "title": "American Princelings",
       "date": "2025-10-10",
       "url": "https://dekleptocracy.substack.com/p/american-princelings-22b",
-      "entities": [],
-      "clusters": [],
-      "snippet": "October 10, 2025"
+      "entities": [
+        1,
+        2,
+        3,
+        12,
+        23,
+        37,
+        46,
+        47,
+        104,
+        106,
+        107
+      ],
+      "clusters": [
+        "princelings",
+        "energy",
+        "crypto",
+        "influence"
+      ],
+      "snippet": "American Princelings October weekly. $TRUMP memecoin VIP dinner mechanics, Kushner-Saudi PIF ongoing income, MGX-UAE deals, USD1 stablecoin foreign investor flows."
     },
     {
       "id": 75,
       "title": "We Need to Have a Chat About Cryptocurrency ",
       "date": "2025-10-09",
       "url": "https://dekleptocracy.substack.com/p/we-need-to-have-a-chat-about-cryptocurrency",
-      "entities": [],
-      "clusters": [],
-      "snippet": "I\u2019m sorry, I\u2019m sorry\u2026"
+      "entities": [
+        1,
+        7,
+        9,
+        10,
+        13,
+        17,
+        19,
+        21,
+        22,
+        34
+      ],
+      "clusters": [
+        "crypto",
+        "sanctions",
+        "influence"
+      ],
+      "snippet": "We Need to Have a Chat About Cryptocurrency. Structural role of crypto in sanctions evasion. Tether as Russian and Iranian evasion rail. Thiel-Sacks deregulatory pipeline. China CIPS parallel system."
     },
     {
       "id": 76,
       "title": "American Princelings ",
       "date": "2025-10-02",
       "url": "https://dekleptocracy.substack.com/p/american-princelings-1ed",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Foreign Investigative Reporting Digest - 10/02/2025"
+      "entities": [
+        1,
+        2,
+        3,
+        7,
+        23,
+        37,
+        46,
+        54,
+        66,
+        106
+      ],
+      "clusters": [
+        "princelings",
+        "influence",
+        "energy",
+        "crypto"
+      ],
+      "snippet": "American Princelings early October. Saudi PIF Kushner payments, Witkoff Russia deals, Thiel network placements, Rubio foreign policy alignment with princeling interests, DOGE regulatory dismantling."
     },
     {
       "id": 77,
       "title": "Is Trump Taking Chinese Bribes?",
       "date": "2025-10-01",
       "url": "https://dekleptocracy.substack.com/p/is-trump-taking-chinese-bribes",
-      "entities": [],
-      "clusters": [],
-      "snippet": "And acting as the frontman for a massive Chinese intelligence operation? "
+      "entities": [
+        1,
+        2,
+        3,
+        5,
+        12,
+        19,
+        46,
+        47,
+        48,
+        49
+      ],
+      "clusters": [
+        "influence",
+        "sanctions",
+        "princelings"
+      ],
+      "snippet": "Is Trump Taking Chinese Bribes? October edition. TikTok $10B fee structure, ByteDance-CCP connection, Oracle-Silver Lake-MGX consortium, Kushner-Saudi PIF income creating Iran war incentive."
     },
     {
       "id": 78,
       "title": "MAHA, Inc",
       "date": "2025-09-26",
       "url": "https://dekleptocracy.substack.com/p/maha-inc",
-      "entities": [],
-      "clusters": [],
-      "snippet": "It profits by harming pregnant women"
+      "entities": [
+        1,
+        54,
+        114
+      ],
+      "clusters": [
+        "influence"
+      ],
+      "snippet": "MAHA Inc. How Make America Healthy Again is being co-opted as political cover. RFK Jr. as HHS secretary. Musk amplification of MAHA narratives. The movement's capture by the MAGA patronage ecosystem."
     },
     {
       "id": 79,
       "title": "American Princelings ",
       "date": "2025-09-25",
       "url": "https://dekleptocracy.substack.com/p/american-princelings-3ef",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Investigative Reporting Digest on Trump Family Associates (mostly) in Eastern  -- 09/25/2025"
+      "entities": [
+        1,
+        2,
+        3,
+        23,
+        37,
+        46,
+        54,
+        85,
+        86,
+        106
+      ],
+      "clusters": [
+        "princelings",
+        "influence",
+        "energy"
+      ],
+      "snippet": "American Princelings late September digest. Kushner-Saudi PIF, Witkoff Russia dealings, Ambani-Modi-India energy nexus, DOGE dismantling oversight, Trump family foreign deal activity."
     },
     {
       "id": 80,
       "title": "The Embarrassing Spectacle at Turtle Bay",
       "date": "2025-09-24",
       "url": "https://dekleptocracy.substack.com/p/the-embarrassing-spectacle-at-turtle",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Trump's speech was jarring for the world"
+      "entities": [
+        1,
+        13,
+        19,
+        38,
+        66
+      ],
+      "clusters": [
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "The Embarrassing Spectacle at Turtle Bay. Trump at UN General Assembly. Russia and China leverage US kleptocracy to advance their positions. Orb\u00e1n as EU Trojan horse. Rubio foreign policy as corrupt instrument."
     },
     {
       "id": 81,
@@ -4070,54 +4411,137 @@
       "title": "American Princelings",
       "date": "2025-09-18",
       "url": "https://dekleptocracy.substack.com/p/american-princelings-0f5",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Foreign investigative reporting digest \u2013 09/18/2025"
+      "entities": [
+        1,
+        2,
+        3,
+        23,
+        37,
+        46,
+        54,
+        85,
+        86,
+        106
+      ],
+      "clusters": [
+        "princelings",
+        "energy",
+        "influence"
+      ],
+      "snippet": "American Princelings September mid-month. Witkoff Russia-Ukraine shuttle, Kushner-PIF, Ambani-Modi oil deals, DOGE regulatory rollback benefiting princeling financial interests."
     },
     {
       "id": 83,
       "title": "Trump's Strategic Corruption Threatens National Security",
       "date": "2025-09-17",
       "url": "https://dekleptocracy.substack.com/p/america-needs-to-focus-on-strategic",
-      "entities": [],
-      "clusters": [],
-      "snippet": "The president\u2019s business activities have undermined years of building national security protections in record time."
+      "entities": [
+        1,
+        3,
+        12,
+        19,
+        35,
+        36,
+        46,
+        47,
+        48,
+        49,
+        50
+      ],
+      "clusters": [
+        "sanctions",
+        "princelings",
+        "crypto",
+        "energy"
+      ],
+      "snippet": "Trump's Strategic Corruption Threatens National Security. Aqua 1 Foundation phantom wire transfers. UAE AI chip purchases. Saudi PIF lobbying for Iran war. China buying access. Foreign powers exploit Trump's price."
     },
     {
       "id": 84,
       "title": "The Return of the Kleptocracy in America Report",
       "date": "2025-09-12",
       "url": "https://dekleptocracy.substack.com/p/the-return-of-the-kleptocracy-in",
-      "entities": [],
-      "clusters": [],
-      "snippet": "State Round-up -- 9/12/2025"
+      "entities": [
+        1,
+        16,
+        30,
+        31,
+        58,
+        59,
+        62,
+        68
+      ],
+      "clusters": [
+        "sanctions",
+        "influence"
+      ],
+      "snippet": "Return of the Kleptocracy in America Report. Bondi shuts Task Force KleptoCapture, Kleptocracy Asset Recovery Initiative, FCPA enforcement. 17 IGs fired. CFPB dismantled. CTA paused. Systematic dismantling of anti-corruption infrastructure."
     },
     {
       "id": 85,
       "title": "American Princelings",
       "date": "2025-09-08",
       "url": "https://dekleptocracy.substack.com/p/american-princelings-286",
-      "entities": [],
-      "clusters": [],
-      "snippet": "The Trump Clan in Eastern Europe 09/09/2025"
+      "entities": [
+        1,
+        2,
+        3,
+        23,
+        37,
+        46,
+        54,
+        106,
+        107
+      ],
+      "clusters": [
+        "princelings",
+        "energy",
+        "influence"
+      ],
+      "snippet": "American Princelings September weekly. Trump family foreign deal activity, Kushner-Saudi PIF, Witkoff Russia dealings, DOGE agency dismantling, princeling financial conflicts."
     },
     {
       "id": 86,
       "title": "American Princelings ",
       "date": "2025-08-28",
       "url": "https://dekleptocracy.substack.com/p/american-princelings-7cc",
-      "entities": [],
-      "clusters": [],
-      "snippet": "A foreign investigative reporting digest of the Trump family in Eastern Europe 08/28/2025"
+      "entities": [
+        1,
+        2,
+        3,
+        23,
+        35,
+        37,
+        46,
+        54,
+        66,
+        106
+      ],
+      "clusters": [
+        "princelings",
+        "crypto",
+        "energy",
+        "influence"
+      ],
+      "snippet": "American Princelings late August digest. World Liberty Financial foreign investor flows, Witkoff-Dmitriev Russia peace framework, Kushner-Saudi PIF, Rubio policy alignment."
     },
     {
       "id": 87,
       "title": "Orb\u00e1n voices rare criticism against Trump",
       "date": "2025-08-27",
       "url": "https://dekleptocracy.substack.com/p/orban-voices-rare-criticism-against",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Could it signal the end of their bromance?"
+      "entities": [
+        1,
+        13,
+        38,
+        74,
+        116
+      ],
+      "clusters": [
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "Orb\u00e1n voices rare criticism against Trump at MCC Feszt. First public break in the bromance over Ukraine peace terms. Washington told Budapest its Ukraine veto was unfavorable. Cracks in authoritarian fraternity."
     },
     {
       "id": 88,
@@ -4143,108 +4567,205 @@
       "title": "When Big Pharma Allegedly Bought a Presidential Whisper",
       "date": "2025-08-19",
       "url": "https://dekleptocracy.substack.com/p/when-big-pharma-allegedly-bought",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Does Laura Loomer have a say on the FDA process?"
+      "entities": [
+        1,
+        114
+      ],
+      "clusters": [
+        "influence"
+      ],
+      "snippet": "When Big Pharma allegedly bought a presidential whisper. RFK Jr. as conduit between pharmaceutical interests and White House access. MAHA movement monetizing health policy proximity to Trump."
     },
     {
       "id": 90,
       "title": "Canada Can Silence Truth Social",
       "date": "2025-08-18",
       "url": "https://dekleptocracy.substack.com/p/canada-can-silence-truth-social",
-      "entities": [],
-      "clusters": [],
-      "snippet": "We took our awareness campaign to our friends to the north"
+      "entities": [
+        1,
+        11
+      ],
+      "clusters": [
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "Canada Can Silence Truth Social. Canadian regulatory and securities authorities have jurisdiction over Trump Media's SPAC structure and cross-border financing. Blue-state federalist approach to anti-corruption."
     },
     {
       "id": 91,
       "title": "Newsletter: Some Dare Call it Treason",
       "date": "2025-08-15",
       "url": "https://dekleptocracy.substack.com/p/newsletter-some-dare-call-it-treason",
-      "entities": [],
-      "clusters": [],
-      "snippet": "We preview Trump\u2019s forthcoming \u201csummit\u201d"
+      "entities": [
+        1,
+        13,
+        23,
+        55,
+        66
+      ],
+      "clusters": [
+        "sanctions",
+        "energy",
+        "influence"
+      ],
+      "snippet": "Newsletter: Some Dare Call It Treason. Witkoff coaching Putin aides on selling Russia's terms. Dmitriev peace framework based on Russian-authored paper. Rubio insisting peace proposal was American-authored."
     },
     {
       "id": 92,
       "title": "Exclusive: Pro-Orban think-tank to open outpost in Washington",
       "date": "2025-08-06",
       "url": "https://dekleptocracy.substack.com/p/exclusive-pro-orban-think-tank-to",
-      "entities": [],
-      "clusters": [],
-      "snippet": "They Hungarian organization with links to Project 2025 is establishing a post here."
+      "entities": [
+        38,
+        39,
+        73,
+        74,
+        75,
+        116
+      ],
+      "clusters": [
+        "influence"
+      ],
+      "snippet": "Exclusive: Pro-Orb\u00e1n think tank to open Washington outpost. Danube Institute expands US footprint. Heritage Foundation cooperation deepens. Spencer Chretien as bridge figure. Bannon European network overlap."
     },
     {
       "id": 93,
       "title": "Trump's DOJ for Sale to Hewlett-Packard",
       "date": "2025-08-04",
       "url": "https://dekleptocracy.substack.com/p/trumps-doj-for-sale-to-hewlett-packard",
-      "entities": [],
-      "clusters": [],
-      "snippet": "A Northern Californian judge has the power to reveal how much the DOJ costs"
+      "entities": [
+        1,
+        30,
+        31
+      ],
+      "clusters": [
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "Trump's DOJ for sale to Hewlett-Packard. Bondi DOJ negotiates favorable resolution for corporate donor. Pattern: major corporate donors receive DOJ leniency in exchange for political support and contributions."
     },
     {
       "id": 94,
       "title": "Follow the Epstein Money Through Albany",
       "date": "2025-08-01",
       "url": "https://dekleptocracy.substack.com/p/follow-the-epstein-money-through",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Trump has no control over Albany "
+      "entities": [
+        1,
+        13,
+        76,
+        88,
+        89,
+        90,
+        115
+      ],
+      "clusters": [
+        "influence",
+        "sanctions",
+        "princelings"
+      ],
+      "snippet": "Follow the Epstein Money Through Albany. Epstein maintained ties to Russian intelligence. Advised on sanctions evasion for St. Petersburg Economic Forum. NY state regulators may hold key financial documents."
     },
     {
       "id": 95,
       "title": "Teachers\u2019 Pensions Prop Up Trump's Propaganda ",
       "date": "2025-07-30",
       "url": "https://dekleptocracy.substack.com/p/teachers-pensions-prop-up-trumps",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Use transparency and go on offense"
+      "entities": [
+        1,
+        11
+      ],
+      "clusters": [
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "Teachers' pensions prop up Trump's propaganda. Trump Media in Russell 3000 forces pension funds to hold DJT stock. Lost $400M, earned $4M revenue. Devin Nunes paid $47.6M CEO salary. Securities fraud settlement."
     },
     {
       "id": 96,
       "title": "Epstein's Network Exposed Our Rigged System",
       "date": "2025-07-29",
       "url": "https://dekleptocracy.substack.com/p/epsteins-network-exposed-our-rigged",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Trump will protect it at all costs"
+      "entities": [
+        1,
+        30,
+        76,
+        88,
+        89,
+        90,
+        115
+      ],
+      "clusters": [
+        "influence",
+        "princelings"
+      ],
+      "snippet": "Epstein's network exposed our rigged system. Wexner, Deutsche Bank, Maxwell, and the financial infrastructure of the Epstein enterprise. Bondi DOJ concluding no client list exists while Trump's name appears throughout files."
     },
     {
       "id": 97,
       "title": "US planned to sanction Orban\u2019s PR chief until Trump intervened",
       "date": "2025-07-23",
       "url": "https://dekleptocracy.substack.com/p/us-planned-to-sanction-orbans-pr",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Attacking Democracy Takes a Back Seat to Good Relations"
+      "entities": [
+        1,
+        38,
+        66
+      ],
+      "clusters": [
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "US planned to sanction Orb\u00e1n's PR chief until Trump intervened. Rubio State Department blocked sanctions on Orb\u00e1n associate. Pattern: Trump uses foreign policy machinery to protect allied authoritarian networks."
     },
     {
       "id": 98,
       "title": "NY Tax Dollars Go to Contractor Building Florida's Gulag Archipelago",
       "date": "2025-07-22",
       "url": "https://dekleptocracy.substack.com/p/ny-tax-dollars-go-to-contractor-building",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Blue states: demand accountability with your money"
+      "entities": [
+        1,
+        30,
+        97
+      ],
+      "clusters": [
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "NY tax dollars go to contractor building Florida's gulag archipelago. ICE detention contractor corruption. Noem DHS oversight dismantled. Private detention profits flow to MAGA-aligned contractors."
     },
     {
       "id": 99,
       "title": "Trump\u2019s Links to the Sex Trafficking Industry Underline a Global Network of Corruption",
       "date": "2025-07-21",
       "url": "https://dekleptocracy.substack.com/p/trumps-links-to-the-sex-trafficking",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Financial crimes leave paper trails"
+      "entities": [
+        1,
+        30,
+        76,
+        115
+      ],
+      "clusters": [
+        "influence",
+        "princelings"
+      ],
+      "snippet": "Trump's links to sex trafficking industry underline a global network of corruption. Epstein-Maxwell enterprise connected to Trump world. Bondi DOJ investigation focuses exclusively on Democrats while Trump name appears throughout files."
     },
     {
       "id": 100,
       "title": "Thank you Mr President",
       "date": "2025-07-17",
       "url": "https://dekleptocracy.substack.com/p/thank-you-mr-president",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Hopefully"
+      "entities": [
+        1,
+        30,
+        31,
+        59,
+        68
+      ],
+      "clusters": [
+        "sanctions",
+        "influence"
+      ],
+      "snippet": "Thank you Mr. President \u2014 ironically documenting Trump administration's systematic dismantling of anti-corruption infrastructure. FCPA paused, KleptoCapture disbanded, CFPB gutted, IGs fired. CREW tracks the damage."
     },
     {
       "id": 101,
@@ -4286,18 +4807,39 @@
       "title": "Local Corruption State Roundup",
       "date": "2025-07-04",
       "url": "https://dekleptocracy.substack.com/p/local-corruption-state-roundup",
-      "entities": [],
-      "clusters": [],
-      "snippet": "What's happening locally"
+      "entities": [
+        1,
+        30,
+        45,
+        68,
+        104
+      ],
+      "clusters": [
+        "influence",
+        "sanctions",
+        "crypto"
+      ],
+      "snippet": "Local Corruption State Roundup July 4th. Pardon network from Washington to Main Street. $TRUMP memecoin VIP dinner pardons connection. Bondi DOJ selective enforcement documented state-by-state."
     },
     {
       "id": 104,
       "title": "No MAGA left behind",
       "date": "2025-07-03",
       "url": "https://dekleptocracy.substack.com/p/no-maga-left-behind",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Kleptocracy in America issue number 8 national throughline recap"
+      "entities": [
+        1,
+        30,
+        31,
+        45,
+        68,
+        104
+      ],
+      "clusters": [
+        "influence",
+        "sanctions",
+        "crypto"
+      ],
+      "snippet": "No MAGA Left Behind: how pardon power flows from national to local corruption. $TRUMP memecoin dinner attendees receiving DOJ leniency. Protection-racket logic of the kleptocratic ecosystem."
     },
     {
       "id": 105,
