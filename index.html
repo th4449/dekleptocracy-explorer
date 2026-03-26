@@ -114,7 +114,7 @@ a{color:inherit;text-decoration:none}
 
 /* ========== VIEWS ========== */
 .view{display:none;padding:var(--s6);flex-direction:column;gap:var(--s6);animation:fi .2s ease}
-.view.active{display:flex}
+.view.active{display:flex;flex:1;min-height:0}
 @keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
 /* ========== TYPOGRAPHY ========== */
@@ -152,7 +152,7 @@ a{color:inherit;text-decoration:none}
 .tgr{background:var(--color-surface-offset);color:var(--color-text-muted)}
 
 /* ========== GRAPH ========== */
-#gcc{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-xl);overflow:hidden;position:relative;height:510px}
+#gcc{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-xl);overflow:hidden;position:relative;flex:1;min-height:400px}
 #gc{width:100%;height:100%;cursor:grab;display:block}
 #gc:active{cursor:grabbing}
 .gleg{position:absolute;bottom:var(--s4);left:var(--s4);display:flex;flex-direction:column;gap:var(--s1);background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border:1px solid var(--color-divider);border-radius:var(--radius-lg);padding:var(--s3)}
@@ -335,7 +335,7 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
   .ngrid{grid-template-columns:1fr}
   .ccards{grid-template-columns:1fr}
   .sgrid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
-  #gcc{height:380px}
+  #gcc{min-height:320px;flex:1}
 }
 
 /* ========== PRINT ========== */
@@ -388,8 +388,8 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
 <nav class="sidebar" id="sidebar">
   <div class="ss">
     <div class="ssl">Explorer</div>
-    <div class="si active" onclick="sv('dashboard');sa(this)"><i data-lucide="layout-dashboard"></i>Overview</div>
-    <div class="si" onclick="sv('graph');sa(this)"><i data-lucide="git-fork"></i>Network Map</div>
+    <div class="si" onclick="sv('dashboard');sa(this)"><i data-lucide="layout-dashboard"></i>Overview</div>
+    <div class="si active" onclick="sv('graph');sa(this)"><i data-lucide="git-fork"></i>Network Map</div>
     <div class="si" onclick="sv('nodes');sa(this)"><i data-lucide="circle-dot"></i>All Nodes<span class="sic" id="anc">&mdash;</span></div>
     <div class="si" onclick="sv('articles');sa(this)"><i data-lucide="file-text"></i>Articles<span class="sic" id="ac">&mdash;</span></div>
   </div>
@@ -422,7 +422,7 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
 <main class="main">
 
   <!-- DASHBOARD -->
-  <div class="view active" id="view-dashboard">
+  <div class="view" id="view-dashboard">
     <div class="ph">
       <h1 class="pt">Dekleptocracy Explorer</h1>
       <p class="ps">Open-source knowledge graph of Trump-world's shadow sanctions-busting network — auto-built from investigative reporting.</p>
@@ -450,10 +450,17 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
   </div>
 
   <!-- GRAPH -->
-  <div class="view" id="view-graph">
-    <div class="ph">
-      <h1 class="pt">Network Map</h1>
-      <p class="ps">Drag to pan &middot; Scroll to zoom &middot; Click any node to highlight its connections</p>
+  <div class="view active" id="view-graph">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:var(--s4);flex-wrap:wrap">
+      <div class="ph" style="flex:1;min-width:200px">
+        <h1 class="pt">Dekleptocracy Explorer</h1>
+        <p class="ps">Interactive corruption network map. Drag to pan &middot; Scroll to zoom &middot; Click any node to see details</p>
+      </div>
+      <div style="display:flex;gap:var(--s3);flex-wrap:wrap;align-items:center">
+        <div style="text-align:center;padding:var(--s2) var(--s3);background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-md)"><div style="font-size:var(--txt-xs);color:var(--color-text-faint);text-transform:uppercase;letter-spacing:.06em">Nodes</div><div style="font-family:var(--font-mono);font-weight:600;color:var(--color-text)" id="gstat-n">0</div></div>
+        <div style="text-align:center;padding:var(--s2) var(--s3);background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-md)"><div style="font-size:var(--txt-xs);color:var(--color-text-faint);text-transform:uppercase;letter-spacing:.06em">Links</div><div style="font-family:var(--font-mono);font-weight:600;color:var(--color-text)" id="gstat-e">0</div></div>
+        <div style="text-align:center;padding:var(--s2) var(--s3);background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-md)"><div style="font-size:var(--txt-xs);color:var(--color-text-faint);text-transform:uppercase;letter-spacing:.06em">Articles</div><div style="font-family:var(--font-mono);font-weight:600;color:var(--color-text)" id="gstat-a">0</div></div>
+      </div>
     </div>
     <div class="fb" id="gfb">
       <span style="font-size:var(--txt-xs);color:var(--color-text-faint)">Filter:</span>
@@ -737,6 +744,8 @@ async function boot(){
   try{const r=await fetch('./graph_data.json');if(r.ok) DATA=await r.json();}catch(e){}
   init();
   handleHash();
+  // Re-init graph after layout settles (ensures canvas gets correct dimensions)
+  setTimeout(()=>ig(),100);
   // Embed mode
   if(new URLSearchParams(location.search).get('embed')==='true'){
     document.getElementById('app').classList.add('embed-mode');
@@ -758,6 +767,11 @@ function init(){
     if(el) el.textContent=n.filter(x=>x.tags&&x.tags.includes(c)).length;
   });
   rcc();rtt();rng();rat();ig();refreshEdgeSelectors();refreshUrlList();updateFilterCounts();
+  // Graph view stats
+  const gn=document.getElementById('gstat-n'),ge=document.getElementById('gstat-e'),ga=document.getElementById('gstat-a');
+  if(gn) gn.textContent=n.length;
+  if(ge) ge.textContent=e.length;
+  if(ga) ga.textContent=a.length;
   lucide.createIcons();
 }
 
@@ -1118,6 +1132,18 @@ window.addEventListener('resize',()=>{
     if(nsim.length) dg();
   }
 });
+// ResizeObserver for flex-based graph container
+if(typeof ResizeObserver!=='undefined'){
+  new ResizeObserver(()=>{
+    const canvas=document.getElementById('gc'),cont=document.getElementById('gcc');
+    if(canvas&&cont&&cont.clientWidth>0&&cont.clientHeight>0){
+      if(canvas.width!==cont.clientWidth||canvas.height!==cont.clientHeight){
+        canvas.width=cont.clientWidth;canvas.height=cont.clientHeight;
+        if(nsim.length) dg();
+      }
+    }
+  }).observe(document.getElementById('gcc')||document.body);
+}
 
 // ========== DEEP LINKING ==========
 function handleHash(){
