@@ -70,9 +70,9 @@ a{color:inherit;text-decoration:none}
 :focus-visible{outline:2px solid var(--color-primary);outline-offset:2px;border-radius:var(--radius-sm)}
 
 /* ========== APP SHELL ========== */
-.app{display:grid;grid-template-rows:var(--sh) 1fr;grid-template-columns:var(--sw) 1fr;height:100dvh;overflow:hidden}
+.app{display:grid;grid-template-rows:var(--sh) 1fr;grid-template-columns:var(--sw) auto 1fr;height:100dvh;overflow:hidden}
 .app.embed-mode{grid-template-columns:1fr;grid-template-rows:42px 1fr}
-.app.embed-mode .sidebar,.app.embed-mode .sob{display:none}
+.app.embed-mode .sidebar,.app.embed-mode .sob,.app.embed-mode .sb-resize,.app.embed-mode .sb-expand{display:none}
 .app.embed-mode .topbar{padding:0 var(--s3)}
 .app.embed-mode .tlogo{display:none}
 .app.embed-mode .hmb{display:none}
@@ -93,9 +93,22 @@ a{color:inherit;text-decoration:none}
 .ib:hover{background:var(--color-surface-offset);color:var(--color-text)}
 
 /* ========== SIDEBAR ========== */
-.sidebar{background:var(--color-surface);border-right:1px solid var(--color-divider);overflow-y:auto;padding:var(--s4) 0;display:flex;flex-direction:column}
+.sidebar{background:var(--color-surface);border-right:none;overflow-y:auto;padding:var(--s4) 0;display:flex;flex-direction:column;position:relative;min-width:0}
 .sidebar::-webkit-scrollbar{width:3px}
 .sidebar::-webkit-scrollbar-thumb{background:var(--color-border);border-radius:var(--radius-full)}
+.sidebar-wrap{display:flex;position:relative}
+.sb-resize{width:5px;cursor:col-resize;background:var(--color-divider);flex-shrink:0;position:relative;z-index:10;transition:background .15s ease}
+.sb-resize:hover,.sb-resize.active{background:var(--color-primary);width:5px}
+.sb-resize::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:3px;height:32px;border-radius:2px;background:var(--color-text-faint);opacity:0;transition:opacity .15s ease}
+.sb-resize:hover::after,.sb-resize.active::after{opacity:.5}
+.app.sb-collapsed{grid-template-columns:0px 0px 1fr}
+.app.sb-collapsed .sidebar{display:none}
+.app.sb-collapsed .sb-resize{display:none}
+.app.sb-collapsed .sb-expand{display:flex}
+.sb-expand{position:fixed;top:calc(var(--sh) + 8px);left:4px;width:24px;height:24px;background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-full);display:none;align-items:center;justify-content:center;cursor:pointer;z-index:151;color:var(--color-text-muted);font-size:11px;transition:all var(--transition);box-shadow:var(--shadow-sm)}
+.sb-expand:hover{background:var(--color-surface-offset);color:var(--color-text);border-color:var(--color-primary)}
+.sb-toggle{display:flex;align-items:center;gap:var(--s2);padding:var(--s2) var(--s4);font-size:var(--txt-xs);color:var(--color-text-faint);cursor:pointer;margin-top:auto;transition:color var(--transition)}
+.sb-toggle:hover{color:var(--color-text)}
 .ss{margin-bottom:var(--s4)}
 .ssl{font-size:var(--txt-xs);font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-faint);padding:0 var(--s4);margin-bottom:var(--s1)}
 .si{display:flex;align-items:center;gap:var(--s2);padding:var(--s2) var(--s4);font-size:var(--txt-sm);color:var(--color-text-muted);cursor:pointer;border-left:2px solid transparent;transition:background var(--transition),color var(--transition),border-color var(--transition)}
@@ -324,7 +337,10 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
 /* ========== RESPONSIVE ========== */
 @media(max-width:768px){
   .app{grid-template-columns:1fr}
-  .sidebar{position:fixed;top:var(--sh);left:0;bottom:0;width:260px;z-index:150;transform:translateX(-100%);transition:transform .25s cubic-bezier(.16,1,.3,1)}
+  .sb-resize{display:none}
+  .sb-expand{display:none!important}
+  .sb-toggle{display:none}
+  .sidebar{position:fixed;top:var(--sh);left:0;bottom:0;width:260px;z-index:150;transform:translateX(-100%);transition:transform .25s cubic-bezier(.16,1,.3,1);border-right:1px solid var(--color-divider)}
   .sidebar.open{transform:translateX(0)}
   .sob{position:fixed;inset:0;top:var(--sh);background:rgba(0,0,0,.3);z-index:149;opacity:0;pointer-events:none;transition:opacity .2s ease}
   .sob.open{opacity:1;pointer-events:all}
@@ -342,7 +358,7 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
 @media print{
   body{overflow:visible;background:#fff;color:#000}
   .app{display:block;height:auto;overflow:visible}
-  .topbar,.sidebar,.sob,.gctrl,.gleg,.gtt,.do-bg,.dp,.tour-bg,.dm-toast{display:none!important}
+  .topbar,.sidebar,.sob,.gctrl,.gleg,.gtt,.do-bg,.dp,.tour-bg,.dm-toast,.sb-resize,.sb-expand,.sb-toggle{display:none!important}
   .main{overflow:visible;display:block}
   .view{display:none!important;page-break-inside:avoid}
   .view.active{display:block!important}
@@ -416,7 +432,14 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
     <div class="si" onclick="sv('datamanager');sa(this)"><i data-lucide="database"></i>Data Manager</div>
     <div class="si" onclick="sv('setup');sa(this)"><i data-lucide="terminal"></i>Setup Guide</div>
   </div>
+  <div class="sb-toggle" onclick="toggleCollapse()" title="Collapse sidebar"><i data-lucide="chevrons-left" style="width:13px;height:13px"></i> Collapse</div>
 </nav>
+
+<!-- SIDEBAR RESIZE HANDLE -->
+<div class="sb-resize" id="sb-resize" title="Drag to resize sidebar"></div>
+
+<!-- SIDEBAR COLLAPSE (inside sidebar area) / EXPAND (fixed when collapsed) -->
+<button class="sb-expand" id="sb-expand" onclick="toggleCollapse()" title="Show sidebar">&#9654;</button>
 
 <!-- MAIN -->
 <main class="main">
@@ -1113,6 +1136,78 @@ function toggleSidebar(){
   document.getElementById('sidebar').classList.toggle('open');
   document.getElementById('sob').classList.toggle('open');
 }
+
+// ========== SIDEBAR COLLAPSE ==========
+function toggleCollapse(){
+  const app=document.getElementById('app');
+  app.classList.toggle('sb-collapsed');
+  // Re-render graph after sidebar state changes
+  setTimeout(()=>{
+    const canvas=document.getElementById('gc'),cont=document.getElementById('gcc');
+    if(canvas&&cont&&cont.clientWidth>0&&cont.clientHeight>0){
+      canvas.width=cont.clientWidth;canvas.height=cont.clientHeight;
+      if(nsim.length){ig();}
+    }
+  },50);
+}
+
+// ========== SIDEBAR DRAG RESIZE ==========
+(function(){
+  const handle=document.getElementById('sb-resize');
+  if(!handle) return;
+  let dragging=false,startX=0,startW=0;
+  handle.addEventListener('mousedown',function(e){
+    e.preventDefault();
+    dragging=true;
+    handle.classList.add('active');
+    startX=e.clientX;
+    startW=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sw'))||252;
+    document.body.style.cursor='col-resize';
+    document.body.style.userSelect='none';
+  });
+  window.addEventListener('mousemove',function(e){
+    if(!dragging) return;
+    const delta=e.clientX-startX;
+    const newW=Math.max(160,Math.min(450,startW+delta));
+    document.documentElement.style.setProperty('--sw',newW+'px');
+  });
+  window.addEventListener('mouseup',function(){
+    if(!dragging) return;
+    dragging=false;
+    handle.classList.remove('active');
+    document.body.style.cursor='';
+    document.body.style.userSelect='';
+    // Re-render graph after resize
+    const canvas=document.getElementById('gc'),cont=document.getElementById('gcc');
+    if(canvas&&cont&&cont.clientWidth>0&&cont.clientHeight>0){
+      canvas.width=cont.clientWidth;canvas.height=cont.clientHeight;
+      if(nsim.length) dg();
+    }
+  });
+  // Touch support for resize
+  handle.addEventListener('touchstart',function(e){
+    dragging=true;
+    handle.classList.add('active');
+    startX=e.touches[0].clientX;
+    startW=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sw'))||252;
+  },{passive:true});
+  window.addEventListener('touchmove',function(e){
+    if(!dragging) return;
+    const delta=e.touches[0].clientX-startX;
+    const newW=Math.max(160,Math.min(450,startW+delta));
+    document.documentElement.style.setProperty('--sw',newW+'px');
+  },{passive:true});
+  window.addEventListener('touchend',function(){
+    if(!dragging) return;
+    dragging=false;
+    handle.classList.remove('active');
+    const canvas=document.getElementById('gc'),cont=document.getElementById('gcc');
+    if(canvas&&cont&&cont.clientWidth>0&&cont.clientHeight>0){
+      canvas.width=cont.clientWidth;canvas.height=cont.clientHeight;
+      if(nsim.length) dg();
+    }
+  });
+})();
 
 // ========== KEYBOARD ==========
 document.addEventListener('keydown',e=>{
