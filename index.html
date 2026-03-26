@@ -218,6 +218,24 @@ a{color:inherit;text-decoration:none}
 .dlink{display:flex;align-items:center;gap:var(--s2);margin-top:var(--s2);padding:var(--s2) var(--s3);background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-md);font-size:var(--txt-xs);font-family:var(--font-mono);color:var(--color-text-faint);cursor:pointer;transition:all var(--transition)}
 .dlink:hover{border-color:var(--color-primary);color:var(--color-primary)}
 
+/* ── EDGE META (source url, amount, date) ── */
+.emeta{display:flex;flex-wrap:wrap;gap:var(--s1);margin-top:var(--s2)}
+.emeta-chip{display:inline-flex;align-items:center;gap:4px;height:18px;padding:0 var(--s2);border-radius:var(--radius-full);font-size:.6rem;font-family:var(--font-mono);font-weight:500;text-decoration:none}
+.emeta-src{background:var(--color-info-highlight);color:var(--color-info);border:1px solid color-mix(in srgb,var(--color-info) 30%,transparent)}
+.emeta-src:hover{background:var(--color-info);color:var(--color-text-inverse)}
+.emeta-amt{background:var(--color-success-highlight);color:var(--color-success);border:1px solid color-mix(in srgb,var(--color-success) 30%,transparent)}
+.emeta-date{background:var(--color-surface-offset-2);color:var(--color-text-faint);border:1px solid var(--color-border)}
+
+/* ── INVESTIGATE FURTHER ── */
+.inv-box{display:flex;flex-direction:column;gap:var(--s2)}
+.inv-btn{display:flex;align-items:center;gap:var(--s3);padding:var(--s3);background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-md);text-decoration:none;transition:border-color var(--transition),background var(--transition)}
+.inv-btn:hover{border-color:var(--color-primary);background:var(--color-primary-highlight)}
+.inv-icon{width:28px;height:28px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:var(--txt-xs);font-weight:700;font-family:var(--font-mono)}
+.inv-icon-os{background:color-mix(in srgb,var(--color-accent) 15%,var(--color-surface));color:var(--color-accent)}
+.inv-icon-icij{background:var(--color-info-highlight);color:var(--color-info)}
+.inv-label{font-size:var(--txt-sm);font-weight:500;color:var(--color-text)}
+.inv-desc{font-size:var(--txt-xs);color:var(--color-text-faint);margin-top:1px}
+
 /* ========== SEARCH ========== */
 .srl{display:flex;flex-direction:column;gap:var(--s2)}
 .sri{display:flex;align-items:flex-start;gap:var(--s3);padding:var(--s3) var(--s4);background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-lg);cursor:pointer;transition:border-color var(--transition),box-shadow var(--transition)}
@@ -665,6 +683,7 @@ python -m spacy download en_core_web_sm</pre></div></div>
     <div><div class="dsh">Connections (<span id="dcc">0</span>)</div><div class="clist" id="dcl"></div></div>
     <div><div class="dsh">Source Evidence</div><div class="elist" id="del"></div></div>
     <div><div class="dsh">Tags</div><div class="ntags" id="dtags"></div></div>
+    <div id="dinv-wrap"></div>
     <div id="dlink-wrap"></div>
   </div>
 </aside>
@@ -904,10 +923,23 @@ function on(id){
   document.getElementById('dcl').innerHTML=conns.map(e=>{
     const oId=e.source===id?e.target:e.source;
     const o=DATA.nodes.find(n=>n.id===oId);if(!o) return '';
+    // Build edge metadata chips
+    let meta='';
+    if(e.source_url||e.amount||e.date){
+      meta='<div class="emeta">';
+      if(e.source_url) meta+=`<a class="emeta-chip emeta-src" href="${esc(e.source_url)}" target="_blank" rel="noopener noreferrer"><i data-lucide="external-link" style="width:9px;height:9px"></i>source</a>`;
+      if(e.amount)     meta+=`<span class="emeta-chip emeta-amt"><i data-lucide="dollar-sign" style="width:9px;height:9px"></i>${esc(e.amount)}</span>`;
+      if(e.date)       meta+=`<span class="emeta-chip emeta-date">${esc(e.date)}</span>`;
+      meta+='</div>';
+    }
     return `<div class="ci" onclick="on(${oId})">
       <div class="nti" style="width:26px;height:26px"><i data-lucide="${TI[o.type]||'circle-dot'}" style="width:11px;height:11px"></i></div>
-      <div style="flex:1;min-width:0"><div style="font-size:var(--txt-sm);font-weight:500;color:var(--color-text)">${esc(o.name)}</div><div class="crel">${esc(e.relation)}</div></div>
-      <i data-lucide="chevron-right" style="width:12px;height:12px;color:var(--color-text-faint)"></i>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:var(--txt-sm);font-weight:500;color:var(--color-text)">${esc(o.name)}</div>
+        <div class="crel">${esc(e.relation)}</div>
+        ${meta}
+      </div>
+      <i data-lucide="chevron-right" style="width:12px;height:12px;color:var(--color-text-faint);flex-shrink:0"></i>
     </div>`;
   }).join('')||'<div style="color:var(--color-text-faint);font-size:var(--txt-sm)">No connections yet.</div>';
   const arts=DATA.articles.filter(a=>a.entities&&a.entities.includes(id));
@@ -916,6 +948,23 @@ function on(id){
   ).join('')||'<div style="color:var(--color-text-faint);font-size:var(--txt-sm)">No source articles indexed for this node.</div>';
   const tags=(nd.tags||[]);
   document.getElementById('dtags').innerHTML=tags.map(t=>`<span class="tag ${TC[t]||'tgr'}">${t}</span>`).join('')||'<span style="color:var(--color-text-faint);font-size:var(--txt-sm)">None</span>';
+  // Investigate Further — OpenSanctions + ICIJ
+  const invWrap=document.getElementById('dinv-wrap');
+  const encName=encodeURIComponent(nd.name);
+  invWrap.innerHTML=`
+    <div class="dsh">Investigate Further</div>
+    <div class="inv-box">
+      <a class="inv-btn" href="https://www.opensanctions.org/search/?q=${encName}" target="_blank" rel="noopener noreferrer">
+        <div class="inv-icon inv-icon-os">OS</div>
+        <div><div class="inv-label">OpenSanctions</div><div class="inv-desc">OFAC, EU, UN &amp; UK sanctions lists · PEP registries</div></div>
+        <i data-lucide="external-link" style="width:12px;height:12px;color:var(--color-text-faint);margin-left:auto;flex-shrink:0"></i>
+      </a>
+      <a class="inv-btn" href="https://offshoreleaks.icij.org/search?q=${encName}" target="_blank" rel="noopener noreferrer">
+        <div class="inv-icon inv-icon-icij">ICIJ</div>
+        <div><div class="inv-label">ICIJ Offshore Leaks</div><div class="inv-desc">Panama Papers · Pandora Papers · FinCEN Files</div></div>
+        <i data-lucide="external-link" style="width:12px;height:12px;color:var(--color-text-faint);margin-left:auto;flex-shrink:0"></i>
+      </a>
+    </div>`;
   // Deep link button + Find on Map button
   document.getElementById('dlink-wrap').innerHTML=`<div class="dlink" onclick="copyNodeLink(${id})"><i data-lucide="link" style="width:11px;height:11px"></i> Copy shareable link to this node</div><div class="find-map-btn" onclick="findOnMap(${id})"><i data-lucide="map-pin" style="width:11px;height:11px"></i> Find on network map</div>`;
   // Analytics: track node view
