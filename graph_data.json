@@ -1498,6 +1498,230 @@
         "sanctions_exposure": 35,
         "financial_opacity": 50
       }
+    },
+    {
+      "id": 96,
+      "name": "Rumble",
+      "type": "organization",
+      "desc": "Canadian-founded video platform serving as a key node in the MAGA media ecosystem. Hosts Truth Social's video infrastructure and serves as an alternative to YouTube for right-wing content creators.",
+      "tags": [
+        "influence",
+        "crypto"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 55,
+        "sanctions_exposure": 35,
+        "financial_opacity": 70
+      }
+    },
+    {
+      "id": 97,
+      "name": "Kristi Noem / DHS",
+      "type": "person",
+      "desc": "Secretary of Homeland Security. Overseeing expansion of ICE detention infrastructure fueled by private contractor corruption and questionable procurement practices.",
+      "tags": [
+        "influence",
+        "sanctions"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 40,
+        "sanctions_exposure": 30,
+        "financial_opacity": 60
+      }
+    },
+    {
+      "id": 98,
+      "name": "Nord Stream 2",
+      "type": "deal",
+      "desc": "Defunct Russia-to-Germany gas pipeline. Revival discussions under Trump signal willingness to reward Russian energy interests and undermine European energy security.",
+      "tags": [
+        "energy",
+        "sanctions"
+      ],
+      "cluster": "energy",
+      "risk": {
+        "foreign_entanglement": 95,
+        "sanctions_exposure": 90,
+        "financial_opacity": 75
+      }
+    },
+    {
+      "id": 99,
+      "name": "Raiffeisen Bank International",
+      "type": "organization",
+      "desc": "Austrian bank maintaining significant operations in Russia despite Western sanctions. New York regulators have authority to investigate its dollar-clearing activities.",
+      "tags": [
+        "sanctions",
+        "energy"
+      ],
+      "cluster": "sanctions",
+      "risk": {
+        "foreign_entanglement": 80,
+        "sanctions_exposure": 85,
+        "financial_opacity": 72
+      }
+    },
+    {
+      "id": 100,
+      "name": "Marc Andreessen",
+      "type": "person",
+      "desc": "Co-founder of Andreessen Horowitz (a16z). Major crypto industry investor and political donor. Firm's portfolio companies have benefited from sanctions and enforcement rollbacks.",
+      "tags": [
+        "crypto",
+        "influence"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 45,
+        "sanctions_exposure": 50,
+        "financial_opacity": 65
+      }
+    },
+    {
+      "id": 101,
+      "name": "Securitize",
+      "type": "organization",
+      "desc": "Tokenization platform tapped by World Liberty Financial to tokenize Trump hotel development in the Maldives. Backed by BlackRock.",
+      "tags": [
+        "crypto",
+        "princelings"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 40,
+        "sanctions_exposure": 30,
+        "financial_opacity": 55
+      }
+    },
+    {
+      "id": 102,
+      "name": "Dar Global",
+      "type": "organization",
+      "desc": "London-listed Saudi-backed luxury real estate developer partnering with Trump Organization on the tokenized Trump International Hotel Maldives project.",
+      "tags": [
+        "princelings",
+        "energy"
+      ],
+      "cluster": "princelings",
+      "risk": {
+        "foreign_entanglement": 72,
+        "sanctions_exposure": 45,
+        "financial_opacity": 60
+      }
+    },
+    {
+      "id": 103,
+      "name": "USD1 Stablecoin",
+      "type": "deal",
+      "desc": "Stablecoin issued by World Liberty Financial, reaching $3.3B in circulation. Used by UAE's MGX to fund $2B Binance deal. Custodied by BitGo, in which David Sacks holds a stake via Craft Ventures.",
+      "tags": [
+        "crypto",
+        "sanctions"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 80,
+        "sanctions_exposure": 75,
+        "financial_opacity": 88
+      }
+    },
+    {
+      "id": 104,
+      "name": "$TRUMP Memecoin",
+      "type": "deal",
+      "desc": "Presidential memecoin down 95.7% from all-time high of $73.43. Insiders control over 525M of 1B token supply. Multiple Mar-a-Lago dinners for top holders used to temporarily pump price.",
+      "tags": [
+        "crypto",
+        "influence"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 50,
+        "sanctions_exposure": 40,
+        "financial_opacity": 90
+      }
+    },
+    {
+      "id": 105,
+      "name": "Jessica Steinmann",
+      "type": "person",
+      "desc": "Former DOJ lawyer backed by Trump who won Texas congressional primary with over $750K in Fairshake PAC support. Part of crypto industry's capture of 2026 midterm elections.",
+      "tags": [
+        "crypto",
+        "influence"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 20,
+        "sanctions_exposure": 15,
+        "financial_opacity": 30
+      }
+    },
+    {
+      "id": 106,
+      "name": "Donald Trump Jr.",
+      "type": "person",
+      "desc": "President's eldest son. Co-founder of World Liberty Financial and American Bitcoin mining venture. College roommate Gentry Beach signed deal with Novatek for Arctic mineral extraction.",
+      "tags": [
+        "princelings",
+        "crypto",
+        "sanctions"
+      ],
+      "cluster": "princelings",
+      "risk": {
+        "foreign_entanglement": 82,
+        "sanctions_exposure": 65,
+        "financial_opacity": 78
+      }
+    },
+    {
+      "id": 107,
+      "name": "Eric Trump",
+      "type": "person",
+      "desc": "Executive VP of Trump Organization. Co-founder of World Liberty Financial. Signed $500M UAE stake deal four days before inauguration. Oversees American Bitcoin mining operation.",
+      "tags": [
+        "princelings",
+        "crypto"
+      ],
+      "cluster": "princelings",
+      "risk": {
+        "foreign_entanglement": 80,
+        "sanctions_exposure": 60,
+        "financial_opacity": 75
+      }
+    },
+    {
+      "id": 108,
+      "name": "American Bitcoin",
+      "type": "organization",
+      "desc": "Bitcoin mining operation overseen by Eric Trump. Absorbed mining operations from Hut 8. Part of the Trump family's four-pillar crypto empire.",
+      "tags": [
+        "crypto"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 30,
+        "sanctions_exposure": 25,
+        "financial_opacity": 60
+      }
+    },
+    {
+      "id": 109,
+      "name": "Rep. Ro Khanna",
+      "type": "person",
+      "desc": "Democratic congressman. Set March 1 deadline for World Liberty Financial to produce documents on foreign investment relationships. WLFI refused, calling the request a 'baseless assault.'",
+      "tags": [
+        "crypto",
+        "influence"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 5,
+        "sanctions_exposure": 5,
+        "financial_opacity": 5
+      }
     }
   ],
   "edges": [
@@ -2095,6 +2319,191 @@
       "source": 6,
       "target": 40,
       "relation": "Reliance Industries chaired by Ambani"
+    },
+    {
+      "source": 96,
+      "target": 11,
+      "relation": "hosts video infrastructure for Truth Social"
+    },
+    {
+      "source": 96,
+      "target": 7,
+      "relation": "Thiel-backed media ecosystem"
+    },
+    {
+      "source": 97,
+      "target": 1,
+      "relation": "appointed by / serves under"
+    },
+    {
+      "source": 98,
+      "target": 13,
+      "relation": "Russian energy infrastructure project"
+    },
+    {
+      "source": 98,
+      "target": 29,
+      "relation": "connected via Russian LNG interests"
+    },
+    {
+      "source": 99,
+      "target": 13,
+      "relation": "maintains operations in Russia despite sanctions"
+    },
+    {
+      "source": 99,
+      "target": 16,
+      "relation": "subject to potential enforcement action"
+    },
+    {
+      "source": 100,
+      "target": 33,
+      "relation": "co-founded"
+    },
+    {
+      "source": 100,
+      "target": 22,
+      "relation": "crypto political spending network"
+    },
+    {
+      "source": 101,
+      "target": 35,
+      "relation": "tokenization partner for Trump hotel project"
+    },
+    {
+      "source": 101,
+      "target": 78,
+      "relation": "works within same tokenization ecosystem"
+    },
+    {
+      "source": 102,
+      "target": 14,
+      "relation": "partner on Trump International Hotel Maldives"
+    },
+    {
+      "source": 102,
+      "target": 3,
+      "relation": "Saudi-backed developer"
+    },
+    {
+      "source": 103,
+      "target": 35,
+      "relation": "issued by"
+    },
+    {
+      "source": 103,
+      "target": 10,
+      "relation": "Binance holds $4.7B in USD1"
+    },
+    {
+      "source": 103,
+      "target": 47,
+      "relation": "used for $2B MGX-Binance deal"
+    },
+    {
+      "source": 103,
+      "target": 78,
+      "relation": "reserves custodied by BitGo"
+    },
+    {
+      "source": 103,
+      "target": 37,
+      "relation": "Lutnick/Cantor Fitzgerald custody relationship"
+    },
+    {
+      "source": 104,
+      "target": 1,
+      "relation": "issued by the president"
+    },
+    {
+      "source": 104,
+      "target": 43,
+      "relation": "SEC dropped enforcement under Atkins"
+    },
+    {
+      "source": 105,
+      "target": 22,
+      "relation": "received $750K in PAC support"
+    },
+    {
+      "source": 106,
+      "target": 1,
+      "relation": "son of"
+    },
+    {
+      "source": 106,
+      "target": 35,
+      "relation": "co-founder"
+    },
+    {
+      "source": 106,
+      "target": 24,
+      "relation": "college roommate, business connection"
+    },
+    {
+      "source": 106,
+      "target": 108,
+      "relation": "involved in mining operation"
+    },
+    {
+      "source": 107,
+      "target": 1,
+      "relation": "son of"
+    },
+    {
+      "source": 107,
+      "target": 35,
+      "relation": "co-founder, signed UAE deal"
+    },
+    {
+      "source": 107,
+      "target": 14,
+      "relation": "executive vice president"
+    },
+    {
+      "source": 107,
+      "target": 108,
+      "relation": "oversees mining operation"
+    },
+    {
+      "source": 107,
+      "target": 102,
+      "relation": "partner on Maldives hotel"
+    },
+    {
+      "source": 108,
+      "target": 11,
+      "relation": "part of Trump crypto empire"
+    },
+    {
+      "source": 109,
+      "target": 35,
+      "relation": "demanded documents on foreign investments"
+    },
+    {
+      "source": 9,
+      "target": 35,
+      "relation": "policy czar benefiting from WLFI growth via BitGo stake"
+    },
+    {
+      "source": 77,
+      "target": 35,
+      "relation": "7.8% stake in BitGo which custodies USD1"
+    },
+    {
+      "source": 60,
+      "target": 35,
+      "relation": "pardoned by Trump, attended Mar-a-Lago WLFI forum"
+    },
+    {
+      "source": 70,
+      "target": 16,
+      "relation": "CPI measures corruption linked to enforcement rollback"
+    },
+    {
+      "source": 21,
+      "target": 35,
+      "relation": "SEC dropped crypto enforcement benefiting WLFI"
     }
   ],
   "articles": [
@@ -3512,90 +3921,168 @@
       "title": "TRUMP\u2019S CRYPTO KINGDOM IS THE NEW TRUMP HOTEL ",
       "date": "2025-04-08",
       "url": "https://dekleptocracy.substack.com/p/trumps-crypto-kingdom-is-the-new",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Regulatory Capture Matters to You"
+      "entities": [
+        1,
+        35,
+        103,
+        104,
+        9,
+        21,
+        43,
+        22,
+        106,
+        107,
+        10,
+        60
+      ],
+      "clusters": [
+        "crypto",
+        "princelings"
+      ],
+      "snippet": "Trump's crypto ventures have replaced the Trump Hotel as the primary vehicle for pay-to-play corruption, with the president's family earning billions while dismantling oversight."
     },
     {
       "id": 127,
       "title": "WHY ALAN J. KUPERMAN IS WRONG ON TRUMP BEING RIGHT ON UKRAINE",
       "date": "2025-04-03",
       "url": "https://dekleptocracy.substack.com/p/why-alan-j-kuperman-is-wrong-on-trump-292",
-      "entities": [],
-      "clusters": [],
-      "snippet": "PART 2"
+      "entities": [
+        1,
+        13
+      ],
+      "clusters": [
+        "sanctions",
+        "influence"
+      ],
+      "snippet": "Continuation of analysis on why accommodating Russia on Ukraine serves kleptocratic rather than strategic interests."
     },
     {
       "id": 128,
       "title": "WHY ALAN J. KUPERMAN IS WRONG ON TRUMP BEING RIGHT ON UKRAINE ",
       "date": "2025-04-02",
       "url": "https://dekleptocracy.substack.com/p/why-alan-j-kuperman-is-wrong-on-trump",
-      "entities": [],
-      "clusters": [],
-      "snippet": "PART I "
+      "entities": [
+        1,
+        13
+      ],
+      "clusters": [
+        "sanctions",
+        "influence"
+      ],
+      "snippet": "Rebuttal to arguments supporting Trump's approach to Ukraine, exposing the corruption motivations behind the policy."
     },
     {
       "id": 129,
       "title": "Track II Envoy to Authoritarians ",
       "date": "2025-03-28",
       "url": "https://dekleptocracy.substack.com/p/track-ii-envoy-to-authoritarians",
-      "entities": [],
-      "clusters": [],
-      "snippet": "The Trump Family\u2019s Self-Dealing "
+      "entities": [
+        23,
+        1,
+        13,
+        55
+      ],
+      "clusters": [
+        "sanctions",
+        "influence"
+      ],
+      "snippet": "Steve Witkoff's dual role as peace envoy and crypto business partner creates unprecedented conflicts of interest in authoritarian diplomacy."
     },
     {
       "id": 130,
       "title": "Cheaper Competition for the Military ",
       "date": "2025-03-27",
       "url": "https://dekleptocracy.substack.com/p/cheaper-competition-for-the-military",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Taiwan, your democratic values do not count with Trump"
+      "entities": [
+        1,
+        54
+      ],
+      "clusters": [
+        "influence"
+      ],
+      "snippet": "How DOGE-driven cost-cutting in military procurement creates vulnerabilities and enriches connected contractors."
     },
     {
       "id": 131,
       "title": "It's Not the War Plans, It's the CCP's Leash ",
       "date": "2025-03-26",
       "url": "https://dekleptocracy.substack.com/p/its-not-the-war-plans-its-the-ccps",
-      "entities": [],
-      "clusters": [],
-      "snippet": "(And He Seems to Like It)"
+      "entities": [
+        19,
+        1,
+        35
+      ],
+      "clusters": [
+        "sanctions",
+        "influence"
+      ],
+      "snippet": "Chinese influence over Trump administration through financial entanglements and crypto investments."
     },
     {
       "id": 132,
       "title": "NY's Economic Sovereignty: Raiffeisen's Actions Demand Investigation to Assert New York\u2019s Constitutional Authority and Protect the Rule of Law ",
       "date": "2025-03-25",
       "url": "https://dekleptocracy.substack.com/p/nys-economic-sovereignty-raiffeisens",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Attorney General Letitia James must act swiftly and decisively "
+      "entities": [
+        99,
+        13,
+        16
+      ],
+      "clusters": [
+        "sanctions"
+      ],
+      "snippet": "New York has constitutional authority to investigate Raiffeisen Bank's dollar-clearing activities that may facilitate Russian sanctions evasion."
     },
     {
       "id": 133,
       "title": "Crypto Corruption: How California Can Stop a Pay-to-Play Grift",
       "date": "2025-03-20",
       "url": "https://dekleptocracy.substack.com/p/crypto-corruption-how-california",
-      "entities": [],
-      "clusters": [],
-      "snippet": "By leveraging state jurisdiction over the infrastructure behind crypto transactions, California\u2019s Attorney General can crack down on the pay-to-play corruption and Trump\u2019s conflicts of interest"
+      "entities": [
+        35,
+        22,
+        9,
+        21,
+        43
+      ],
+      "clusters": [
+        "crypto",
+        "influence"
+      ],
+      "snippet": "How California's existing legal frameworks could disrupt crypto pay-to-play corruption emanating from the Trump administration."
     },
     {
       "id": 134,
       "title": "Trump\u2019s Untapped Trump Card: A Sanction That Could Cripple Putin",
       "date": "2025-03-19",
       "url": "https://dekleptocracy.substack.com/p/trumps-untapped-trump-card-a-sanction",
-      "entities": [],
-      "clusters": [],
-      "snippet": "But Trump Won\u2019t Use It"
+      "entities": [
+        1,
+        13,
+        16,
+        6
+      ],
+      "clusters": [
+        "sanctions",
+        "energy"
+      ],
+      "snippet": "Identifying unused sanctions tools that could meaningfully constrain Putin's war economy if the political will existed."
     },
     {
       "id": 135,
       "title": "Trump\u2019s Chess Gambit: Bluffing America into Checkmate",
       "date": "2025-03-18",
       "url": "https://dekleptocracy.substack.com/p/trumps-chess-gambit-bluffing-america",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Reset 2.0"
+      "entities": [
+        1,
+        13,
+        2
+      ],
+      "clusters": [
+        "sanctions",
+        "influence"
+      ],
+      "snippet": "How Trump's geopolitical positioning serves kleptocratic interests rather than American national security."
     },
     {
       "id": 136,
@@ -3604,7 +4091,7 @@
       "url": "https://dekleptocracy.substack.com/p/welcome-to-the-dekleptocracy-projects",
       "entities": [],
       "clusters": [],
-      "snippet": "Where We Do Things Other Than Yell at Old People in Washington"
+      "snippet": "Introduction to the Dekleptocracy Project's mission and approach to anti-corruption advocacy."
     },
     {
       "id": 137,
@@ -3613,25 +4100,37 @@
       "url": "https://dekleptocracy.substack.com/p/coming-soon",
       "entities": [],
       "clusters": [],
-      "snippet": ""
+      "snippet": "Announcement of upcoming Dekleptocracy Substack content."
     },
     {
       "id": 138,
       "title": "The king of bad ideas: reviving Nord Stream 2 (Dekleptocracy Report #37)",
       "date": "2025-03-06",
       "url": "https://dekleptocracy.substack.com/p/9ljwejjzerr8gmgj42c6no2wf72yqj",
-      "entities": [],
-      "clusters": [],
-      "snippet": ""
+      "entities": [
+        98,
+        13,
+        1,
+        29
+      ],
+      "clusters": [
+        "energy",
+        "sanctions"
+      ],
+      "snippet": "Analysis of proposals to revive Nord Stream 2 pipeline and how it would reward Russian energy interests while undermining European security."
     },
     {
       "id": 139,
       "title": "Local corruption from coast to coast, Part 1",
       "date": "2025-03-02",
       "url": "https://dekleptocracy.substack.com/p/59oz727d24tah0h9130h5evd3dngoy",
-      "entities": [],
-      "clusters": [],
-      "snippet": ""
+      "entities": [
+        1
+      ],
+      "clusters": [
+        "influence"
+      ],
+      "snippet": "Survey of local corruption patterns across the United States and their connection to national political dynamics."
     },
     {
       "id": 140,
@@ -3658,9 +4157,15 @@
       "title": "(MEME) Coin of the realm",
       "date": "2025-02-13",
       "url": "https://dekleptocracy.substack.com/p/ka8cwgmk907sx52i57e7l20xrvvy83",
-      "entities": [],
-      "clusters": [],
-      "snippet": ""
+      "entities": [
+        1,
+        104,
+        35
+      ],
+      "clusters": [
+        "crypto"
+      ],
+      "snippet": "Analysis of Trump's memecoin ventures and their intersection with presidential corruption."
     },
     {
       "id": 142,
@@ -3811,9 +4316,15 @@
       "title": "In brief, November 20, 2024: Trump teases \"maximum pressure,\" local corruption intersects with partisan politics across America, and more",
       "date": "2024-11-20",
       "url": "https://dekleptocracy.substack.com/p/in-brief-november-20-2024-trump-teases-maximum-pressure-local-corruption-intersects-with-partisan-politics-across-america-and-more",
-      "entities": [],
-      "clusters": [],
-      "snippet": ""
+      "entities": [
+        1,
+        13
+      ],
+      "clusters": [
+        "sanctions",
+        "influence"
+      ],
+      "snippet": "Trump signals maximum pressure rhetoric while local corruption intersects with partisan politics across America."
     },
     {
       "id": 152,
@@ -3850,36 +4361,60 @@
       "title": "In brief, October 31, 2024: Sweeping Russia sanctions, drone (supply chain) wars, and more",
       "date": "2024-10-31",
       "url": "https://dekleptocracy.substack.com/p/in-brief-october-31-2024-sweeping-russia-sanctions-drone-supply-chain-wars-and-more",
-      "entities": [],
-      "clusters": [],
-      "snippet": ""
+      "entities": [
+        13,
+        16,
+        19
+      ],
+      "clusters": [
+        "sanctions"
+      ],
+      "snippet": "New sweeping Russia sanctions target supply chains. Drone supply chain wars escalate."
     },
     {
       "id": 155,
       "title": "In brief, October 28, 2024: North Korean troops in Russia, LNG-2 halted, and more",
       "date": "2024-10-28",
       "url": "https://dekleptocracy.substack.com/p/in-brief-october-28-2024-north-korean-troops-in-russia-lng-2-halted-and-more",
-      "entities": [],
-      "clusters": [],
-      "snippet": ""
+      "entities": [
+        13,
+        52,
+        29
+      ],
+      "clusters": [
+        "sanctions",
+        "energy"
+      ],
+      "snippet": "North Korean troops deployed to Russia. Arctic LNG-2 development halted amid sanctions pressure."
     },
     {
       "id": 156,
       "title": "How OSINT can save the world: TDR #27, 23 October 2024",
       "date": "2024-10-23",
       "url": "https://dekleptocracy.substack.com/p/how-osint-can-save-the-world-tdr-27-23-october-2024",
-      "entities": [],
-      "clusters": [],
-      "snippet": ""
+      "entities": [
+        13,
+        16
+      ],
+      "clusters": [
+        "sanctions"
+      ],
+      "snippet": "Open-source intelligence techniques as tools for tracking sanctions evasion and kleptocratic networks."
     },
     {
       "id": 157,
       "title": "In brief, October 21, 2024: US sanctions Chinese firms for Russia drone collab, UK goes after shadow fleet, and more",
       "date": "2024-10-21",
       "url": "https://dekleptocracy.substack.com/p/in-brief-october-21-2024-us-sanctions-chinese-firms-for-russia-drone-collab-uk-goes-after-shadow-fleet-and-more",
-      "entities": [],
-      "clusters": [],
-      "snippet": ""
+      "entities": [
+        19,
+        13,
+        16
+      ],
+      "clusters": [
+        "sanctions"
+      ],
+      "snippet": "US sanctions Chinese firms collaborating with Russia on drone technology. UK targets shadow fleet enabling Russian oil exports."
     }
   ]
 }
