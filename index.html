@@ -9,6 +9,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.js"></script>
+<!-- Cloudflare Web Analytics (free, no cookies, GDPR-compliant) -->
+<!-- Replace YOUR_TOKEN_HERE with your Cloudflare beacon token -->
+<!-- Get yours at: https://dash.cloudflare.com → Analytics & Logs → Web Analytics → Add a site -->
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "YOUR_TOKEN_HERE"}'></script>
 <style>
 /* ========== THEME VARIABLES ========== */
 :root,[data-theme="light"]{
@@ -159,7 +163,11 @@ a{color:inherit;text-decoration:none}
 .gcb{width:28px;height:28px;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border:1px solid var(--color-divider);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:var(--color-text-muted);font-size:var(--txt-sm);transition:background var(--transition),color var(--transition)}
 .gcb:hover{background:var(--color-surface-offset);color:var(--color-text)}
 [data-theme="light"] .gcb{background:rgba(255,255,255,.8)}
-.gtt{position:absolute;background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--s3);font-size:var(--txt-xs);box-shadow:var(--shadow-lg);pointer-events:none;opacity:0;transition:opacity .12s ease;z-index:20;max-width:185px}
+[data-theme="light"] #graph-find{background:rgba(255,255,255,.8);color:var(--color-text)}
+[data-theme="light"] #zoom-level{background:rgba(255,255,255,.8)}
+.find-map-btn{display:flex;align-items:center;gap:var(--s2);margin-top:var(--s2);padding:var(--s2) var(--s3);background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-md);font-size:var(--txt-xs);color:var(--color-text-faint);cursor:pointer;transition:all var(--transition)}
+.find-map-btn:hover{border-color:var(--color-primary);color:var(--color-primary);background:var(--color-primary-highlight)}
+.gtt{position:absolute;background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--s3);font-size:var(--txt-xs);box-shadow:var(--shadow-lg);pointer-events:none;opacity:0;transition:opacity .12s ease;z-index:20;max-width:240px}
 .gtt.vis{opacity:1}
 .gtn{font-weight:600;color:var(--color-text);margin-bottom:3px}
 .gty{color:var(--color-text-faint);font-family:var(--font-mono)}
@@ -459,9 +467,11 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
     <div id="gcc">
       <canvas id="gc"></canvas>
       <div class="gctrl">
-        <button class="gcb" onclick="zg(1.2)">+</button>
-        <button class="gcb" onclick="zg(.8)">&#8722;</button>
-        <button class="gcb" onclick="rg()">&#8962;</button>
+        <input type="text" id="graph-find" placeholder="Find node on map…" autocomplete="off" style="width:140px;height:28px;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:0 var(--s2);font-size:var(--txt-xs);color:var(--color-text);font-family:var(--font-mono)" oninput="graphFind(this.value)">
+        <button class="gcb" onclick="zg(1.2)" title="Zoom in">+</button>
+        <button class="gcb" onclick="zg(.8)" title="Zoom out">&#8722;</button>
+        <button class="gcb" onclick="rg()" title="Reset view">&#8962;</button>
+        <span id="zoom-level" style="font-size:var(--txt-xs);font-family:var(--font-mono);color:var(--color-text-faint);background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:2px 6px;pointer-events:none">100%</span>
       </div>
       <div class="gleg">
         <div class="gli"><span class="gld" style="background:var(--color-primary)"></span>Sanctions</div>
@@ -715,7 +725,7 @@ const DEMO={
 
 // ========== STATE ==========
 let DATA=JSON.parse(JSON.stringify(DEMO)),ctf='all',ccf='all',cns='',gaf='all',gz=1,go={x:0,y:0};
-let gd=false,gds={x:0,y:0},raf,nsim=[],esim=[],gHighlight=null;
+let gd=false,gds={x:0,y:0},raf,nsim=[],esim=[],gHighlight=null,gFoundNode=null;
 
 const TC={sanctions:'tr',crypto:'to',energy:'tg',princelings:'tb',influence:'tn'};
 const TI={person:'user',organization:'building-2',deal:'handshake',jurisdiction:'globe',enforcement:'scale'};
@@ -868,8 +878,10 @@ function on(id){
   ).join('')||'<div style="color:var(--color-text-faint);font-size:var(--txt-sm)">No source articles indexed for this node.</div>';
   const tags=(nd.tags||[]);
   document.getElementById('dtags').innerHTML=tags.map(t=>`<span class="tag ${TC[t]||'tgr'}">${t}</span>`).join('')||'<span style="color:var(--color-text-faint);font-size:var(--txt-sm)">None</span>';
-  // Deep link button
-  document.getElementById('dlink-wrap').innerHTML=`<div class="dlink" onclick="copyNodeLink(${id})"><i data-lucide="link" style="width:11px;height:11px"></i> Copy shareable link to this node</div>`;
+  // Deep link button + Find on Map button
+  document.getElementById('dlink-wrap').innerHTML=`<div class="dlink" onclick="copyNodeLink(${id})"><i data-lucide="link" style="width:11px;height:11px"></i> Copy shareable link to this node</div><div class="find-map-btn" onclick="findOnMap(${id})"><i data-lucide="map-pin" style="width:11px;height:11px"></i> Find on network map</div>`;
+  // Analytics: track node view
+  trackEvent('node_view', nd.name, nd.cluster);
   document.getElementById('dob').classList.add('open');
   document.getElementById('dp').classList.add('open');
   lucide.createIcons();
@@ -948,12 +960,32 @@ function dg(){
     ctx.stroke();
   });
   nsim.forEach(n=>{
-    const r=10,color=nc(n);
+    // Size nodes by connection count: more connections = bigger node
+    const connCount=esim.filter(e=>e.source===n.id||e.target===n.id).length;
+    const r=Math.max(7, Math.min(22, 7 + connCount * 1.5));
+    n._r=r; // store for hit detection
+    const color=nc(n);
     const dim=hlSet&&!hlSet.has(n.id);
-    ctx.globalAlpha=dim?0.25:1;
-    ctx.beginPath();ctx.arc(n.x,n.y,r+4,0,Math.PI*2);ctx.fillStyle=color+(dim?'18':'22');ctx.fill();
+    const isFound=gFoundNode===n.id;
+    ctx.globalAlpha=dim?0.15:1;
+    // Glow for found node
+    if(isFound){
+      ctx.beginPath();ctx.arc(n.x,n.y,r+12,0,Math.PI*2);ctx.fillStyle=color+'44';ctx.fill();
+      ctx.beginPath();ctx.arc(n.x,n.y,r+8,0,Math.PI*2);ctx.strokeStyle=color;ctx.lineWidth=2.5/gz;ctx.setLineDash([4/gz,3/gz]);ctx.stroke();ctx.setLineDash([]);
+    }
+    // Outer glow
+    ctx.beginPath();ctx.arc(n.x,n.y,r+4,0,Math.PI*2);ctx.fillStyle=color+(dim?'10':'22');ctx.fill();
+    // Main circle
     ctx.beginPath();ctx.arc(n.x,n.y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
     ctx.strokeStyle=dark?'rgba(255,255,255,.12)':'rgba(255,255,255,.6)';ctx.lineWidth=1.5/gz;ctx.stroke();
+    // Connection count badge for nodes with 4+ connections
+    if(connCount>=4 && !dim){
+      const bx=n.x+r*0.65,by=n.y-r*0.65;
+      ctx.beginPath();ctx.arc(bx,by,7/gz,0,Math.PI*2);ctx.fillStyle=dark?'rgba(0,0,0,.7)':'rgba(255,255,255,.9)';ctx.fill();
+      ctx.strokeStyle=color;ctx.lineWidth=1/gz;ctx.stroke();
+      ctx.font=`${Math.max(7,8/gz)}px 'IBM Plex Mono',monospace`;ctx.fillStyle=color;ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(connCount,bx,by);ctx.textBaseline='alphabetic';
+    }
     if(hlSet&&n.id===gHighlight){
       ctx.beginPath();ctx.arc(n.x,n.y,r+7,0,Math.PI*2);ctx.strokeStyle=color;ctx.lineWidth=2/gz;ctx.stroke();
     }
@@ -965,10 +997,13 @@ function dg(){
     ctx.globalAlpha=1;
   });
   ctx.restore();
+  // Update zoom indicator
+  const zl=document.getElementById('zoom-level');
+  if(zl) zl.textContent=Math.round(gz*100)+'%';
 }
 
 function zg(f){gz=Math.max(.3,Math.min(3,gz*f));dg();}
-function rg(){gz=1;go={x:0,y:0};ig();}
+function rg(){gz=1;go={x:0,y:0};gFoundNode=null;gHighlight=null;const fi=document.getElementById('graph-find');if(fi)fi.value='';ig();}
 
 // Canvas interaction
 window.addEventListener('load',()=>{
@@ -980,11 +1015,12 @@ window.addEventListener('load',()=>{
     const rect=cv.getBoundingClientRect();
     const mx=(e.clientX-rect.left-go.x)/gz,my=(e.clientY-rect.top-go.y)/gz;
     let hit=null;
-    nsim.forEach(n=>{if(Math.sqrt((n.x-mx)**2+(n.y-my)**2)<16) hit=n;});
+    nsim.forEach(n=>{const hr=n._r||10;if(Math.sqrt((n.x-mx)**2+(n.y-my)**2)<hr+6) hit=n;});
     if(hit){
+      const connCount=esim.filter(e=>e.source===hit.id||e.target===hit.id).length;
       tt.style.left=(e.clientX-rect.left+16)+'px';tt.style.top=(e.clientY-rect.top-34)+'px';
       document.getElementById('ttn').textContent=hit.name;
-      document.getElementById('tty').textContent=hit.type.toUpperCase();
+      document.getElementById('tty').textContent=hit.type.toUpperCase()+' · '+connCount+' connection'+(connCount!==1?'s':'');
       tt.classList.add('vis');cv.style.cursor='pointer';
     } else{tt.classList.remove('vis');cv.style.cursor=gd?'grabbing':'grab';}
   });
@@ -993,9 +1029,9 @@ window.addEventListener('load',()=>{
     const rect=cv.getBoundingClientRect();
     const mx=(e.clientX-rect.left-go.x)/gz,my=(e.clientY-rect.top-go.y)/gz;
     let hit=null;
-    nsim.forEach(n=>{if(Math.sqrt((n.x-mx)**2+(n.y-my)**2)<16) hit=n;});
-    if(hit){gHighlight=gHighlight===hit.id?null:hit.id;dg();on(hit.id);}
-    else{gHighlight=null;dg();}
+    nsim.forEach(n=>{const hr=n._r||10;if(Math.sqrt((n.x-mx)**2+(n.y-my)**2)<hr+6) hit=n;});
+    if(hit){gHighlight=gHighlight===hit.id?null:hit.id;gFoundNode=null;dg();on(hit.id);}
+    else{gHighlight=null;gFoundNode=null;dg();}
   });
   cv.addEventListener('wheel',e=>{e.preventDefault();zg(e.deltaY<0?1.1:.9);},{passive:false});
   // Touch support
@@ -1041,6 +1077,7 @@ function sv(n){
   if(n==='datamanager'){refreshEdgeSelectors();refreshUrlList();lucide.createIcons();}
   const sb=document.getElementById('sidebar');
   if(sb&&sb.classList.contains('open')) toggleSidebar();
+  trackEvent('view_change', n);
 }
 function sa(el){document.querySelectorAll('.si').forEach(i=>i.classList.remove('active'));el.classList.add('active');}
 function fc(c){ccf=c;rng();}
@@ -1288,6 +1325,63 @@ function toast(msg){
   el.classList.add('show');
   clearTimeout(el._t);
   el._t=setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+// ========== ANALYTICS TRACKING ==========
+// Lightweight custom event tracking that works with Cloudflare Web Analytics
+// and also logs to console for development. Replace with your analytics provider if desired.
+function trackEvent(action, label, category){
+  // Console logging for development
+  if(typeof console!=='undefined') console.log('[Analytics]', action, label, category||'');
+  // If using a more advanced analytics provider, add tracking call here
+  // e.g., plausible('event', {props: {action, label, category}})
+}
+
+// ========== GRAPH: FIND NODE ON MAP ==========
+function graphFind(query){
+  const q=query.trim().toLowerCase();
+  if(!q){gFoundNode=null;dg();return;}
+  const match=nsim.find(n=>n.name.toLowerCase().includes(q));
+  if(match){
+    gFoundNode=match.id;
+    // Center the map on the found node
+    const canvas=document.getElementById('gc');
+    if(canvas){
+      go.x=canvas.width/2 - match.x*gz;
+      go.y=canvas.height/2 - match.y*gz;
+    }
+    dg();
+  } else {
+    gFoundNode=null;
+    dg();
+  }
+}
+
+// ========== FIND ON MAP (from detail panel) ==========
+function findOnMap(id){
+  cd(); // close detail panel
+  sv('graph'); // switch to graph view
+  setTimeout(()=>{
+    const node=nsim.find(n=>n.id===id);
+    if(node){
+      gFoundNode=id;
+      gHighlight=id;
+      const canvas=document.getElementById('gc');
+      if(canvas){
+        gz=1.5; // zoom in a bit
+        go.x=canvas.width/2 - node.x*gz;
+        go.y=canvas.height/2 - node.y*gz;
+      }
+      dg();
+      // Also populate the find input
+      const findInput=document.getElementById('graph-find');
+      if(findInput){
+        const nd=DATA.nodes.find(n=>n.id===id);
+        findInput.value=nd?nd.name:'';
+      }
+      trackEvent('find_on_map', DATA.nodes.find(n=>n.id===id)?.name||'unknown');
+    }
+  }, 150);
 }
 
 // ========== UTILITIES ==========
