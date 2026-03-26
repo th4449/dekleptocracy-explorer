@@ -1832,6 +1832,22 @@
         "sanctions_exposure": 45,
         "financial_opacity": 65
       }
+    },
+    {
+      "id": 117,
+      "name": "Aleksandar Vu\u010di\u0107",
+      "type": "person",
+      "desc": "Serbian president. Cultivated by Kushner, Grenell, and Giuliani as a pro-Kremlin partner in the Balkans. Received Order of the Serbian Flag decoration for MAGA figures. Trump lifted Dodik sanctions enabling Vu\u010di\u0107's regional agenda.",
+      "tags": [
+        "sanctions",
+        "influence"
+      ],
+      "cluster": "influence",
+      "risk": {
+        "foreign_entanglement": 82,
+        "sanctions_exposure": 72,
+        "financial_opacity": 68
+      }
     }
   ],
   "edges": [
@@ -2709,6 +2725,41 @@
       "source": 11,
       "target": 1,
       "relation": "owned / controlled by"
+    },
+    {
+      "source": 2,
+      "target": 117,
+      "relation": "business dealings in Serbia"
+    },
+    {
+      "source": 42,
+      "target": 117,
+      "relation": "decorated by / cultivated"
+    },
+    {
+      "source": 26,
+      "target": 117,
+      "relation": "lobbying / political cultivation"
+    },
+    {
+      "source": 117,
+      "target": 27,
+      "relation": "close political ally"
+    },
+    {
+      "source": 117,
+      "target": 13,
+      "relation": "maintains close relations with"
+    },
+    {
+      "source": 45,
+      "target": 117,
+      "relation": "FARA-registered lobbyist for"
+    },
+    {
+      "source": 60,
+      "target": 106,
+      "relation": "pardon facilitated via Trump Jr. associate"
     }
   ],
   "articles": [
@@ -4846,81 +4897,185 @@
       "title": "In the Conversation: 15 May - 25 June 2025",
       "date": "2025-07-02",
       "url": "https://dekleptocracy.substack.com/p/in-the-conversation-15-may-25-june",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Highlights from our local corruption roundup"
+      "entities": [
+        1,
+        30,
+        31,
+        45,
+        68,
+        104
+      ],
+      "clusters": [
+        "influence",
+        "sanctions",
+        "crypto"
+      ],
+      "snippet": "In the Conversation May-June 2025 digest. Pardon power as corruption currency. $TRUMP memecoin dinner VIP pardons. CREW tracking 16 corrupt politicians receiving clemency. 'No MAGA left behind' protection-racket logic."
     },
     {
       "id": 106,
       "title": "They Were Paid by Orban\u2019s Think Tank. Now, They Work for the U.S. Department of State. ",
       "date": "2025-07-01",
       "url": "https://dekleptocracy.substack.com/p/they-were-paid-by-orbans-think-tank",
-      "entities": [],
-      "clusters": [],
-      "snippet": ""
+      "entities": [
+        38,
+        39,
+        42,
+        66,
+        74,
+        75,
+        116
+      ],
+      "clusters": [
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "They were paid by Orb\u00e1n's think tank \u2014 now they work for the US State Department. Danube Institute and MCC alumni placed throughout Rubio's State Department. Spencer Chretien. Grenell. Hungarian influence operation fully infiltrating US foreign policy."
     },
     {
       "id": 107,
       "title": "\u201cNo MAGA left behind\u201d: Kleptocracy in America",
       "date": "2025-06-29",
       "url": "https://dekleptocracy.substack.com/p/no-maga-left-behind-kleptocracy-in-668",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Report 8, Part 2"
+      "entities": [
+        1,
+        30,
+        31,
+        45,
+        60,
+        68,
+        104,
+        106
+      ],
+      "clusters": [
+        "influence",
+        "sanctions",
+        "crypto"
+      ],
+      "snippet": "No MAGA Left Behind Kleptocracy in America Report 8 Part 2. State-level corruption roundup. $TRUMP memecoin dinner attendees receiving DOJ leniency. CZ Binance pardon for $450K. Bondi DOJ selective enforcement state by state."
     },
     {
       "id": 108,
       "title": "\u201cNo MAGA left behind\u201d: Kleptocracy in America ",
       "date": "2025-06-27",
       "url": "https://dekleptocracy.substack.com/p/no-maga-left-behind-kleptocracy-in",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Report 8, Part 1"
+      "entities": [
+        1,
+        30,
+        31,
+        45,
+        60,
+        68,
+        104,
+        106
+      ],
+      "clusters": [
+        "influence",
+        "sanctions",
+        "crypto"
+      ],
+      "snippet": "No MAGA Left Behind Kleptocracy in America Report 8 Part 1. National throughline: patronage flows up, protection flows down. Pardon network from Washington through K Street to Main Street."
     },
     {
       "id": 109,
       "title": "THE DEKLEPTOCRACY REPORT: WAR ON IRAN FOR THE HIGHEST BIDDER",
       "date": "2025-06-25",
       "url": "https://dekleptocracy.substack.com/p/the-dekleptocracy-report-war-on-iran",
-      "entities": [],
-      "clusters": [],
-      "snippet": "NEWSLETTER #42"
+      "entities": [
+        1,
+        2,
+        3,
+        7,
+        9,
+        12,
+        22,
+        32,
+        46,
+        47,
+        82
+      ],
+      "clusters": [
+        "energy",
+        "princelings",
+        "crypto",
+        "sanctions"
+      ],
+      "snippet": "War on Iran for the highest bidder. Saudi PIF lobbying Trump via Kushner for Iran strike. UAE backing war behind scenes. Palantir AI justifying strikes. Thiel-Polymarket-Don Jr. insider war gambling. Fairshake bought the war."
     },
     {
       "id": 110,
       "title": "Threatening the Boundary Waters Creates Opening for Democrats",
       "date": "2025-06-20",
       "url": "https://dekleptocracy.substack.com/p/threatening-the-boundary-waters-creates",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Minnesota's Boundary Waters face a threat. And it involves a Chilean billionaire who was once Ivanka Trump's landlord."
+      "entities": [
+        1,
+        13,
+        19
+      ],
+      "clusters": [
+        "sanctions",
+        "energy"
+      ],
+      "snippet": "Threatening the Boundary Waters creates opening for Democrats. Trump's annexation threats against Canada expose the corrupt foreign policy logic. Blue-state federalist resistance strategy framing."
     },
     {
       "id": 111,
       "title": "Is the DOJ Subsidizing Insurrection?",
       "date": "2025-06-19",
       "url": "https://dekleptocracy.substack.com/p/is-the-doj-subsidizing-insurrection",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Your tax dollars could be flowing to white nationalists and conspiracy theorists"
+      "entities": [
+        1,
+        30,
+        31,
+        54,
+        59,
+        62,
+        68
+      ],
+      "clusters": [
+        "sanctions",
+        "influence"
+      ],
+      "snippet": "Is the DOJ subsidizing insurrection? Bondi DOJ disbands KleptoCapture and Kleptocracy Asset Recovery Initiative. CFPB gutted. DOGE eliminates inspectors general. Systematic destruction of anti-corruption infrastructure."
     },
     {
       "id": 112,
       "title": "DONALD TRUMP JR.\u2019S RECENT CEE VISIT COULD STRENGTHEN MAGA-ALIGNED NETWORKS IN THE REGION.",
       "date": "2025-06-12",
       "url": "https://dekleptocracy.substack.com/p/donald-trump-jrs-recent-cee-visit",
-      "entities": [],
-      "clusters": [],
-      "snippet": ""
+      "entities": [
+        1,
+        38,
+        42,
+        73,
+        106,
+        116,
+        117
+      ],
+      "clusters": [
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "Donald Trump Jr.'s CEE visit could strengthen MAGA-aligned networks. Don Jr. in Hungary and Serbia, meeting Orb\u00e1n-aligned and Vu\u010di\u0107-aligned figures. MCC, Danube Institute, and Bannon European network overlap."
     },
     {
       "id": 113,
       "title": "VU\u010cI\u0106 DEMONSTRATES HOW TO CONTAIN AMERICA WITH CORRUPTION",
       "date": "2025-06-11",
       "url": "https://dekleptocracy.substack.com/p/vucic-demonstrates-how-to-contain",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Corruption, not interests, appear to steer American foreign policy"
+      "entities": [
+        1,
+        27,
+        38,
+        42,
+        66,
+        117
+      ],
+      "clusters": [
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "Vu\u010di\u0107 demonstrates how to contain America with corruption. Serbia as model of how authoritarian leaders use targeted corruption of Trump associates to neutralize US foreign policy pressure. Dodik sanctions lifted. Grenell decorated."
     },
     {
       "id": 114,
@@ -4943,45 +5098,95 @@
       "title": "WHY THE US SHOULD FOLLOW THE UK AND INSTITUTE A MODERN SLAVERY ACT ",
       "date": "2025-05-29",
       "url": "https://dekleptocracy.substack.com/p/why-the-us-should-follow-the-uk-and",
-      "entities": [],
-      "clusters": [],
-      "snippet": "It would be a bipartisan win"
+      "entities": [
+        1,
+        30,
+        97
+      ],
+      "clusters": [
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "Why the US should follow the UK and institute a Modern Slavery Act. ICE detention and private contractor corruption under Noem. Bondi DOJ dismantling human trafficking enforcement. UK Modern Slavery Act as model for state-level action."
     },
     {
       "id": 116,
       "title": "MAKE AMERICA SMALL AGAIN: WHEN THE PRESIDENT'S LANDLORD IS A SERBIAN STRONGMAN ",
       "date": "2025-05-19",
       "url": "https://dekleptocracy.substack.com/p/make-america-small-again-when-the",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Sub-heading: Trump\u2019s Balkan Side Hustle Reduces America "
+      "entities": [
+        1,
+        2,
+        42,
+        117
+      ],
+      "clusters": [
+        "influence",
+        "princelings",
+        "sanctions"
+      ],
+      "snippet": "Make America Small Again: when the president's landlord is a Serbian strongman. Kushner's Serbia real estate deals. Blagojevich as Serbia's FARA lobbyist. Grenell decorated by Vu\u010di\u0107. Trump family financial interests tied to Balkan strongman."
     },
     {
       "id": 117,
       "title": "KLEPTOCRACY IN AMERICA REPORT #7, 4 APRIL - 14 MAY 2025: SPRINGTIME FOR CORRUPTION ",
       "date": "2025-05-16",
       "url": "https://dekleptocracy.substack.com/p/kleptocracy-in-america-report-7-4",
-      "entities": [],
-      "clusters": [],
-      "snippet": ""
+      "entities": [
+        1,
+        2,
+        3,
+        16,
+        30,
+        31,
+        54,
+        58,
+        59,
+        62,
+        68
+      ],
+      "clusters": [
+        "sanctions",
+        "influence",
+        "princelings"
+      ],
+      "snippet": "Kleptocracy in America Report 7, Springtime for Corruption. Bondi dismantles KleptoCapture, FCPA enforcement, CFPB, CTA. Kushner-Saudi PIF income. DOGE cuts IGs. Comprehensive anti-corruption infrastructure destruction."
     },
     {
       "id": 118,
       "title": "TRUMP\u2019S WHITE NATIONALIST SANCTUARY",
       "date": "2025-05-14",
       "url": "https://dekleptocracy.substack.com/p/trumps-white-nationalist-sanctuary",
-      "entities": [],
-      "clusters": [],
-      "snippet": "It's worse than it looks"
+      "entities": [
+        1,
+        38,
+        42,
+        64,
+        73
+      ],
+      "clusters": [
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "Trump's White Nationalist Sanctuary. AfriForum white South African refugee program. Grenell and Bannon European far-right networks. Calin Georgescu Romanian election interference. Trump administration as beacon for global white nationalist movement."
     },
     {
       "id": 119,
       "title": "OUR AUTHORITARIAN FRIEND",
       "date": "2025-05-08",
       "url": "https://dekleptocracy.substack.com/p/our-authoritarian-friend",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Trump Impeded a DOJ Gang Case and Freed an MS-13 Leader to Help an Authoritarian Ally"
+      "entities": [
+        1,
+        38,
+        42,
+        66,
+        117
+      ],
+      "clusters": [
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "Our Authoritarian Friend. Vu\u010di\u0107-Trump relationship. Grenell as Serbia's champion in Washington. Trump administration lifting Dodik sanctions over NATO objections. Authoritarian network consolidating in Balkans."
     },
     {
       "id": 120,
@@ -5006,45 +5211,102 @@
       "title": "Elon\u2019s Use of the Familiar Enron Playbook Has Endangered American Workers ",
       "date": "2025-05-05",
       "url": "https://dekleptocracy.substack.com/p/elons-use-of-the-familiar-enron-playbook",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Tesla began life on corporate welfare. Not only has it come full circle, but blue states subsidize him almost entirely now"
+      "entities": [
+        1,
+        54,
+        58
+      ],
+      "clusters": [
+        "influence",
+        "energy"
+      ],
+      "snippet": "Elon's use of the familiar Enron playbook has endangered American workers. DOGE dismantling worker protections mirrors Enron's deregulatory capture. Musk's conflicts of interest across DOE, DoD, NASA contracts. $40B in government contracts and subsidies."
     },
     {
       "id": 122,
       "title": "Trump Associate Corruption in the Balkans is Harming America\u2019s Reputation and Diminishing Us. ",
       "date": "2025-04-28",
       "url": "https://dekleptocracy.substack.com/p/trump-associate-corruption-in-the",
-      "entities": [],
-      "clusters": [],
-      "snippet": "America is playing small ball. "
+      "entities": [
+        1,
+        2,
+        27,
+        42,
+        45,
+        117
+      ],
+      "clusters": [
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "Trump associate corruption in the Balkans is harming America's reputation. Kushner Serbia deals. Blagojevich FARA registration for Serbia. Grenell's Order of the Serbian Flag. Giuliani 'Make Srpska Great Again' visits. Sanctions on Dodik lifted."
     },
     {
       "id": 123,
       "title": "THE DEKLEPTOCRACY REPORT",
       "date": "2025-04-16",
       "url": "https://dekleptocracy.substack.com/p/the-dekleptocracy-report",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Issue #39: THE UK \u2013 IT CAN HAPPEN THERE"
+      "entities": [
+        1,
+        2,
+        3,
+        16,
+        23,
+        30,
+        31,
+        35,
+        54,
+        58,
+        62,
+        66
+      ],
+      "clusters": [
+        "sanctions",
+        "princelings",
+        "energy",
+        "influence"
+      ],
+      "snippet": "Dekleptocracy Report April 2025. Comprehensive monthly. Witkoff Russia dealings, Kushner-PIF income, Bondi anti-corruption dismantling, DOGE regulatory rollback, WLF foreign investment, Rubio foreign policy alignment."
     },
     {
       "id": 124,
       "title": "DONALD TRUMP\u2019S MARKETS KAYFABE & YOUR RETIREMENT FUND ",
       "date": "2025-04-15",
       "url": "https://dekleptocracy.substack.com/p/donald-trumps-markets-kayfabe-and",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Millennials, Boomers are Screwing You One Last Time"
+      "entities": [
+        1,
+        11,
+        54,
+        104
+      ],
+      "clusters": [
+        "influence",
+        "crypto",
+        "sanctions"
+      ],
+      "snippet": "Donald Trump's Markets Kayfabe and your retirement fund. $TRUMP memecoin pump-and-dump mechanics. Trump Media DJT stock manipulation. DOGE market manipulation through policy announcements. Retail investors as exit liquidity."
     },
     {
       "id": 125,
       "title": "JARED IS BACK ",
       "date": "2025-04-10",
       "url": "https://dekleptocracy.substack.com/p/jared-is-back",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Welcome to the Kleptocracy"
+      "entities": [
+        1,
+        2,
+        3,
+        4,
+        23,
+        42,
+        45,
+        117
+      ],
+      "clusters": [
+        "princelings",
+        "influence",
+        "sanctions"
+      ],
+      "snippet": "Jared is Back. Kushner's Affinity Partners Serbia real estate deal. Blagojevich pardoned then registered as Serbia's FARA lobbyist. Vu\u010di\u0107 connection. Kushner-Saudi PIF $2B investment with zero commercial logic confirmed by Senate Finance Committee."
     },
     {
       "id": 126,
@@ -5219,9 +5481,18 @@
       "title": "Welcome to The Dekleptocracy Project's Substack",
       "date": "2025-03-13",
       "url": "https://dekleptocracy.substack.com/p/welcome-to-the-dekleptocracy-projects",
-      "entities": [],
-      "clusters": [],
-      "snippet": "Introduction to the Dekleptocracy Project's mission and approach to anti-corruption advocacy."
+      "entities": [
+        1,
+        13,
+        16,
+        19,
+        54
+      ],
+      "clusters": [
+        "sanctions",
+        "influence"
+      ],
+      "snippet": "Welcome to the Dekleptocracy Project's Substack. Mission statement: use anti-corruption and transparency as offensive tools against authoritarianism. States have federalist leverage. Russia, China, and Trump ecosystem as primary targets."
     },
     {
       "id": 137,
@@ -5230,7 +5501,7 @@
       "url": "https://dekleptocracy.substack.com/p/coming-soon",
       "entities": [],
       "clusters": [],
-      "snippet": "Announcement of upcoming Dekleptocracy Substack content."
+      "snippet": "Coming soon placeholder post. No substantive entity content."
     },
     {
       "id": 138,
