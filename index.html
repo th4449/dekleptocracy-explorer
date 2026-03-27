@@ -218,42 +218,6 @@ a{color:inherit;text-decoration:none}
 .dlink{display:flex;align-items:center;gap:var(--s2);margin-top:var(--s2);padding:var(--s2) var(--s3);background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-md);font-size:var(--txt-xs);font-family:var(--font-mono);color:var(--color-text-faint);cursor:pointer;transition:all var(--transition)}
 .dlink:hover{border-color:var(--color-primary);color:var(--color-primary)}
 
-/* ── EDGE META (source url, amount, date) ── */
-.emeta{display:flex;flex-wrap:wrap;gap:var(--s1);margin-top:var(--s2)}
-.emeta-chip{display:inline-flex;align-items:center;gap:4px;height:18px;padding:0 var(--s2);border-radius:var(--radius-full);font-size:.6rem;font-family:var(--font-mono);font-weight:500;text-decoration:none}
-.emeta-src{background:var(--color-info-highlight);color:var(--color-info);border:1px solid color-mix(in srgb,var(--color-info) 30%,transparent)}
-.emeta-src:hover{background:var(--color-info);color:var(--color-text-inverse)}
-.emeta-amt{background:var(--color-success-highlight);color:var(--color-success);border:1px solid color-mix(in srgb,var(--color-success) 30%,transparent)}
-.emeta-date{background:var(--color-surface-offset-2);color:var(--color-text-faint);border:1px solid var(--color-border)}
-
-/* ── INVESTIGATE FURTHER ── */
-.inv-box{display:flex;flex-direction:column;gap:var(--s2)}
-.inv-btn{display:flex;align-items:center;gap:var(--s3);padding:var(--s3);background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-md);text-decoration:none;transition:border-color var(--transition),background var(--transition)}
-.inv-btn:hover{border-color:var(--color-primary);background:var(--color-primary-highlight)}
-.inv-icon{width:28px;height:28px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:var(--txt-xs);font-weight:700;font-family:var(--font-mono)}
-.inv-icon-os{background:color-mix(in srgb,var(--color-accent) 15%,var(--color-surface));color:var(--color-accent)}
-.inv-icon-icij{background:var(--color-info-highlight);color:var(--color-info)}
-.inv-label{font-size:var(--txt-sm);font-weight:500;color:var(--color-text)}
-.inv-desc{font-size:var(--txt-xs);color:var(--color-text-faint);margin-top:1px}
-
-/* ── FEC DONATIONS ── */
-.fec-wrap{display:flex;flex-direction:column;gap:var(--s2)}
-.fec-loading{font-size:var(--txt-xs);color:var(--color-text-faint);font-family:var(--font-mono);padding:var(--s2) 0;animation:pulse 1.4s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
-.fec-summary{display:flex;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--s2)}
-.fec-stat{background:var(--color-surface-offset);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:var(--s2) var(--s3);min-width:80px}
-.fec-stat-v{font-size:var(--txt-base);font-weight:600;font-family:var(--font-mono);color:var(--color-text);line-height:1.2}
-.fec-stat-l{font-size:var(--txt-xs);color:var(--color-text-faint);margin-top:2px}
-.fec-row{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s3);padding:var(--s2) 0;border-bottom:1px solid var(--color-divider);font-size:var(--txt-xs)}
-.fec-row:last-child{border-bottom:none}
-.fec-recipient{color:var(--color-text-muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fec-amount{font-family:var(--font-mono);color:var(--color-text);flex-shrink:0;font-weight:500}
-.fec-date{color:var(--color-text-faint);flex-shrink:0;font-family:var(--font-mono)}
-.fec-none{font-size:var(--txt-xs);color:var(--color-text-faint);font-style:italic}
-.fec-more{font-size:var(--txt-xs);color:var(--color-primary);font-family:var(--font-mono);text-decoration:none;margin-top:var(--s1);display:inline-block}
-.fec-more:hover{text-decoration:underline}
-.fec-error{font-size:var(--txt-xs);color:var(--color-text-faint);font-style:italic}
-
 /* ========== SEARCH ========== */
 .srl{display:flex;flex-direction:column;gap:var(--s2)}
 .sri{display:flex;align-items:flex-start;gap:var(--s3);padding:var(--s3) var(--s4);background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-lg);cursor:pointer;transition:border-color var(--transition),box-shadow var(--transition)}
@@ -697,8 +661,6 @@ python -m spacy download en_core_web_sm</pre></div></div>
   </div>
   <div class="dpb">
     <div><div class="dsh">Description</div><div class="ddesc" id="ddesc"></div></div>
-    <div id="dinv-wrap"></div>
-    <div id="dfec-wrap"></div>
     <div><div class="dsh">Risk Indicators</div><div class="ri" id="dri"></div></div>
     <div><div class="dsh">Connections (<span id="dcc">0</span>)</div><div class="clist" id="dcl"></div></div>
     <div><div class="dsh">Source Evidence</div><div class="elist" id="del"></div></div>
@@ -942,23 +904,10 @@ function on(id){
   document.getElementById('dcl').innerHTML=conns.map(e=>{
     const oId=e.source===id?e.target:e.source;
     const o=DATA.nodes.find(n=>n.id===oId);if(!o) return '';
-    // Build edge metadata chips
-    let meta='';
-    if(e.source_url||e.amount||e.date){
-      meta='<div class="emeta">';
-      if(e.source_url) meta+=`<a class="emeta-chip emeta-src" href="${esc(e.source_url)}" target="_blank" rel="noopener noreferrer"><i data-lucide="external-link" style="width:9px;height:9px"></i>source</a>`;
-      if(e.amount)     meta+=`<span class="emeta-chip emeta-amt"><i data-lucide="dollar-sign" style="width:9px;height:9px"></i>${esc(e.amount)}</span>`;
-      if(e.date)       meta+=`<span class="emeta-chip emeta-date">${esc(e.date)}</span>`;
-      meta+='</div>';
-    }
     return `<div class="ci" onclick="on(${oId})">
       <div class="nti" style="width:26px;height:26px"><i data-lucide="${TI[o.type]||'circle-dot'}" style="width:11px;height:11px"></i></div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:var(--txt-sm);font-weight:500;color:var(--color-text)">${esc(o.name)}</div>
-        <div class="crel">${esc(e.relation)}</div>
-        ${meta}
-      </div>
-      <i data-lucide="chevron-right" style="width:12px;height:12px;color:var(--color-text-faint);flex-shrink:0"></i>
+      <div style="flex:1;min-width:0"><div style="font-size:var(--txt-sm);font-weight:500;color:var(--color-text)">${esc(o.name)}</div><div class="crel">${esc(e.relation)}</div></div>
+      <i data-lucide="chevron-right" style="width:12px;height:12px;color:var(--color-text-faint)"></i>
     </div>`;
   }).join('')||'<div style="color:var(--color-text-faint);font-size:var(--txt-sm)">No connections yet.</div>';
   const arts=DATA.articles.filter(a=>a.entities&&a.entities.includes(id));
@@ -967,25 +916,6 @@ function on(id){
   ).join('')||'<div style="color:var(--color-text-faint);font-size:var(--txt-sm)">No source articles indexed for this node.</div>';
   const tags=(nd.tags||[]);
   document.getElementById('dtags').innerHTML=tags.map(t=>`<span class="tag ${TC[t]||'tgr'}">${t}</span>`).join('')||'<span style="color:var(--color-text-faint);font-size:var(--txt-sm)">None</span>';
-  // Investigate Further — OpenSanctions + ICIJ
-  const invWrap=document.getElementById('dinv-wrap');
-  const encName=encodeURIComponent(nd.name);
-  invWrap.innerHTML=`
-    <div class="dsh">Investigate Further</div>
-    <div class="inv-box">
-      <a class="inv-btn" href="https://www.opensanctions.org/search/?q=${encName}" target="_blank" rel="noopener noreferrer">
-        <div class="inv-icon inv-icon-os">OS</div>
-        <div><div class="inv-label">OpenSanctions</div><div class="inv-desc">OFAC, EU, UN &amp; UK sanctions lists · PEP registries</div></div>
-        <i data-lucide="external-link" style="width:12px;height:12px;color:var(--color-text-faint);margin-left:auto;flex-shrink:0"></i>
-      </a>
-      <a class="inv-btn" href="https://offshoreleaks.icij.org/search?q=${encName}" target="_blank" rel="noopener noreferrer">
-        <div class="inv-icon inv-icon-icij">ICIJ</div>
-        <div><div class="inv-label">ICIJ Offshore Leaks</div><div class="inv-desc">Panama Papers · Pandora Papers · FinCEN Files</div></div>
-        <i data-lucide="external-link" style="width:12px;height:12px;color:var(--color-text-faint);margin-left:auto;flex-shrink:0"></i>
-      </a>
-    </div>`;
-  // FEC political donation data
-  loadFEC(nd.name, nd.type);
   // Deep link button + Find on Map button
   document.getElementById('dlink-wrap').innerHTML=`<div class="dlink" onclick="copyNodeLink(${id})"><i data-lucide="link" style="width:11px;height:11px"></i> Copy shareable link to this node</div><div class="find-map-btn" onclick="findOnMap(${id})"><i data-lucide="map-pin" style="width:11px;height:11px"></i> Find on network map</div>`;
   // Analytics: track node view
@@ -994,102 +924,6 @@ function on(id){
   document.getElementById('dp').classList.add('open');
   lucide.createIcons();
 }
-// ========== FEC DONATION LOOKUP ==========
-const FEC_KEY = 'ypNKeDGQkJayRpc6F5rjPbdz2UAtbfODkSUCX1qC';
-
-function fmt$(n){
-  if(!n&&n!==0) return '—';
-  if(Math.abs(n)>=1e6) return '$'+(n/1e6).toFixed(1)+'M';
-  if(Math.abs(n)>=1e3) return '$'+(n/1e3).toFixed(0)+'K';
-  return '$'+Math.round(n).toLocaleString();
-}
-
-async function loadFEC(name, nodeType){
-  const wrap=document.getElementById('dfec-wrap');
-  if(!wrap) return;
-  // Only meaningful for persons and organizations, skip jurisdictions/enforcement
-  if(nodeType==='jurisdiction'||nodeType==='enforcement'){wrap.innerHTML='';return;}
-  wrap.innerHTML='<div class="dsh">FEC Political Donations</div><div class="fec-loading">Loading FEC data…</div>';
-
-  // Strip common suffixes that trip up FEC name search
-  const searchName=name.replace(/\s*\/.*$/,'') // strip "/ CZ" etc
-                        .replace(/\s*\(.*?\)/g,'') // strip parentheticals
-                        .trim();
-  const encN=encodeURIComponent(searchName);
-  const fecSearchUrl=`https://www.fec.gov/data/receipts/?contributor_name=${encN}`;
-
-  try {
-    // 1. Fetch individual contributions made by this person/org (Schedule A)
-    const r=await fetch(
-      `https://api.fec.gov/v1/schedules/schedule_a/?contributor_name=${encN}&sort=-contribution_receipt_amount&per_page=8&api_key=${FEC_KEY}`,
-      {signal:AbortSignal.timeout(8000)}
-    );
-    if(!r.ok) throw new Error('FEC API '+r.status);
-    const data=await r.json();
-    const results=data.results||[];
-    const total=data.pagination?.count||0;
-
-    if(results.length===0){
-      // Try as committee name (PACs, LLCs, orgs)
-      const r2=await fetch(
-        `https://api.fec.gov/v1/committees/?q=${encN}&sort=-receipts&per_page=3&api_key=${FEC_KEY}`,
-        {signal:AbortSignal.timeout(8000)}
-      );
-      if(!r2.ok) throw new Error('FEC committees '+r2.status);
-      const d2=await r2.json();
-      const committees=d2.results||[];
-      if(committees.length===0){
-        wrap.innerHTML=`<div class="dsh">FEC Political Donations</div><div class="fec-wrap"><div class="fec-none">No FEC records found for this entity. <a class="fec-more" href="https://www.fec.gov/data/receipts/?contributor_name=${encN}" target="_blank" rel="noopener noreferrer">Search FEC directly →</a></div></div>`;
-        return;
-      }
-      // Show committee summary cards
-      let html='<div class="dsh">FEC Political Donations</div><div class="fec-wrap">';
-      html+='<div style="font-size:var(--txt-xs);color:var(--color-text-faint);margin-bottom:var(--s2)">Found as registered committee</div>';
-      html+='<div class="fec-summary">';
-      committees.forEach(c=>{
-        html+=`<div class="fec-stat"><div class="fec-stat-v">${fmt$(c.total_receipts||0)}</div><div class="fec-stat-l">Total raised</div></div>`;
-        html+=`<div class="fec-stat"><div class="fec-stat-v">${fmt$(c.total_disbursements||0)}</div><div class="fec-stat-l">Total spent</div></div>`;
-      });
-      html+='</div>';
-      committees.forEach(c=>{
-        html+=`<div style="font-size:var(--txt-xs);color:var(--color-text-muted);font-family:var(--font-mono)">${esc(c.name||'')} · ${esc(c.committee_type_full||'')} · ${esc(c.state||'')}</div>`;
-      });
-      html+=`<a class="fec-more" href="https://www.fec.gov/data/committees/?q=${encN}" target="_blank" rel="noopener noreferrer">View full FEC committee record →</a>`;
-      html+='</div>';
-      wrap.innerHTML=html;
-      return;
-    }
-
-    // Summarise contributions
-    const totalAmt=results.reduce((s,r)=>s+(r.contribution_receipt_amount||0),0);
-    const uniqueRecipients=new Set(results.map(r=>r.committee_name||r.committee?.name||''));
-
-    let html='<div class="dsh">FEC Political Donations</div><div class="fec-wrap">';
-    html+=`<div class="fec-summary">
-      <div class="fec-stat"><div class="fec-stat-v">${fmt$(totalAmt)}</div><div class="fec-stat-l">Top ${results.length} donations</div></div>
-      <div class="fec-stat"><div class="fec-stat-v">${total.toLocaleString()}</div><div class="fec-stat-l">Total FEC records</div></div>
-    </div>`;
-    results.slice(0,6).forEach(row=>{
-      const recipient=row.committee_name||row.committee?.name||'Unknown committee';
-      const amt=row.contribution_receipt_amount||0;
-      const date=(row.contribution_receipt_date||'').slice(0,7); // YYYY-MM
-      html+=`<div class="fec-row">
-        <span class="fec-recipient" title="${esc(recipient)}">${esc(recipient)}</span>
-        <span class="fec-amount">${fmt$(amt)}</span>
-        <span class="fec-date">${esc(date)}</span>
-      </div>`;
-    });
-    if(total>6){
-      html+=`<a class="fec-more" href="${fecSearchUrl}" target="_blank" rel="noopener noreferrer">View all ${total.toLocaleString()} FEC records →</a>`;
-    }
-    html+='</div>';
-    wrap.innerHTML=html;
-
-  } catch(err){
-    wrap.innerHTML=`<div class="dsh">FEC Political Donations</div><div class="fec-wrap"><div class="fec-error">Could not load FEC data. <a class="fec-more" href="${fecSearchUrl}" target="_blank" rel="noopener noreferrer">Search FEC directly →</a></div></div>`;
-  }
-}
-
 function cd(){
   document.getElementById('dob').classList.remove('open');
   document.getElementById('dp').classList.remove('open');
