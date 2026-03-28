@@ -78,14 +78,14 @@ a{color:inherit;text-decoration:none}
 .app.embed-mode .hmb{display:none}
 
 /* ========== TOPBAR ========== */
-.topbar{grid-column:1/-1;grid-row:1;display:flex;align-items:center;gap:var(--s3);padding:0 12px;background:#3D5C2F;border-bottom:none;z-index:100;height:var(--sh)}
+.topbar{grid-column:1/-1;grid-row:1;display:flex;align-items:center;gap:var(--s3);padding:0 12px;background:#3D5C2F;border-bottom:none;z-index:100;height:var(--sh);max-height:var(--sh);overflow:hidden;flex-wrap:nowrap}
 .tlogo{display:flex;align-items:center;gap:var(--s2);flex-shrink:0}
 .tlogo svg{color:#fff}
 .tlogo-t{font-size:var(--txt-sm);font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#fff;font-family:var(--font-body)}
 .tlogo-s{font-size:var(--txt-xs);color:rgba(255,255,255,.7);font-family:var(--font-body)}
-.tsearch{margin-left:auto;width:260px;max-width:320px;position:relative;flex-shrink:0}
+.tsearch{margin-left:auto;width:300px;position:relative;flex-shrink:1;min-width:0}
 .tsearch i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.6);pointer-events:none;width:14px;height:14px}
-#gs{width:100%;background:rgba(255,255,255,.1);border:1px solid #555;border-radius:8px;padding:8px 8px 8px 32px;font-size:var(--txt-sm);color:#fff;font-family:var(--font-body);transition:border-color var(--transition),box-shadow var(--transition)}
+#gs{width:100%;background:rgba(255,255,255,.1);border:1px solid #555;border-radius:8px;padding:8px 8px 8px 32px;font-size:var(--txt-sm);color:#fff;font-family:var(--font-body);transition:border-color var(--transition),box-shadow var(--transition);box-sizing:border-box}
 #gs::placeholder{color:rgba(255,255,255,.5)}
 #gs:focus{outline:none;border-color:#5a8a47;box-shadow:0 0 0 3px rgba(61,92,47,.45);background:rgba(255,255,255,.15)}
 .tactions{display:flex;align-items:center;gap:var(--s2);margin-left:var(--s3)}
@@ -532,7 +532,15 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
 .sob.open{opacity:1;pointer-events:all;display:block}
 
 /* ========== RESPONSIVE ========== */
-@media(max-width:768px){
+/* ========== RESPONSIVE ========== */
+/* Tablet: 640px–1024px */
+@media(max-width:1024px){
+  .tsearch{width:200px}
+  .tlogo-s{display:none}
+}
+
+/* Mobile: <640px */
+@media(max-width:640px){
   .app{grid-template-columns:1fr}
   .sb-resize{display:none}
   .sb-expand{display:none!important}
@@ -542,12 +550,24 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
   .sob{display:block}
   .hmb{display:flex}
   .tlogo{width:auto}
-  .tsearch{max-width:none}
+  .tlogo-t{font-size:.7rem;letter-spacing:.02em}
+  .tsearch{width:120px;min-width:80px}
+  #gs{padding:6px 6px 6px 28px;font-size:var(--txt-xs)}
+  .tsearch i{left:8px;width:12px;height:12px}
+  .tactions{gap:2px;margin-left:var(--s1)}
+  .ib{width:30px;height:30px}
   .view{padding:var(--s4)}
   .ngrid{grid-template-columns:1fr}
   .ccards{grid-template-columns:1fr}
   .sgrid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
   #gcc{min-height:320px;flex:1}
+}
+
+/* Small mobile: <400px — hide logo text entirely, search gets more room */
+@media(max-width:400px){
+  .tlogo-t{display:none}
+  .tlogo{gap:0}
+  .tsearch{width:140px;flex-grow:1}
 }
 
 /* ========== PRINT ========== */
@@ -1945,13 +1965,22 @@ document.addEventListener('keydown',e=>{
 });
 
 // ========== WINDOW RESIZE ==========
+function updateSearchPlaceholder(){
+  const gs=document.getElementById('gs');
+  if(!gs) return;
+  const w=window.innerWidth;
+  if(w<=640) gs.placeholder='Search\u2026';
+  else gs.placeholder='Find a node';
+}
 window.addEventListener('resize',()=>{
+  updateSearchPlaceholder();
   const canvas=document.getElementById('gc'),cont=document.getElementById('gcc');
   if(canvas&&cont&&cont.clientWidth>0){
     canvas.width=cont.clientWidth;canvas.height=cont.clientHeight;
     if(nsim.length) dg();
   }
 });
+updateSearchPlaceholder();
 // ResizeObserver for flex-based graph container
 if(typeof ResizeObserver!=='undefined'){
   new ResizeObserver(()=>{
