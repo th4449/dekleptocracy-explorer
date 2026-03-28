@@ -212,6 +212,43 @@ a{color:inherit;text-decoration:none}
 .sb-link-row{display:flex;align-items:center;gap:var(--s2);padding:6px var(--s3);background:#fff;border:1px solid #e0e0e0;border-radius:var(--radius-md);font-size:var(--txt-xs);color:#3D5C2F;cursor:pointer;transition:border-color var(--transition);margin-top:var(--s2)}
 .sb-link-row:hover{border-color:#3D5C2F}
 .sb-link-row i{width:11px;height:11px}
+/* ── Methodology system ── */
+.sb-mode-toggle{display:flex;gap:2px;background:#f0f0f0;border-radius:var(--radius-md);padding:2px;margin-bottom:var(--s3)}
+.sb-mode-btn{flex:1;padding:6px 4px;border-radius:var(--radius-sm);font-size:.65rem;font-weight:500;text-align:center;cursor:pointer;transition:all var(--transition);color:#666;background:transparent;white-space:nowrap}
+.sb-mode-btn.active{background:#3D5C2F;color:#fff}
+.sb-mode-btn:hover:not(.active){background:#e0e0e0}
+.sb-step{margin-bottom:var(--s2);border:1px solid #e0e0e0;border-radius:var(--radius-md);overflow:hidden}
+.sb-step-header{display:flex;align-items:flex-start;gap:var(--s2);padding:8px var(--s3);background:#fff;cursor:pointer;user-select:none;transition:background var(--transition)}
+.sb-step-header:hover{background:#fafafa}
+.sb-step-num{width:20px;height:20px;border-radius:var(--radius-full);background:#3D5C2F;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;font-family:var(--font-mono);flex-shrink:0;margin-top:1px}
+.sb-step-title{font-size:var(--txt-xs);font-weight:600;color:#333;flex:1;line-height:1.4}
+.sb-step-chevron{font-size:8px;color:#3D5C2F;transition:transform .2s ease;margin-top:3px;flex-shrink:0}
+.sb-step.collapsed .sb-step-chevron{transform:rotate(-90deg)}
+.sb-step-body{padding:8px var(--s3);background:#F5F5F5;border-top:1px solid #e0e0e0;font-size:var(--txt-xs)}
+.sb-step.collapsed .sb-step-body{display:none}
+.sb-step-desc{color:#333;line-height:1.6;margin-bottom:var(--s2)}
+.sb-step-example{color:#999;font-style:italic;font-size:.6rem;margin-bottom:var(--s2);line-height:1.5}
+.sb-step-tools{display:flex;flex-wrap:wrap;gap:var(--s1)}
+.sb-tool-link{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#FF6B52;color:#fff;border-radius:var(--radius-md);text-decoration:none;font-size:.6rem;font-weight:600;transition:opacity var(--transition)}
+.sb-tool-link:hover{opacity:.82}
+.sb-tool-link i{width:9px;height:9px}
+.sb-method-wrap{display:none}
+.sb-method-wrap.active{display:block}
+.sb-flow-wrap{display:none}
+.sb-flow-wrap.active{display:block}
+[data-theme="dark"] .sb-mode-toggle{background:var(--color-surface-offset)}
+[data-theme="dark"] .sb-mode-btn{color:var(--color-text-muted)}
+[data-theme="dark"] .sb-mode-btn.active{background:#4a6e3a}
+[data-theme="dark"] .sb-mode-btn:hover:not(.active){background:var(--color-surface-dynamic)}
+[data-theme="dark"] .sb-step{border-color:var(--color-border)}
+[data-theme="dark"] .sb-step-header{background:var(--color-surface)}
+[data-theme="dark"] .sb-step-header:hover{background:var(--color-surface-offset)}
+[data-theme="dark"] .sb-step-num{background:#4a6e3a}
+[data-theme="dark"] .sb-step-title{color:var(--color-text)}
+[data-theme="dark"] .sb-step-chevron{color:#7ab368}
+[data-theme="dark"] .sb-step-body{background:var(--color-surface-offset);border-color:var(--color-border)}
+[data-theme="dark"] .sb-step-desc{color:var(--color-text-muted)}
+[data-theme="dark"] .sb-step-example{color:var(--color-text-faint)}
 /* Dark mode overrides for sidebar panels */
 [data-theme="dark"] .sb-welcome-title{color:#7ab368}
 [data-theme="dark"] .sb-welcome-text{color:var(--color-text-muted)}
@@ -625,8 +662,15 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
           <span class="sb-section-toggle">&#9660;</span>
         </div>
         <div class="sb-section-body">
-          <div id="sb-inv-wrap"></div>
-          <div id="sb-fec-wrap"></div>
+          <div id="sb-l3-mode-toggle"></div>
+          <!-- Corruption Flow Tracing mode (quick links) -->
+          <div id="sb-flow-wrap" class="sb-flow-wrap active">
+            <div id="sb-inv-wrap"></div>
+            <div id="sb-fec-wrap"></div>
+          </div>
+          <!-- Node Tradecraft mode (methodology steps) -->
+          <div id="sb-method-wrap" class="sb-method-wrap"></div>
+          <!-- Always visible -->
           <div id="sb-link-wrap" style="margin-top:var(--s2)"></div>
         </div>
       </div>
@@ -1216,6 +1260,129 @@ function computeCentrality(id){
   return {degree,degreeNorm,hop2Reach:hop2.size,reachPct,clustersBridged:neighborClusters.size};
 }
 
+// ========== INVESTIGATION METHODOLOGY ==========
+let l3Mode='flow'; // 'flow' or 'tradecraft'
+
+const methodologyTemplates={
+  person:[
+    {title:'Beneficial Ownership Search',
+     desc:'Identify all companies, trusts, and legal entities this person controls or has significant ownership in. Look for nominees, proxies, and family members used to obscure control.',
+     tools:[{name:'OpenSanctions',url:'https://www.opensanctions.org/search/?q={name}&schema=Person'}],
+     example:'Search for the exact name and known aliases. Check for transliterated spellings.'},
+    {title:'Financial Disclosures',
+     desc:'Review public financial filings including SEC Forms 4, 13D/13G, and annual reports. For political figures, check OGE 278 financial disclosure reports.',
+     tools:[{name:'SEC EDGAR',url:'https://efts.sec.gov/LATEST/search-index?q=%22{name}%22&dateRange=custom&startdt=2020-01-01'},{name:'FEC Filings',url:'https://www.fec.gov/data/receipts/?contributor_name={name}'}],
+     example:'Search EDGAR for direct filings and mentions in other companies\u2019 proxy statements.'},
+    {title:'Sanctions History',
+     desc:'Check all major sanctions lists for current and historical designations. Look for delisted entities that may indicate past enforcement and subsequent rehabilitation.',
+     tools:[{name:'UN Consolidated List',url:'https://www.un.org/securitycouncil/content/un-sc-consolidated-list'},{name:'OFAC SDN Search',url:'https://sanctionssearch.ofac.treas.gov/'}],
+     example:'Cross-reference aliases and dates of birth. Sanctioned individuals often operate through intermediaries.'},
+    {title:'Family Connections',
+     desc:'Map immediate and extended family members who may serve as nominees or beneficial owners. Identify marriages that create business network bridges.',
+     tools:[{name:'OpenSanctions Family',url:'https://www.opensanctions.org/search/?q={familyName}'}],
+     example:'Search for surname variants and known relatives. Check property records in key jurisdictions.'},
+    {title:'Business Associates',
+     desc:'Identify co-directors, co-shareholders, and business partners across corporate registries and leaked document databases.',
+     tools:[{name:'ICIJ Offshore Leaks',url:'https://offshoreleaks.icij.org/search?q={name}'},{name:'OpenCorporates',url:'https://opencorporates.com/officers?q={name}'}],
+     example:'Cross-reference names appearing in Panama Papers, Pandora Papers, and FinCEN Files.'}
+  ],
+  organization:[
+    {title:'Beneficial Ownership',
+     desc:'Identify the ultimate beneficial owners (UBOs) behind this entity. Trace through corporate layers, nominee directors, and shell company structures.',
+     tools:[{name:'OpenSanctions',url:'https://www.opensanctions.org/search/?q={name}&schema=Company'},{name:'OpenCorporates',url:'https://opencorporates.com/companies?q={name}'}],
+     example:'Search for the exact registered name and any known DBAs or subsidiaries.'},
+    {title:'Registered Address Verification',
+     desc:'Verify the entity\u2019s registered address. Mass-registration addresses (e.g., shared by 50+ entities) are a strong indicator of shell company structures.',
+     tools:[{name:'Google Maps',url:'https://www.google.com/maps/search/{name}'},{name:'OpenCorporates',url:'https://opencorporates.com/companies?q={name}'}],
+     example:'Check whether the address is a virtual office, residential property, or formation agent.'},
+    {title:'Transaction History',
+     desc:'Search for this entity in leaked financial documents and offshore databases. Look for payments, invoices, and wire transfers referencing this name.',
+     tools:[{name:'ICIJ Offshore Leaks',url:'https://offshoreleaks.icij.org/search?q={name}'}],
+     example:'Try both the full legal name and common abbreviations.'},
+    {title:'Board Members and Officers',
+     desc:'Identify current and historical directors, officers, and authorized signatories. Cross-reference against sanctions lists and PEP databases.',
+     tools:[{name:'OpenSanctions',url:'https://www.opensanctions.org/search/?q={name}'},{name:'OpenCorporates',url:'https://opencorporates.com/officers?q={name}'}],
+     example:'Look for nominee directors (individuals serving on 10+ boards) and recently resigned officers.'},
+    {title:'Regulatory Filings',
+     desc:'Check SEC, FinCEN, and equivalent regulators for enforcement actions, consent orders, suspicious activity reports, and compliance failures.',
+     tools:[{name:'SEC EDGAR',url:'https://efts.sec.gov/LATEST/search-index?q=%22{name}%22'},{name:'Treasury OFAC',url:'https://sanctionssearch.ofac.treas.gov/'}],
+     example:'Search for both the entity name and key officer names in enforcement databases.'}
+  ],
+  country:[
+    {title:'Sanctions Regime',
+     desc:'Identify all current sanctions programs targeting this jurisdiction. Check for comprehensive sanctions (full embargo) versus sectoral or list-based measures.',
+     tools:[{name:'UN Consolidated List',url:'https://www.un.org/securitycouncil/content/un-sc-consolidated-list'},{name:'OFAC Programs',url:'https://ofac.treasury.gov/sanctions-programs-and-country-information'}],
+     example:'Check EU, UK, and US sanctions independently \u2014 they often differ in scope.'},
+    {title:'Trade Restrictions',
+     desc:'Review export controls, import bans, and financial restrictions. Identify licensed exceptions and general licenses that may create loopholes.',
+     tools:[{name:'Treasury.gov',url:'https://home.treasury.gov/policy-issues/financial-sanctions/sanctions-programs-and-country-information'},{name:'BIS Entity List',url:'https://www.bis.doc.gov/index.php/policy-guidance/lists-of-parties-of-concern/entity-list'}],
+     example:'Look for recent general license issuances that may indicate sanctions weakening.'},
+    {title:'Known Corruption Actors',
+     desc:'Search for PEPs, oligarchs, and kleptocrats associated with this jurisdiction. Identify state-owned enterprises commonly used for value extraction.',
+     tools:[{name:'OpenSanctions',url:'https://www.opensanctions.org/search/?q={name}'},{name:'ICIJ Offshore Leaks',url:'https://offshoreleaks.icij.org/search?q={name}&country={countryCode}'}],
+     example:'Filter by jurisdiction to see all designated persons and entities.'}
+  ],
+  network:[
+    {title:'Network Mapping',
+     desc:'Identify all parties to this deal or network arrangement. Map the flow of funds, goods, or services between participants.',
+     tools:[{name:'OpenSanctions',url:'https://www.opensanctions.org/search/?q={name}'},{name:'ICIJ Offshore Leaks',url:'https://offshoreleaks.icij.org/search?q={name}'}],
+     example:'Start with the named parties and expand outward to their corporate affiliates.'},
+    {title:'Financial Structure',
+     desc:'Trace the funding chain. Identify which entities provide capital, which receive it, and through what intermediary vehicles.',
+     tools:[{name:'SEC EDGAR',url:'https://efts.sec.gov/LATEST/search-index?q=%22{name}%22'},{name:'FEC',url:'https://www.fec.gov/data/receipts/?contributor_name={name}'}],
+     example:'Look for SPVs, trusts, and offshore entities in the funding chain.'},
+    {title:'Regulatory Exposure',
+     desc:'Assess which jurisdictions have regulatory authority over this arrangement and whether required filings have been made.',
+     tools:[{name:'Treasury OFAC',url:'https://sanctionssearch.ofac.treas.gov/'},{name:'OpenCorporates',url:'https://opencorporates.com/companies?q={name}'}],
+     example:'Check whether the arrangement crosses sanctioned jurisdictions or involves restricted parties.'}
+  ]
+};
+
+// Map node types to methodology template keys
+const TYPE_TO_METHOD={person:'person',organization:'organization',jurisdiction:'country',deal:'network',enforcement:'network'};
+
+function setL3Mode(mode){
+  l3Mode=mode;
+  document.querySelectorAll('.sb-mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+  const flow=document.getElementById('sb-flow-wrap');
+  const method=document.getElementById('sb-method-wrap');
+  if(flow) flow.classList.toggle('active',mode==='flow');
+  if(method) method.classList.toggle('active',mode==='tradecraft');
+}
+
+function toggleStep(el){
+  el.closest('.sb-step').classList.toggle('collapsed');
+}
+
+function renderMethodology(nd){
+  const wrap=document.getElementById('sb-method-wrap');
+  if(!wrap) return;
+  const key=TYPE_TO_METHOD[nd.type]||'network';
+  const steps=methodologyTemplates[key]||[];
+  const encName=encodeURIComponent(nd.name);
+  const familyName=encodeURIComponent(nd.name.split(/\s+/).pop()||nd.name);
+  if(!steps.length){wrap.innerHTML='<div class="sb-empty">No methodology template for this node type.</div>';return;}
+  wrap.innerHTML=steps.map((step,i)=>{
+    const toolsHtml=step.tools.map(t=>{
+      const url=t.url.replace(/\{name\}/g,encName).replace(/\{familyName\}/g,familyName).replace(/\{countryCode\}/g,'');
+      return `<a class="sb-tool-link" href="${url}" target="_blank" rel="noopener noreferrer"><i data-lucide="external-link"></i>${esc(t.name)}</a>`;
+    }).join('');
+    return `<div class="sb-step collapsed">
+      <div class="sb-step-header" onclick="toggleStep(this)">
+        <span class="sb-step-num">${i+1}</span>
+        <span class="sb-step-title">${esc(step.title)}</span>
+        <span class="sb-step-chevron">\u25BC</span>
+      </div>
+      <div class="sb-step-body">
+        <div class="sb-step-desc">${esc(step.desc)}</div>
+        <div class="sb-step-example">${esc(step.example)}</div>
+        <div class="sb-step-tools">${toolsHtml}</div>
+      </div>
+    </div>`;
+  }).join('');
+  lucide.createIcons();
+}
+
 function on(id){
   const nd=DATA.nodes.find(n=>n.id===id);if(!nd) return;
   history.replaceState(null,null,'#node/'+id);
@@ -1300,8 +1467,15 @@ function on(id){
     <div class="sb-breakdown-title">Cluster Breakdown</div>
     ${breakdownHtml}
     ${xcHtml}`;
-  // Layer 3: Investigation Guides
+  // Layer 3: Investigation Guides — mode toggle + both modes
   const encName=encodeURIComponent(nd.name);
+  // Render mode toggle
+  document.getElementById('sb-l3-mode-toggle').innerHTML=`
+    <div class="sb-mode-toggle">
+      <div class="sb-mode-btn${l3Mode==='flow'?' active':''}" data-mode="flow" onclick="setL3Mode('flow')">Corruption Flow Tracing</div>
+      <div class="sb-mode-btn${l3Mode==='tradecraft'?' active':''}" data-mode="tradecraft" onclick="setL3Mode('tradecraft')">Node Tradecraft</div>
+    </div>`;
+  // Flow mode: quick links
   document.getElementById('sb-inv-wrap').innerHTML=`
     <a class="sb-inv-btn" href="https://www.opensanctions.org/search/?q=${encName}" target="_blank" rel="noopener noreferrer">
       <div class="sb-inv-icon sb-inv-icon-os">OS</div>
@@ -1311,9 +1485,13 @@ function on(id){
       <div class="sb-inv-icon sb-inv-icon-icij">ICIJ</div>
       <div><div class="sb-inv-label">ICIJ Offshore Leaks</div><div class="sb-inv-desc">Panama Papers, Pandora Papers, FinCEN Files</div></div>
     </a>`;
-  // FEC
+  // FEC (inside flow mode)
   loadFEC(nd.name, nd.type);
-  // Deep link + Find on map
+  // Tradecraft mode: methodology steps
+  renderMethodology(nd);
+  // Apply current mode visibility
+  setL3Mode(l3Mode);
+  // Deep link + Find on map (always visible)
   document.getElementById('sb-link-wrap').innerHTML=`
     <div class="sb-link-row" onclick="copyNodeLink(${id})"><i data-lucide="link"></i> Copy shareable link</div>
     <div class="sb-link-row" onclick="findOnMap(${id})"><i data-lucide="map-pin"></i> Find on network map</div>`;
