@@ -2072,109 +2072,155 @@ function ig(){
   const canvas=document.getElementById('gc'),cont=document.getElementById('gcc');
   if(!canvas||!cont||cont.clientWidth===0) return;
   canvas.width=cont.clientWidth;canvas.height=cont.clientHeight;
-  // ── Diagnostic: log canvas dimensions ──
-  console.log('[Graph] Canvas %d×%d | Container %d×%d | Window %d×%d | Topbar 64px accounted by CSS grid row',
-    canvas.width,canvas.height,cont.clientWidth,cont.clientHeight,window.innerWidth,window.innerHeight);
+  console.log('[Graph] Cluster layout: canvas %d×%d',canvas.width,canvas.height);
   if(canvas.height<200){
-    console.warn('[Graph] Canvas height suspiciously low (%d). Forcing minimum.',canvas.height);
     canvas.height=Math.max(400,window.innerHeight-64);
   }
   const vn=gaf==='all'?DATA.nodes:DATA.nodes.filter(n=>n.tags&&n.tags.includes(gaf));
   const vi=new Set(vn.map(n=>n.id));
   esim=DATA.edges.filter(e=>vi.has(e.source)&&vi.has(e.target));
+  // Precompute connection counts and cross-cluster flag
   const connMap={};
   esim.forEach(e=>{connMap[e.source]=(connMap[e.source]||0)+1;connMap[e.target]=(connMap[e.target]||0)+1;});
+  const nodeMap={};
+  vn.forEach(n=>nodeMap[n.id]=n);
   const W=canvas.width,H=canvas.height;
-  const cx=W/2,cy=H/2;
-  // ── Initial placement: spread across 40% of canvas ──
-  nsim=vn.map((n,i)=>{
-    const a=(2*Math.PI*i)/vn.length,r=Math.min(W,H)*.4;
-    const cc=connMap[n.id]||0;
-    return{...n,x:cx+r*Math.cos(a),y:cy+r*Math.sin(a),vx:0,vy:0,_cc:cc,_r:nodeRadius(cc)};
-  });
-  if(raf) cancelAnimationFrame(raf);
-  let t=0;
-  // ── Force simulation constants ──
-  const CHARGE=8000;         // Repulsive charge (higher = more spread)
-  const LINK_REST=160;       // Rest length of edge springs
-  const LINK_STIFF=0.03;     // Spring stiffness
-  const CENTER_PULL=0.012;   // Gravity toward canvas center
-  const COLLISION_PAD=30;    // Minimum clearance per node (60px between two nodes)
-  const COLLISION_STR=0.4;   // Collision push strength
-  const EDGE_PAD=60;         // Boundary repulsion zone
-  const EDGE_STR=0.1;        // Boundary push strength
-  const TICKS=300;           // Total simulation iterations
+  const pad=50; // edge padding
 
-  function sim(){
-    t++;
-    const m={};nsim.forEach(n=>m[n.id]=n);
-    // ── Charge repulsion (Coulomb-style: CHARGE / d²) ──
-    for(let i=0;i<nsim.length;i++){
-      for(let j=i+1;j<nsim.length;j++){
-        const a=nsim[i],b=nsim[j];
-        const dx=b.x-a.x,dy=b.y-a.y;
-        const d2=dx*dx+dy*dy;
-        const d=Math.sqrt(d2)||1;
-        // Cap force at close range to prevent explosion
-        const effD=Math.max(d,20);
-        const f=CHARGE/(effD*effD);
-        const fx=f*dx/d,fy=f*dy/d;
-        a.vx-=fx;a.vy-=fy;b.vx+=fx;b.vy+=fy;
-      }
+  // ── Cluster region centers ──
+  // Distribute 5 clusters: 4 quadrants + center
+  const regionCenters={
+    sanctions:  {x:W*0.22, y:H*0.25},
+    crypto:     {x:W*0.78, y:H*0.25},
+    energy:     {x:W*0.22, y:H*0.75},
+    princelings:{x:W*0.78, y:H*0.75},
+    influence:  {x:W*0.50, y:H*0.50}
+  };
+  // Region radii (how far nodes can spread from center)
+  const regionR=Math.min(W,H)*0.2;
+
+  // ── Classify each node: bridge or cluster-only ──
+  function getNeighborClusters(nid){
+    const cls=new Set();
+    esim.forEach(e=>{
+      if(e.source===nid){const t=nodeMap[e.target];if(t) cls.add(t.cluster);}
+      if(e.target===nid){const s=nodeMap[e.source];if(s) cls.add(s.cluster);}
+    });
+    return cls;
+  }
+
+  const clusterBuckets={sanctions:[],crypto:[],energy:[],princelings:[],influence:[],_bridge:[]};
+  const bridgePositions={};
+
+  vn.forEach(n=>{
+    const cc=connMap[n.id]||0;
+    const neighborClusters=getNeighborClusters(n.id);
+    neighborClusters.delete(n.cluster); // remove own cluster
+    const isBridge=neighborClusters.size>=2||
+      (neighborClusters.size===1&&cc>=3); // connects to another cluster with 3+ edges total
+    if(isBridge&&neighborClusters.size>0){
+      // Position bridge nodes between their cluster and the clusters they connect to
+      const ownCenter=regionCenters[n.cluster]||regionCenters.influence;
+      let avgX=ownCenter.x,avgY=ownCenter.y,count=1;
+      neighborClusters.forEach(c=>{
+        const rc=regionCenters[c];
+        if(rc){avgX+=rc.x;avgY+=rc.y;count++;}
+      });
+      bridgePositions[n.id]={x:avgX/count,y:avgY/count};
+      clusterBuckets._bridge.push(n);
+    } else {
+      const bucket=clusterBuckets[n.cluster];
+      if(bucket) bucket.push(n);
+      else (clusterBuckets.influence).push(n); // fallback
     }
-    // ── Collision: enforce minimum separation ──
-    for(let i=0;i<nsim.length;i++){
-      for(let j=i+1;j<nsim.length;j++){
-        const a=nsim[i],b=nsim[j];
-        const minDist=(a._r||10)+COLLISION_PAD+(b._r||10)+COLLISION_PAD;
+  });
+
+  // ── Position nodes within each cluster using spiral layout ──
+  function spiralLayout(nodes,cx,cy,maxR){
+    // Sort by connection count descending (most connected near center)
+    const sorted=nodes.slice().sort((a,b)=>(connMap[b.id]||0)-(connMap[a.id]||0));
+    const positions={};
+    sorted.forEach((n,i)=>{
+      if(i===0){
+        positions[n.id]={x:cx,y:cy};
+        return;
+      }
+      // Archimedean spiral: r = a + b*theta
+      const theta=i*0.8;
+      const r=Math.min(maxR,18+i*12);
+      positions[n.id]={
+        x:cx+r*Math.cos(theta),
+        y:cy+r*Math.sin(theta)
+      };
+    });
+    return positions;
+  }
+
+  const allPositions={};
+
+  // Layout each cluster
+  ['sanctions','crypto','energy','princelings','influence'].forEach(cluster=>{
+    const nodes=clusterBuckets[cluster];
+    if(!nodes.length) return;
+    const center=regionCenters[cluster];
+    const positions=spiralLayout(nodes,center.x,center.y,regionR);
+    Object.assign(allPositions,positions);
+  });
+
+  // Place bridge nodes at their computed positions
+  clusterBuckets._bridge.forEach(n=>{
+    const bp=bridgePositions[n.id];
+    allPositions[n.id]={x:bp.x,y:bp.y};
+  });
+
+  // ── Overlap resolution (simple iterative push, 30 passes) ──
+  const posArr=vn.map(n=>({id:n.id,x:allPositions[n.id]?allPositions[n.id].x:W/2,y:allPositions[n.id]?allPositions[n.id].y:H/2,r:nodeRadius(connMap[n.id]||0)}));
+  for(let pass=0;pass<30;pass++){
+    let moved=false;
+    for(let i=0;i<posArr.length;i++){
+      for(let j=i+1;j<posArr.length;j++){
+        const a=posArr[i],b=posArr[j];
+        const minD=a.r+b.r+20;
         const dx=b.x-a.x,dy=b.y-a.y;
-        const d=Math.sqrt(dx*dx+dy*dy)||1;
-        if(d<minDist){
-          const push=(minDist-d)*COLLISION_STR;
-          const px=push*dx/d,py=push*dy/d;
-          a.vx-=px;a.vy-=py;b.vx+=px;b.vy+=py;
+        const d=Math.sqrt(dx*dx+dy*dy)||0.1;
+        if(d<minD){
+          const push=(minD-d)*0.3;
+          const px=push*(dx/d),py=push*(dy/d);
+          a.x-=px;a.y-=py;b.x+=px;b.y+=py;
+          moved=true;
         }
       }
     }
-    // ── Link springs ──
-    esim.forEach(e=>{
-      const a=m[e.source],b=m[e.target];if(!a||!b) return;
-      const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
-      const f=(d-LINK_REST)*LINK_STIFF;
-      const fx=f*dx/d,fy=f*dy/d;
-      a.vx+=fx;a.vy+=fy;b.vx-=fx;b.vy-=fy;
+    // Clamp to canvas
+    posArr.forEach(p=>{
+      p.x=Math.max(pad,Math.min(W-pad,p.x));
+      p.y=Math.max(pad,Math.min(H-pad,p.y));
     });
-    // ── Center gravity ──
-    nsim.forEach(n=>{
-      n.vx+=(cx-n.x)*CENTER_PULL;
-      n.vy+=(cy-n.y)*CENTER_PULL;
-    });
-    // ── Boundary repulsion (soft push inward from edges) ──
-    nsim.forEach(n=>{
-      if(n.x<EDGE_PAD)       n.vx+=(EDGE_PAD-n.x)*EDGE_STR;
-      if(n.x>W-EDGE_PAD)     n.vx-=(n.x-(W-EDGE_PAD))*EDGE_STR;
-      if(n.y<EDGE_PAD)       n.vy+=(EDGE_PAD-n.y)*EDGE_STR;
-      if(n.y>H-EDGE_PAD)     n.vy-=(n.y-(H-EDGE_PAD))*EDGE_STR;
-    });
-    // ── Velocity damping and position update ──
-    const dm=t<100?0.82:0.90;
-    nsim.forEach(n=>{
-      n.vx*=dm;n.vy*=dm;
-      n.x+=n.vx;n.y+=n.vy;
-      n.x=Math.max(10,Math.min(W-10,n.x));
-      n.y=Math.max(10,Math.min(H-10,n.y));
-    });
-    dg();
-    if(t<TICKS) raf=requestAnimationFrame(sim);
-    // Log final state
-    if(t===TICKS){
-      const xs=nsim.map(n=>n.x),ys=nsim.map(n=>n.y);
-      console.log('[Graph] Settled after %d ticks. X range: %d–%d of %d. Y range: %d–%d of %d.',
-        TICKS,Math.round(Math.min(...xs)),Math.round(Math.max(...xs)),W,
-        Math.round(Math.min(...ys)),Math.round(Math.max(...ys)),H);
-    }
+    if(!moved) break;
   }
-  sim();
+  // Write final positions back
+  posArr.forEach(p=>{allPositions[p.id]={x:p.x,y:p.y};});
+
+  // ── Build nsim array ──
+  nsim=vn.map(n=>{
+    const pos=allPositions[n.id]||{x:W/2,y:H/2};
+    const cc=connMap[n.id]||0;
+    return{...n,x:pos.x,y:pos.y,vx:0,vy:0,_cc:cc,_r:nodeRadius(cc)};
+  });
+
+  // Cancel any lingering animation frame from previous runs
+  if(raf) cancelAnimationFrame(raf);
+  raf=null;
+
+  // Single render (deterministic, no animation)
+  dg();
+
+  // Log layout stats
+  const xs=nsim.map(n=>n.x),ys=nsim.map(n=>n.y);
+  console.log('[Graph] Cluster layout complete. %d nodes, %d bridges. X: %d–%d of %d. Y: %d–%d of %d.',
+    nsim.length, clusterBuckets._bridge.length,
+    Math.round(Math.min(...xs)),Math.round(Math.max(...xs)),W,
+    Math.round(Math.min(...ys)),Math.round(Math.max(...ys)),H);
 }
 
 function dg(){
