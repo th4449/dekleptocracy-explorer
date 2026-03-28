@@ -4,6 +4,13 @@
  * This is a REFERENCE MODULE, not loaded by the app. The actual integration
  * code lives inline in index.html under the "EXTERNAL DATA INTEGRATION" section.
  *
+ * COMPANION FILES:
+ *   - apiConfig.js — Master API configuration with endpoints, rate limits,
+ *     query construction patterns, example responses, and fetch functions.
+ *     Start there when enabling a new data source.
+ *   - index.html — Contains the live extDataConfig object, formatters,
+ *     and renderExtDataSlots() that this file documents.
+ *
  * This file documents:
  *   1. The configuration schema for each external data source
  *   2. Example API responses showing what the data looks like

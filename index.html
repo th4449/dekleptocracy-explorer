@@ -2703,6 +2703,11 @@ function findOnMap(id){
 // Each data source is independently toggleable. Disabled sources are hidden
 // entirely — no loading spinners, no error states, no empty sections.
 //
+// COMPANION FILES (version-controlled alongside this HTML):
+//   apiConfig.js  — Master config with endpoints, rate limits, example responses,
+//                   ready-to-use fetch functions, and activation checklist.
+//   externalData.js — Detailed documentation and integration patterns.
+//
 // HOW TO CONNECT A NEW API:
 // 1. Set the source's `enabled` flag to true in extDataConfig
 // 2. Implement the fetch call inside the source's `fetch` function
