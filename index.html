@@ -498,8 +498,6 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
 /* ── Admin panel (hidden by default) ── */
 #admin-panel{display:none}
 #admin-panel.visible{display:block}
-#nav-data{display:none}
-#nav-data.visible{display:flex}
 .admin-lock{position:fixed;bottom:12px;right:12px;width:28px;height:28px;border-radius:var(--radius-full);background:var(--color-surface);border:1px solid var(--color-divider);display:flex;align-items:center;justify-content:center;z-index:50;cursor:default;opacity:.35;transition:opacity .2s ease,border-color .2s ease;font-size:14px}
 .admin-lock:hover{opacity:.6}
 .admin-lock.unlocked{opacity:.7;border-color:#3D5C2F}
@@ -636,9 +634,6 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
   <div class="sb-nav">
     <div class="sb-nav-item active" onclick="sv('graph');sna(this)"><i data-lucide="git-fork"></i>Map</div>
     <div class="sb-nav-item" onclick="sv('dashboard');sna(this)"><i data-lucide="layout-dashboard"></i>Overview</div>
-    <div class="sb-nav-item" onclick="sv('nodes');sna(this)"><i data-lucide="circle-dot"></i><span id="anc">—</span></div>
-    <div class="sb-nav-item" onclick="sv('articles');sna(this)"><i data-lucide="file-text"></i><span id="ac">—</span></div>
-    <div class="sb-nav-item" id="nav-data" onclick="sv('datamanager');sna(this)"><i data-lucide="database"></i>Data</div>
   </div>
   <div class="sb-content">
     <!-- Welcome State -->
@@ -1072,8 +1067,8 @@ function init(){
   document.getElementById('sa2').textContent=a.length;
   document.getElementById('ssf').textContent=n.filter(x=>x.tags&&x.tags.includes('sanctions')).length;
   document.getElementById('sj').textContent=n.filter(x=>x.type==='jurisdiction').length;
-  document.getElementById('anc').textContent=n.length;
-  document.getElementById('ac').textContent=a.length;
+  const anc=document.getElementById('anc');if(anc) anc.textContent=n.length;
+  const acEl=document.getElementById('ac');if(acEl) acEl.textContent=a.length;
   const clusterIds={sanctions:'cs',crypto:'cc',energy:'ce',princelings:'cp',influence:'ci2'};
   ['sanctions','crypto','energy','princelings','influence'].forEach(c=>{
     const el=document.getElementById(clusterIds[c]);
@@ -1996,11 +1991,9 @@ document.addEventListener('keydown',e=>{
 function toggleAdmin(){
   const panel=document.getElementById('admin-panel');
   const lock=document.getElementById('admin-lock');
-  const navData=document.getElementById('nav-data');
   if(!panel) return;
   const show=!panel.classList.contains('visible');
   panel.classList.toggle('visible',show);
-  if(navData) navData.classList.toggle('visible',show);
   if(lock){
     lock.classList.toggle('unlocked',show);
     lock.innerHTML=show?'&#128275;':'&#128274;';
@@ -2014,9 +2007,7 @@ function toggleAdmin(){
     if(localStorage.getItem('dex-admin')==='1'){
       const panel=document.getElementById('admin-panel');
       const lock=document.getElementById('admin-lock');
-      const navData=document.getElementById('nav-data');
       if(panel) panel.classList.add('visible');
-      if(navData) navData.classList.add('visible');
       if(lock){lock.classList.add('unlocked');lock.innerHTML='&#128275;';}
     }
   }catch(e){}
