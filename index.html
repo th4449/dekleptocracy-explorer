@@ -308,6 +308,37 @@ a{color:inherit;text-decoration:none}
 [data-theme="dark"] .sb-path-name:hover{color:#7ab368}
 [data-theme="dark"] .sb-path-dot{border-color:var(--color-surface)}
 [data-theme="dark"] .sb-path-dot.dot-start{background:#7ab368;box-shadow:0 0 0 1px #7ab368}
+/* ── External data slots ── */
+.sb-ext-slot{display:none;margin-bottom:var(--s3);border:1px solid #e0e0e0;border-radius:var(--radius-lg);overflow:hidden}
+.sb-ext-slot.enabled{display:block}
+.sb-ext-header{display:flex;align-items:center;gap:var(--s2);padding:10px var(--s4);background:#fff;cursor:pointer;user-select:none;transition:background var(--transition)}
+.sb-ext-header:hover{background:#fafafa}
+.sb-ext-label{flex:1;font-size:var(--txt-xs);font-weight:600;color:#3D5C2F;text-transform:uppercase;letter-spacing:.06em}
+.sb-ext-badge{font-size:.55rem;font-family:var(--font-mono);padding:2px 6px;border-radius:var(--radius-full);font-weight:600}
+.sb-ext-badge-live{background:rgba(61,92,47,.1);color:#3D5C2F}
+.sb-ext-badge-off{background:#f0f0f0;color:#999}
+.sb-ext-toggle{color:#3D5C2F;font-size:10px;transition:transform .2s ease;line-height:1}
+.sb-ext-slot.collapsed .sb-ext-toggle{transform:rotate(-90deg)}
+.sb-ext-body{background:#F5F5F5;padding:var(--s3) var(--s4);border-top:1px solid #e0e0e0}
+.sb-ext-slot.collapsed .sb-ext-body{display:none}
+.sb-ext-loading{font-size:var(--txt-xs);color:#999;font-family:var(--font-mono);padding:var(--s2) 0;animation:pulse 1.4s ease-in-out infinite}
+.sb-ext-error{font-size:var(--txt-xs);color:#999;font-style:italic;padding:var(--s2) 0}
+.sb-ext-row{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s2);padding:4px 0;border-bottom:1px solid #e8e8e8;font-size:var(--txt-xs)}
+.sb-ext-row:last-child{border-bottom:none}
+.sb-ext-name{color:#333;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-ext-val{font-family:var(--font-mono);font-weight:500;color:#3D5C2F;flex-shrink:0}
+.sb-ext-date{color:#999;font-family:var(--font-mono);flex-shrink:0}
+.sb-ext-more{font-size:var(--txt-xs);color:#3D5C2F;text-decoration:none;display:inline-block;margin-top:var(--s2)}
+.sb-ext-more:hover{text-decoration:underline}
+[data-theme="dark"] .sb-ext-slot{border-color:var(--color-border)}
+[data-theme="dark"] .sb-ext-header{background:var(--color-surface)}
+[data-theme="dark"] .sb-ext-header:hover{background:var(--color-surface-offset)}
+[data-theme="dark"] .sb-ext-label,[data-theme="dark"] .sb-ext-toggle{color:#7ab368}
+[data-theme="dark"] .sb-ext-body{background:var(--color-surface-offset);border-color:var(--color-border)}
+[data-theme="dark"] .sb-ext-name{color:var(--color-text)}
+[data-theme="dark"] .sb-ext-val{color:#7ab368}
+[data-theme="dark"] .sb-ext-row{border-color:var(--color-divider)}
+[data-theme="dark"] .sb-ext-more{color:#7ab368}
 /* Dark mode overrides for sidebar panels */
 [data-theme="dark"] .sb-welcome-title{color:#7ab368}
 [data-theme="dark"] .sb-welcome-text{color:var(--color-text-muted)}
@@ -745,6 +776,31 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
           <span class="sb-section-toggle">&#9660;</span>
         </div>
         <div class="sb-section-body" id="sb-l2-centrality"></div>
+      </div>
+      <!-- External data slots (conditionally rendered by node type) -->
+      <div class="sb-ext-slot" id="ext-donations">
+        <div class="sb-ext-header" onclick="toggleSection('ext-donations')">
+          <span class="sb-ext-label">Political Donations</span>
+          <span class="sb-ext-badge sb-ext-badge-off" id="ext-donations-badge">off</span>
+          <span class="sb-ext-toggle">&#9660;</span>
+        </div>
+        <div class="sb-ext-body" id="ext-donations-body"></div>
+      </div>
+      <div class="sb-ext-slot" id="ext-filings">
+        <div class="sb-ext-header" onclick="toggleSection('ext-filings')">
+          <span class="sb-ext-label">Corporate Filings</span>
+          <span class="sb-ext-badge sb-ext-badge-off" id="ext-filings-badge">off</span>
+          <span class="sb-ext-toggle">&#9660;</span>
+        </div>
+        <div class="sb-ext-body" id="ext-filings-body"></div>
+      </div>
+      <div class="sb-ext-slot" id="ext-news">
+        <div class="sb-ext-header" onclick="toggleSection('ext-news')">
+          <span class="sb-ext-label">News Mentions</span>
+          <span class="sb-ext-badge sb-ext-badge-off" id="ext-news-badge">off</span>
+          <span class="sb-ext-toggle">&#9660;</span>
+        </div>
+        <div class="sb-ext-body" id="ext-news-body"></div>
       </div>
       <!-- Layer 3: Investigation Guides -->
       <div class="sb-section" id="sb-l3-section">
@@ -1820,6 +1876,8 @@ function on(id){
     <div class="sb-breakdown-title">Cluster Breakdown</div>
     ${breakdownHtml}
     ${xcHtml}`;
+  // External data slots (conditionally rendered by node type and config)
+  renderExtDataSlots(nd);
   // Layer 3: Investigation Guides — mode toggle + both modes
   const encName=encodeURIComponent(nd.name);
   // Render mode toggle
@@ -2638,6 +2696,152 @@ function findOnMap(id){
       trackEvent('find_on_map', DATA.nodes.find(n=>n.id===id)?.name||'unknown');
     }
   }, 150);
+}
+
+// ========== EXTERNAL DATA INTEGRATION ==========
+// Configuration, formatters, and slot rendering for external API data.
+// Each data source is independently toggleable. Disabled sources are hidden
+// entirely — no loading spinners, no error states, no empty sections.
+//
+// HOW TO CONNECT A NEW API:
+// 1. Set the source's `enabled` flag to true in extDataConfig
+// 2. Implement the fetch call inside the source's `fetch` function
+// 3. Pass the API response to the source's `format` function
+// 4. The formatted HTML is injected into the slot's body element
+//
+// See externalData.js (companion file) for detailed examples.
+
+const extDataConfig={
+  // ── Political donations (FEC API) ──
+  // Shows for: person nodes
+  // Endpoint: https://api.fec.gov/v1/schedules/schedule_a/
+  // Status: scaffolded. The existing loadFEC() in Layer 3 handles live FEC data.
+  //         This slot is for a richer, dedicated display once the API key is upgraded.
+  donations:{
+    enabled:false,
+    label:'Political Donations',
+    nodeTypes:['person'],
+    endpoint:'https://api.fec.gov/v1/schedules/schedule_a/',
+    params:{api_key:'DEMO_KEY',sort:'-contribution_receipt_amount',per_page:10},
+    // FUTURE: Replace this stub with actual fetch call
+    // fetch: async function(nodeName){ ... },
+    format:formatDonations
+  },
+  // ── Corporate filings (SEC EDGAR full-text search) ──
+  // Shows for: organization nodes
+  // Endpoint: https://efts.sec.gov/LATEST/search-index
+  // Status: scaffolded. SEC EDGAR is free, no API key required.
+  filings:{
+    enabled:false,
+    label:'Corporate Filings',
+    nodeTypes:['organization'],
+    endpoint:'https://efts.sec.gov/LATEST/search-index',
+    params:{dateRange:'custom',startdt:'2020-01-01'},
+    // FUTURE: Replace this stub with actual fetch call
+    // fetch: async function(nodeName){ ... },
+    format:formatFilings
+  },
+  // ── News mentions (placeholder for future news API) ──
+  // Shows for: all node types
+  // Endpoint: TBD — candidates include GDELT, NewsAPI, or MediaCloud
+  // Status: scaffolded. Currently uses the internal articles array as fallback.
+  news:{
+    enabled:false,
+    label:'News Mentions',
+    nodeTypes:['person','organization','deal','jurisdiction','enforcement'],
+    endpoint:null, // TBD
+    params:{},
+    // FUTURE: Replace this stub with actual fetch call
+    // fetch: async function(nodeName){ ... },
+    format:formatNews
+  }
+};
+
+// ── Data formatters ──
+// Each formatter accepts (nodeName, apiResponse) and returns an HTML string.
+// When no API is connected yet, they return example/placeholder HTML.
+
+function formatDonations(nodeName, data){
+  // When API is connected, `data` will be the parsed JSON response from FEC.
+  // Example of what real data will look like:
+  // {results: [{contributor_name:'...', committee_name:'...', contribution_receipt_amount:2800, contribution_receipt_date:'2024-03-15'}, ...]}
+  if(data&&data.results&&data.results.length>0){
+    let html='';
+    data.results.slice(0,6).forEach(function(r){
+      const name=r.committee_name||'Unknown committee';
+      const amt=r.contribution_receipt_amount||0;
+      const date=(r.contribution_receipt_date||'').slice(0,10);
+      html+=`<div class="sb-ext-row"><span class="sb-ext-name" title="${esc(name)}">${esc(name)}</span><span class="sb-ext-val">${fmt$(amt)}</span><span class="sb-ext-date">${esc(date)}</span></div>`;
+    });
+    const total=(data.pagination&&data.pagination.count)||0;
+    if(total>6) html+=`<a class="sb-ext-more" href="https://www.fec.gov/data/receipts/?contributor_name=${encodeURIComponent(nodeName)}" target="_blank" rel="noopener noreferrer">${total} total records \u2192</a>`;
+    return html;
+  }
+  // Placeholder when no data is loaded yet
+  return '<div class="sb-ext-error">Connect FEC API to see political donation records.</div>';
+}
+
+function formatFilings(nodeName, data){
+  // When API is connected, `data` will be the parsed JSON from SEC EDGAR.
+  // Example of what real data will look like:
+  // {hits: {hits: [{_source: {file_date:'2024-01-15', form_type:'10-K', entity_name:'...', file_num:'...'}}]}}
+  if(data&&data.hits&&data.hits.hits&&data.hits.hits.length>0){
+    let html='';
+    data.hits.hits.slice(0,6).forEach(function(h){
+      const s=h._source||{};
+      html+=`<div class="sb-ext-row"><span class="sb-ext-name">${esc(s.form_type||'Filing')} \u2014 ${esc(s.entity_name||nodeName)}</span><span class="sb-ext-date">${esc((s.file_date||'').slice(0,10))}</span></div>`;
+    });
+    return html;
+  }
+  return '<div class="sb-ext-error">Connect SEC EDGAR to see regulatory filings.</div>';
+}
+
+function formatNews(nodeName, data){
+  // When API is connected, `data` will be the parsed JSON from the news provider.
+  // Example of what real data will look like:
+  // {articles: [{title:'...', source:{name:'...'}, publishedAt:'2024-06-01', url:'...'}]}
+  if(data&&data.articles&&data.articles.length>0){
+    let html='';
+    data.articles.slice(0,5).forEach(function(a){
+      html+=`<div class="sb-ext-row"><a class="sb-ext-name" href="${esc(a.url)}" target="_blank" rel="noopener noreferrer" style="color:#3D5C2F;text-decoration:none">${esc(a.title)}</a><span class="sb-ext-date">${esc((a.publishedAt||'').slice(0,10))}</span></div>`;
+    });
+    return html;
+  }
+  return '<div class="sb-ext-error">Connect a news API to see recent media mentions.</div>';
+}
+
+// ── Slot renderer ──
+// Called from on() when a node is selected. Shows/hides slots based on node type
+// and config. Only enabled sources with matching node types are displayed.
+
+function renderExtDataSlots(nd){
+  Object.entries(extDataConfig).forEach(function(entry){
+    var key=entry[0], cfg=entry[1];
+    var slotEl=document.getElementById('ext-'+key);
+    var bodyEl=document.getElementById('ext-'+key+'-body');
+    var badgeEl=document.getElementById('ext-'+key+'-badge');
+    if(!slotEl||!bodyEl) return;
+    // Only show if enabled AND node type matches
+    var show=cfg.enabled&&cfg.nodeTypes.indexOf(nd.type)!==-1;
+    slotEl.classList.toggle('enabled',show);
+    if(!show) return;
+    // Update badge
+    if(badgeEl){
+      badgeEl.textContent='live';
+      badgeEl.className='sb-ext-badge sb-ext-badge-live';
+    }
+    // Show loading state
+    bodyEl.innerHTML='<div class="sb-ext-loading">Loading\u2026</div>';
+    // FUTURE: This is where the actual API call goes.
+    // Replace the setTimeout below with:
+    //   cfg.fetch(nd.name).then(data => { bodyEl.innerHTML = cfg.format(nd.name, data); })
+    //                      .catch(err => { bodyEl.innerHTML = '<div class="sb-ext-error">Data unavailable. ' + err.message + '</div>'; });
+    //
+    // For now, show the placeholder after a brief simulated delay:
+    setTimeout(function(){
+      bodyEl.innerHTML=cfg.format(nd.name, null);
+    }, 300);
+  });
 }
 
 // ========== ALGORITHMS ==========
