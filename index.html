@@ -495,6 +495,13 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
 .dm-count{display:inline-flex;align-items:center;justify-content:center;background:var(--color-surface-offset);border:1px solid var(--color-divider);border-radius:var(--radius-full);min-width:20px;height:20px;padding:0 6px;font-size:.6rem;font-weight:600;font-family:var(--font-mono);color:var(--color-text-faint)}
 .dm-toast{position:fixed;bottom:var(--s6);left:50%;transform:translateX(-50%) translateY(80px);background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--s3) var(--s5);font-size:var(--txt-sm);color:var(--color-text);box-shadow:var(--shadow-lg);z-index:500;opacity:0;transition:all .3s cubic-bezier(.16,1,.3,1);pointer-events:none}
 .dm-toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+/* ── Admin panel (hidden by default) ── */
+#admin-panel{display:none}
+#admin-panel.visible{display:block}
+.admin-lock{position:fixed;bottom:12px;right:12px;width:28px;height:28px;border-radius:var(--radius-full);background:var(--color-surface);border:1px solid var(--color-divider);display:flex;align-items:center;justify-content:center;z-index:50;cursor:default;opacity:.35;transition:opacity .2s ease,border-color .2s ease;font-size:14px}
+.admin-lock:hover{opacity:.6}
+.admin-lock.unlocked{opacity:.7;border-color:#3D5C2F}
+@media print{.admin-lock{display:none!important}}
 .dm-url-list{display:flex;flex-direction:column;gap:var(--s1);margin-top:var(--s2);max-height:300px;overflow-y:auto}
 .dm-url-item{display:flex;align-items:center;gap:var(--s2);padding:var(--s2) var(--s3);background:var(--color-surface-offset);border-radius:var(--radius-md);font-size:var(--txt-xs);font-family:var(--font-mono);color:var(--color-text-muted)}
 .dm-url-item a{color:var(--color-primary);text-decoration:none;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -837,6 +844,7 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
       <div class="dm-url-list" id="url-list"></div>
     </div>
 
+    <div id="admin-panel">
     <!-- Quick Add Node -->
     <div class="dm-section">
       <div class="dm-section-title"><i data-lucide="circle-dot"></i> Add Node</div>
@@ -879,6 +887,7 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
         <input class="dm-input" id="edge-relation" placeholder="Relationship (e.g. invested $2B in)">
         <button class="dm-btn dm-btn-primary" onclick="addEdge()"><i data-lucide="plus" style="width:12px;height:12px;"></i> Add</button>
       </div>
+    </div>
     </div>
 
     <!-- Import / Export -->
@@ -960,6 +969,9 @@ python -m spacy download en_core_web_sm</pre></div></div>
 
 <!-- TOAST -->
 <div class="dm-toast" id="toast"></div>
+
+<!-- ADMIN LOCK INDICATOR -->
+<div class="admin-lock" id="admin-lock" title="Ctrl+Shift+A">&#128274;</div>
 
 <script>
 // ========== DEMO DATA ==========
@@ -1971,7 +1983,38 @@ document.addEventListener('keydown',e=>{
     const sb=document.getElementById('sidebar');
     if(sb.classList.contains('open')) toggleSidebar();
   }
+  // Admin panel toggle: Ctrl+Shift+A (or Cmd+Shift+A on Mac)
+  if(e.key==='A'&&e.shiftKey&&(e.ctrlKey||e.metaKey)){
+    e.preventDefault();
+    toggleAdmin();
+  }
 });
+
+// ========== ADMIN PANEL ==========
+function toggleAdmin(){
+  const panel=document.getElementById('admin-panel');
+  const lock=document.getElementById('admin-lock');
+  if(!panel) return;
+  const show=!panel.classList.contains('visible');
+  panel.classList.toggle('visible',show);
+  if(lock){
+    lock.classList.toggle('unlocked',show);
+    lock.innerHTML=show?'&#128275;':'&#128274;';
+  }
+  try{localStorage.setItem('dex-admin',show?'1':'0');}catch(e){}
+  if(show) toast('Admin mode enabled');
+}
+// Restore admin state from localStorage on load
+(function(){
+  try{
+    if(localStorage.getItem('dex-admin')==='1'){
+      const panel=document.getElementById('admin-panel');
+      const lock=document.getElementById('admin-lock');
+      if(panel) panel.classList.add('visible');
+      if(lock){lock.classList.add('unlocked');lock.innerHTML='&#128275;';}
+    }
+  }catch(e){}
+})();
 
 // ========== WINDOW RESIZE ==========
 function updateSearchPlaceholder(){
