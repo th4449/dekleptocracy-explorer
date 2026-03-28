@@ -1092,6 +1092,7 @@ async function boot(){
 }
 
 function init(){
+  if(typeof clearPathCache==='function') clearPathCache();
   const n=DATA.nodes,e=DATA.edges,a=DATA.articles;
   document.getElementById('sn').textContent=n.length;
   document.getElementById('se').textContent=e.length;
@@ -2506,6 +2507,119 @@ function findOnMap(id){
       trackEvent('find_on_map', DATA.nodes.find(n=>n.id===id)?.name||'unknown');
     }
   }, 150);
+}
+
+// ========== ALGORITHMS ==========
+// Pathfinding and graph analysis utilities — separate from UI code.
+
+const _pathCache={};
+
+/**
+ * findPath(sourceId, targetId, graph?)
+ * BFS shortest-path between two nodes.
+ * @param {number} sourceId - start node id
+ * @param {number} targetId - end node id
+ * @param {object} [graph]  - optional {nodes,edges}; defaults to DATA
+ * @returns {number[]|null} array of node ids from source to target, or null
+ */
+function findPath(sourceId, targetId, graph){
+  const g=graph||DATA;
+  if(!g||!g.edges) return null;
+  // Same node
+  if(sourceId===targetId) return [sourceId];
+  // Check cache
+  const ck=sourceId+'->'+targetId;
+  const ckr=targetId+'->'+sourceId;
+  if(_pathCache[ck]) return _pathCache[ck].slice();
+  if(_pathCache[ckr]) return _pathCache[ckr].slice().reverse();
+  // Build adjacency list on demand
+  const adj={};
+  g.edges.forEach(function(e){
+    if(!adj[e.source]) adj[e.source]=[];
+    if(!adj[e.target]) adj[e.target]=[];
+    adj[e.source].push(e.target);
+    adj[e.target].push(e.source);
+  });
+  // Verify both nodes exist in the graph
+  if(!adj[sourceId]&&sourceId!==targetId) {_pathCache[ck]=null;return null;}
+  // BFS
+  const visited=new Set();
+  const parent={};
+  const queue=[sourceId];
+  visited.add(sourceId);
+  parent[sourceId]=null;
+  var found=false;
+  while(queue.length>0){
+    var current=queue.shift();
+    if(current===targetId){found=true;break;}
+    var neighbors=adj[current]||[];
+    for(var i=0;i<neighbors.length;i++){
+      var nb=neighbors[i];
+      if(!visited.has(nb)){
+        visited.add(nb);
+        parent[nb]=current;
+        queue.push(nb);
+      }
+    }
+  }
+  if(!found){_pathCache[ck]=null;return null;}
+  // Trace path backwards from target to source
+  var path=[];
+  var step=targetId;
+  while(step!==null){
+    path.push(step);
+    step=parent[step];
+  }
+  path.reverse();
+  _pathCache[ck]=path;
+  return path.slice();
+}
+
+/** Clear the path cache (call after graph data changes). */
+function clearPathCache(){
+  for(var k in _pathCache) delete _pathCache[k];
+}
+
+// Console test helper — run testFindPath() in browser console
+function testFindPath(){
+  var n=DATA.nodes,e=DATA.edges;
+  console.group('%c findPath tests','color:#3D5C2F;font-weight:bold');
+  // Test 1: same node
+  var t1=findPath(n[0].id,n[0].id);
+  console.log('Same node:',t1,'—',t1&&t1.length===1?'PASS':'FAIL');
+  // Test 2: directly connected pair
+  if(e.length>0){
+    var t2=findPath(e[0].source,e[0].target);
+    console.log('Direct edge '+e[0].source+'→'+e[0].target+':',t2,'—',t2&&t2.length===2?'PASS':'FAIL');
+  }
+  // Test 3: two-hop path (find a pair that are NOT directly connected but share a neighbor)
+  var found2hop=false;
+  for(var i=0;i<n.length&&!found2hop;i++){
+    var a=n[i].id;
+    var aN=new Set();e.forEach(function(x){if(x.source===a)aN.add(x.target);if(x.target===a)aN.add(x.source);});
+    for(var j=i+1;j<n.length&&!found2hop;j++){
+      var b=n[j].id;
+      if(aN.has(b)) continue; // directly connected, skip
+      var t3=findPath(a,b);
+      if(t3&&t3.length>=3){
+        var names=t3.map(function(id){var nd=n.find(function(x){return x.id===id;});return nd?nd.name:id;});
+        console.log('Multi-hop '+a+'→'+b+' ('+t3.length+' nodes):',names.join(' → '),'— PASS');
+        found2hop=true;
+      }
+    }
+  }
+  if(!found2hop) console.log('Multi-hop: no indirect pair found in graph');
+  // Test 4: cache hit
+  if(e.length>0){
+    var t4a=findPath(e[0].source,e[0].target);
+    var t4b=findPath(e[0].source,e[0].target);
+    console.log('Cache hit:',JSON.stringify(t4a)===JSON.stringify(t4b)?'PASS':'FAIL');
+  }
+  // Test 5: nonexistent node
+  var t5=findPath(999999,999998);
+  console.log('Nonexistent nodes:',t5,'—',t5===null?'PASS':'FAIL');
+  console.groupEnd();
+  return 'Tests complete. Check results above.';
 }
 
 // ========== UTILITIES ==========
