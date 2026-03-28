@@ -93,7 +93,7 @@ a{color:inherit;text-decoration:none}
 .ib:hover{background:rgba(255,255,255,.12);color:#fff}
 
 /* ========== SIDEBAR ========== */
-.sidebar{grid-column:1;grid-row:2;background:var(--color-surface);border-right:none;overflow-y:auto;padding:var(--s4) 0;display:flex;flex-direction:column;position:relative;min-width:0}
+.sidebar{grid-column:1;grid-row:2;background:var(--color-surface);border-right:none;overflow:hidden;padding:0;display:flex;flex-direction:column;position:relative;min-width:0}
 .sidebar::-webkit-scrollbar{width:3px}
 .sidebar::-webkit-scrollbar-thumb{background:var(--color-border);border-radius:var(--radius-full)}
 .sidebar-wrap{display:flex;position:relative}
@@ -119,6 +119,104 @@ a{color:inherit;text-decoration:none}
 .sdiv{height:1px;background:var(--color-divider);margin:var(--s2) var(--s4)}
 .cdot{width:7px;height:7px;border-radius:var(--radius-full);flex-shrink:0}
 .dr{background:var(--color-primary)}.do{background:var(--color-accent)}.dg{background:var(--color-gold)}.db{background:var(--color-info)}.dn{background:var(--color-success)}
+
+/* ========== SIDEBAR PANELS (progressive disclosure) ========== */
+.sb-nav{display:flex;flex-wrap:wrap;gap:2px;padding:var(--s2) var(--s3);border-bottom:1px solid var(--color-divider)}
+.sb-nav-item{display:flex;align-items:center;gap:4px;padding:4px 7px;font-size:var(--txt-xs);color:var(--color-text-muted);border-radius:var(--radius-md);cursor:pointer;transition:background var(--transition),color var(--transition);white-space:nowrap}
+.sb-nav-item i{width:11px;height:11px}
+.sb-nav-item:hover{background:var(--color-surface-offset);color:var(--color-text)}
+.sb-nav-item.active{color:#3D5C2F;font-weight:600}
+[data-theme="dark"] .sb-nav-item.active{color:#7ab368}
+.sb-nav-count{font-family:var(--font-mono);opacity:.5;font-weight:400}
+.sb-content{flex:1;overflow-y:auto;padding:var(--s4)}
+.sb-content::-webkit-scrollbar{width:3px}
+.sb-content::-webkit-scrollbar-thumb{background:var(--color-border);border-radius:var(--radius-full)}
+.sb-welcome{display:block}
+.sb-welcome.hidden{display:none}
+.sb-welcome-title{font-size:var(--txt-lg);font-weight:600;color:#3D5C2F;line-height:1.3;margin-bottom:var(--s2)}
+.sb-welcome-text{font-size:var(--txt-sm);color:#333;line-height:1.7;margin-bottom:var(--s4)}
+.sb-cluster-badges{display:flex;flex-direction:column;gap:var(--s2)}
+.sb-cluster-pill{display:flex;align-items:center;gap:var(--s2);padding:6px var(--s3);background:#3D5C2F;color:#fff;border-radius:var(--radius-full);font-size:var(--txt-xs);font-weight:500;cursor:pointer;transition:opacity var(--transition)}
+.sb-cluster-pill:hover{opacity:.85}
+.sb-pill-count{margin-left:auto;font-family:var(--font-mono);opacity:.7}
+.sb-node{display:none}
+.sb-node.active{display:block}
+.sb-back{display:inline-flex;align-items:center;gap:var(--s2);padding:var(--s2) 0;font-size:var(--txt-xs);color:#3D5C2F;cursor:pointer;margin-bottom:var(--s3);font-weight:500;transition:opacity var(--transition)}
+.sb-back:hover{opacity:.7}
+.sb-l1{background:#fff;border:1px solid #e0e0e0;border-radius:var(--radius-lg);padding:var(--s4);margin-bottom:var(--s3)}
+.sb-l1-header{display:flex;align-items:flex-start;gap:var(--s3);margin-bottom:var(--s3)}
+.sb-l1-icon{width:34px;height:34px;border-radius:var(--radius-md);background:#f0f0f0;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#666}
+.sb-l1-icon i{width:16px;height:16px}
+.sb-l1-title{font-size:20px;font-weight:700;color:#3D5C2F;line-height:1.25}
+.sb-l1-type{font-size:var(--txt-xs);font-family:var(--font-mono);color:#666;margin-top:2px}
+.sb-l1-desc{font-size:var(--txt-sm);color:#333;line-height:1.7;margin-bottom:var(--s3)}
+.sb-l1-badges{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
+.sb-badge-cluster{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;background:#3D5C2F;color:#fff;border-radius:var(--radius-full);font-size:var(--txt-xs);font-weight:500;text-transform:capitalize}
+.sb-badge-conns{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;background:#f0f0f0;color:#333;border-radius:var(--radius-full);font-size:var(--txt-xs);font-weight:500;font-family:var(--font-mono)}
+.sb-section{margin-bottom:var(--s3);border:1px solid #e0e0e0;border-radius:var(--radius-lg);overflow:hidden}
+.sb-section-header{display:flex;align-items:center;gap:var(--s2);padding:10px var(--s4);background:#fff;cursor:pointer;transition:background var(--transition);user-select:none}
+.sb-section-header:hover{background:#fafafa}
+.sb-section-label{flex:1;font-size:var(--txt-xs);font-weight:600;color:#3D5C2F;text-transform:uppercase;letter-spacing:.06em}
+.sb-section-toggle{color:#3D5C2F;font-size:10px;transition:transform .2s ease;line-height:1}
+.sb-section.collapsed .sb-section-toggle{transform:rotate(-90deg)}
+.sb-section-body{background:#F5F5F5;padding:var(--s3) var(--s4);border-top:1px solid #e0e0e0}
+.sb-section.collapsed .sb-section-body{display:none}
+.sb-conn-row{display:flex;align-items:center;gap:var(--s2);padding:6px 0;border-bottom:1px solid #e8e8e8;cursor:pointer;transition:background var(--transition);font-size:var(--txt-xs)}
+.sb-conn-row:last-child{border-bottom:none}
+.sb-conn-row:hover{background:rgba(61,92,47,.06);border-radius:var(--radius-sm)}
+.sb-conn-icon{width:20px;height:20px;border-radius:var(--radius-sm);background:#fff;border:1px solid #e0e0e0;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-conn-icon i{width:9px;height:9px;color:#666}
+.sb-conn-name{font-weight:500;color:#333;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-conn-rel{color:#999;font-family:var(--font-mono);font-size:.6rem}
+.sb-article-item{padding:6px 0;border-bottom:1px solid #e8e8e8}
+.sb-article-item:last-child{border-bottom:none}
+.sb-article-link{font-size:var(--txt-xs);font-weight:500;color:#3D5C2F;text-decoration:none}
+.sb-article-link:hover{text-decoration:underline}
+.sb-article-date{font-size:.6rem;color:#999;font-family:var(--font-mono);margin-top:2px}
+.sb-metric-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e8e8e8;font-size:var(--txt-xs)}
+.sb-metric-row:last-child{border-bottom:none}
+.sb-metric-label{color:#333}
+.sb-metric-value{font-family:var(--font-mono);font-weight:600;color:#3D5C2F}
+.sb-inv-btn{display:flex;align-items:center;gap:var(--s2);padding:8px var(--s3);background:#fff;border:1px solid #e0e0e0;border-radius:var(--radius-md);text-decoration:none;transition:border-color var(--transition);margin-bottom:var(--s2);font-size:var(--txt-xs)}
+.sb-inv-btn:last-child{margin-bottom:0}
+.sb-inv-btn:hover{border-color:#3D5C2F}
+.sb-inv-icon{width:24px;height:24px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:var(--txt-xs);font-weight:700;font-family:var(--font-mono)}
+.sb-inv-icon-os{background:rgba(196,64,28,.1);color:#c4401c}
+.sb-inv-icon-icij{background:rgba(26,90,122,.1);color:#1a5a7a}
+.sb-inv-icon-fec{background:rgba(61,92,47,.1);color:#3D5C2F}
+.sb-inv-label{font-weight:500;color:#333}
+.sb-inv-desc{color:#999;margin-top:1px;font-size:.6rem}
+.sb-empty{font-size:var(--txt-xs);color:#999;font-style:italic;padding:var(--s2) 0}
+.sb-link-row{display:flex;align-items:center;gap:var(--s2);padding:6px var(--s3);background:#fff;border:1px solid #e0e0e0;border-radius:var(--radius-md);font-size:var(--txt-xs);color:#3D5C2F;cursor:pointer;transition:border-color var(--transition);margin-top:var(--s2)}
+.sb-link-row:hover{border-color:#3D5C2F}
+.sb-link-row i{width:11px;height:11px}
+/* Dark mode overrides for sidebar panels */
+[data-theme="dark"] .sb-welcome-title{color:#7ab368}
+[data-theme="dark"] .sb-welcome-text{color:var(--color-text-muted)}
+[data-theme="dark"] .sb-cluster-pill{background:#4a6e3a}
+[data-theme="dark"] .sb-back{color:#7ab368}
+[data-theme="dark"] .sb-l1{background:var(--color-surface);border-color:var(--color-border)}
+[data-theme="dark"] .sb-l1-title{color:#7ab368}
+[data-theme="dark"] .sb-l1-type,.sb-l1-icon{color:var(--color-text-faint)}
+[data-theme="dark"] .sb-l1-icon{background:var(--color-surface-offset)}
+[data-theme="dark"] .sb-l1-desc{color:var(--color-text-muted)}
+[data-theme="dark"] .sb-badge-cluster{background:#4a6e3a}
+[data-theme="dark"] .sb-badge-conns{background:var(--color-surface-offset);color:var(--color-text)}
+[data-theme="dark"] .sb-section{border-color:var(--color-border)}
+[data-theme="dark"] .sb-section-header{background:var(--color-surface)}
+[data-theme="dark"] .sb-section-header:hover{background:var(--color-surface-offset)}
+[data-theme="dark"] .sb-section-label,[data-theme="dark"] .sb-section-toggle{color:#7ab368}
+[data-theme="dark"] .sb-section-body{background:var(--color-surface-offset);border-color:var(--color-border)}
+[data-theme="dark"] .sb-conn-row{border-color:var(--color-divider)}
+[data-theme="dark"] .sb-conn-icon{background:var(--color-surface);border-color:var(--color-border)}
+[data-theme="dark"] .sb-conn-name,[data-theme="dark"] .sb-metric-label,[data-theme="dark"] .sb-inv-label{color:var(--color-text)}
+[data-theme="dark"] .sb-conn-rel,[data-theme="dark"] .sb-article-date,[data-theme="dark"] .sb-empty,.sb-inv-desc{color:var(--color-text-faint)}
+[data-theme="dark"] .sb-article-link{color:#7ab368}
+[data-theme="dark"] .sb-article-item,[data-theme="dark"] .sb-metric-row{border-color:var(--color-divider)}
+[data-theme="dark"] .sb-metric-value{color:#7ab368}
+[data-theme="dark"] .sb-inv-btn,[data-theme="dark"] .sb-link-row{background:var(--color-surface);border-color:var(--color-border)}
+[data-theme="dark"] .sb-inv-btn:hover,[data-theme="dark"] .sb-link-row:hover{border-color:#7ab368}
+[data-theme="dark"] .sb-link-row{color:#7ab368}
 
 /* ========== MAIN ========== */
 .main{grid-column:3;grid-row:2;overflow-y:auto;background:var(--color-bg);display:flex;flex-direction:column}
@@ -438,35 +536,79 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
 
 <!-- SIDEBAR -->
 <nav class="sidebar" id="sidebar">
-  <div class="ss">
-    <div class="ssl">Explorer</div>
-    <div class="si" onclick="sv('dashboard');sa(this)"><i data-lucide="layout-dashboard"></i>Overview</div>
-    <div class="si active" onclick="sv('graph');sa(this)"><i data-lucide="git-fork"></i>Network Map</div>
-    <div class="si" onclick="sv('nodes');sa(this)"><i data-lucide="circle-dot"></i>All Nodes<span class="sic" id="anc">&mdash;</span></div>
-    <div class="si" onclick="sv('articles');sa(this)"><i data-lucide="file-text"></i>Articles<span class="sic" id="ac">&mdash;</span></div>
+  <div class="sb-nav">
+    <div class="sb-nav-item active" onclick="sv('graph');sna(this)"><i data-lucide="git-fork"></i>Map</div>
+    <div class="sb-nav-item" onclick="sv('dashboard');sna(this)"><i data-lucide="layout-dashboard"></i>Overview</div>
+    <div class="sb-nav-item" onclick="sv('nodes');sna(this)"><i data-lucide="circle-dot"></i><span id="anc">—</span></div>
+    <div class="sb-nav-item" onclick="sv('articles');sna(this)"><i data-lucide="file-text"></i><span id="ac">—</span></div>
+    <div class="sb-nav-item" onclick="sv('datamanager');sna(this)"><i data-lucide="database"></i>Data</div>
   </div>
-  <div class="sdiv"></div>
-  <div class="ss">
-    <div class="ssl">Clusters</div>
-    <div class="si" onclick="fc('sanctions');sv('nodes');sa(this)"><span class="cdot dr"></span>Sanctions-Busting<span class="sic" id="cs">&mdash;</span></div>
-    <div class="si" onclick="fc('crypto');sv('nodes');sa(this)"><span class="cdot do"></span>Crypto Rails<span class="sic" id="cc">&mdash;</span></div>
-    <div class="si" onclick="fc('energy');sv('nodes');sa(this)"><span class="cdot dg"></span>Energy Networks<span class="sic" id="ce">&mdash;</span></div>
-    <div class="si" onclick="fc('princelings');sv('nodes');sa(this)"><span class="cdot db"></span>Princelings<span class="sic" id="cp">&mdash;</span></div>
-    <div class="si" onclick="fc('influence');sv('nodes');sa(this)"><span class="cdot dn"></span>Influence Ops<span class="sic" id="ci2">&mdash;</span></div>
-  </div>
-  <div class="sdiv"></div>
-  <div class="ss">
-    <div class="ssl">By Type</div>
-    <div class="si" onclick="ftn('person');sa(this)"><i data-lucide="user"></i>Persons</div>
-    <div class="si" onclick="ftn('organization');sa(this)"><i data-lucide="building-2"></i>Organizations</div>
-    <div class="si" onclick="ftn('deal');sa(this)"><i data-lucide="handshake"></i>Deals</div>
-    <div class="si" onclick="ftn('jurisdiction');sa(this)"><i data-lucide="globe"></i>Jurisdictions</div>
-    <div class="si" onclick="ftn('enforcement');sa(this)"><i data-lucide="scale"></i>Enforcement</div>
-  </div>
-  <div class="sdiv"></div>
-  <div class="ss">
-    <div class="si" onclick="sv('datamanager');sa(this)"><i data-lucide="database"></i>Data Manager</div>
-    <div class="si" onclick="sv('setup');sa(this)"><i data-lucide="terminal"></i>Setup Guide</div>
+  <div class="sb-content">
+    <!-- Welcome State -->
+    <div id="sb-welcome" class="sb-welcome">
+      <div class="sb-welcome-title">Welcome to Dekleptocracy Explorer</div>
+      <div class="sb-welcome-text">Click any node on the network map to explore its connections, source articles, and investigation tools. Use the clusters below to filter by network type.</div>
+      <div class="sb-cluster-badges">
+        <div class="sb-cluster-pill" onclick="fc('sanctions');sv('nodes')"><span class="cdot" style="background:#fff;opacity:.6"></span>Sanctions-Busting<span class="sb-pill-count" id="cs">—</span></div>
+        <div class="sb-cluster-pill" onclick="fc('crypto');sv('nodes')"><span class="cdot" style="background:#fff;opacity:.6"></span>Crypto Rails<span class="sb-pill-count" id="cc">—</span></div>
+        <div class="sb-cluster-pill" onclick="fc('energy');sv('nodes')"><span class="cdot" style="background:#fff;opacity:.6"></span>Energy Networks<span class="sb-pill-count" id="ce">—</span></div>
+        <div class="sb-cluster-pill" onclick="fc('princelings');sv('nodes')"><span class="cdot" style="background:#fff;opacity:.6"></span>Princelings<span class="sb-pill-count" id="cp">—</span></div>
+        <div class="sb-cluster-pill" onclick="fc('influence');sv('nodes')"><span class="cdot" style="background:#fff;opacity:.6"></span>Influence Ops<span class="sb-pill-count" id="ci2">—</span></div>
+      </div>
+    </div>
+    <!-- Node Detail State (three layers) -->
+    <div id="sb-node-detail" class="sb-node">
+      <div class="sb-back" onclick="cd()"><i data-lucide="arrow-left" style="width:12px;height:12px"></i> Back to Explorer</div>
+      <!-- Layer 1: Basic Facts -->
+      <div class="sb-l1">
+        <div class="sb-l1-header">
+          <div class="sb-l1-icon" id="sb-node-icon"><i data-lucide="circle-dot"></i></div>
+          <div style="flex:1;min-width:0">
+            <div class="sb-l1-title" id="sb-node-name"></div>
+            <div class="sb-l1-type" id="sb-node-type"></div>
+          </div>
+        </div>
+        <div class="sb-l1-desc" id="sb-node-desc"></div>
+        <div class="sb-l1-badges">
+          <span class="sb-badge-cluster" id="sb-node-cluster"></span>
+          <span class="sb-badge-conns" id="sb-node-conns"></span>
+        </div>
+      </div>
+      <!-- Layer 2: Enriched Context -->
+      <div class="sb-section" id="sb-l2-conns-section">
+        <div class="sb-section-header" onclick="toggleSection('sb-l2-conns-section')">
+          <span class="sb-section-label">Key Connections</span>
+          <span class="sb-section-toggle">&#9660;</span>
+        </div>
+        <div class="sb-section-body" id="sb-l2-conns"></div>
+      </div>
+      <div class="sb-section" id="sb-l2-articles-section">
+        <div class="sb-section-header" onclick="toggleSection('sb-l2-articles-section')">
+          <span class="sb-section-label">Mentioned in Articles</span>
+          <span class="sb-section-toggle">&#9660;</span>
+        </div>
+        <div class="sb-section-body" id="sb-l2-articles"></div>
+      </div>
+      <div class="sb-section" id="sb-l2-centrality-section">
+        <div class="sb-section-header" onclick="toggleSection('sb-l2-centrality-section')">
+          <span class="sb-section-label">Centrality Metrics</span>
+          <span class="sb-section-toggle">&#9660;</span>
+        </div>
+        <div class="sb-section-body" id="sb-l2-centrality"></div>
+      </div>
+      <!-- Layer 3: Investigation Guides -->
+      <div class="sb-section" id="sb-l3-section">
+        <div class="sb-section-header" onclick="toggleSection('sb-l3-section')">
+          <span class="sb-section-label">Investigation Guides</span>
+          <span class="sb-section-toggle">&#9660;</span>
+        </div>
+        <div class="sb-section-body">
+          <div id="sb-inv-wrap"></div>
+          <div id="sb-fec-wrap"></div>
+          <div id="sb-link-wrap" style="margin-top:var(--s2)"></div>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="sb-toggle" onclick="toggleCollapse()" title="Collapse sidebar"><i data-lucide="chevrons-left" style="width:13px;height:13px"></i> Collapse</div>
 </nav>
@@ -922,81 +1064,94 @@ function rat(){
   ).join('');
 }
 
-// ========== DETAIL PANEL ==========
+// ========== SIDEBAR PANEL (progressive disclosure) ==========
+function toggleSection(id){
+  document.getElementById(id).classList.toggle('collapsed');
+}
+function sna(el){document.querySelectorAll('.sb-nav-item').forEach(i=>i.classList.remove('active'));el.classList.add('active');}
+
+function computeCentrality(id){
+  const n=DATA.nodes,e=DATA.edges,total=n.length;
+  // Degree centrality
+  const degree=e.filter(x=>x.source===id||x.target===id).length;
+  const degreeNorm=total>1?((degree/(total-1))*100).toFixed(1):0;
+  // 2-hop reach: unique nodes within 2 edges
+  const neighbors=new Set();
+  e.forEach(x=>{if(x.source===id) neighbors.add(x.target);if(x.target===id) neighbors.add(x.source);});
+  const hop2=new Set(neighbors);
+  neighbors.forEach(nid=>{e.forEach(x=>{if(x.source===nid&&x.target!==id) hop2.add(x.target);if(x.target===nid&&x.source!==id) hop2.add(x.source);});});
+  const reachPct=total>1?((hop2.size/(total-1))*100).toFixed(1):0;
+  // Cluster bridging: how many distinct clusters this node's neighbors belong to
+  const neighborClusters=new Set();
+  neighbors.forEach(nid=>{const nd=n.find(x=>x.id===nid);if(nd&&nd.cluster) neighborClusters.add(nd.cluster);});
+  return {degree,degreeNorm,hop2Reach:hop2.size,reachPct,clustersBridged:neighborClusters.size};
+}
+
 function on(id){
   const nd=DATA.nodes.find(n=>n.id===id);if(!nd) return;
-  // Update hash without triggering hashchange
   history.replaceState(null,null,'#node/'+id);
-  document.getElementById('dname').textContent=nd.name;
-  document.getElementById('dtype').textContent=nd.type.toUpperCase();
-  document.getElementById('dicon').innerHTML=`<i data-lucide="${TI[nd.type]||'circle-dot'}" style="width:16px;height:16px;"></i>`;
-  document.getElementById('ddesc').textContent=nd.desc||'No description available.';
-  const risks=nd.risk||{};
-  document.getElementById('dri').innerHTML=Object.entries(risks).map(([k,v])=>{
-    const l=v>=75?'h':v>=50?'m':'l',cls={'h':'rbh','m':'rbm','l':'rbl'}[l];
-    const lbl=k.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-    return `<div class="rr"><span class="rl">${lbl}</span><div class="rbw"><div class="rb ${cls}" style="width:${v}%"></div></div><span class="rs">${v}</span></div>`;
-  }).join('')||'<div style="color:var(--color-text-faint);font-size:var(--txt-sm)">No risk data.</div>';
+  // Switch sidebar from welcome to node detail
+  document.getElementById('sb-welcome').classList.add('hidden');
+  const detail=document.getElementById('sb-node-detail');
+  detail.classList.add('active');
+  // Layer 1: Basic Facts
+  document.getElementById('sb-node-name').textContent=nd.name;
+  document.getElementById('sb-node-type').textContent=nd.type.toUpperCase();
+  document.getElementById('sb-node-icon').innerHTML=`<i data-lucide="${TI[nd.type]||'circle-dot'}" style="width:16px;height:16px"></i>`;
+  document.getElementById('sb-node-desc').textContent=nd.desc||'No description available.';
+  const cluster=nd.cluster||(nd.tags&&nd.tags[0])||'unknown';
+  document.getElementById('sb-node-cluster').textContent=cluster;
   const conns=DATA.edges.filter(e=>e.source===id||e.target===id);
-  document.getElementById('dcc').textContent=conns.length;
-  document.getElementById('dcl').innerHTML=conns.map(e=>{
+  document.getElementById('sb-node-conns').textContent=conns.length+' connection'+(conns.length!==1?'s':'');
+  // Layer 2: Key Connections
+  document.getElementById('sb-l2-conns').innerHTML=conns.map(e=>{
     const oId=e.source===id?e.target:e.source;
     const o=DATA.nodes.find(n=>n.id===oId);if(!o) return '';
-    // Build edge metadata chips
-    let meta='';
-    if(e.source_url||e.amount||e.date){
-      meta='<div class="emeta">';
-      if(e.source_url) meta+=`<a class="emeta-chip emeta-src" href="${esc(e.source_url)}" target="_blank" rel="noopener noreferrer"><i data-lucide="external-link" style="width:9px;height:9px"></i>source</a>`;
-      if(e.amount)     meta+=`<span class="emeta-chip emeta-amt"><i data-lucide="dollar-sign" style="width:9px;height:9px"></i>${esc(e.amount)}</span>`;
-      if(e.date)       meta+=`<span class="emeta-chip emeta-date">${esc(e.date)}</span>`;
-      meta+='</div>';
-    }
-    return `<div class="ci" onclick="on(${oId})">
-      <div class="nti" style="width:26px;height:26px"><i data-lucide="${TI[o.type]||'circle-dot'}" style="width:11px;height:11px"></i></div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:var(--txt-sm);font-weight:500;color:var(--color-text)">${esc(o.name)}</div>
-        <div class="crel">${esc(e.relation)}</div>
-        ${meta}
-      </div>
-      <i data-lucide="chevron-right" style="width:12px;height:12px;color:var(--color-text-faint);flex-shrink:0"></i>
+    return `<div class="sb-conn-row" onclick="on(${oId})">
+      <div class="sb-conn-icon"><i data-lucide="${TI[o.type]||'circle-dot'}"></i></div>
+      <span class="sb-conn-name">${esc(o.name)}</span>
+      <span class="sb-conn-rel">${esc(e.relation)}</span>
     </div>`;
-  }).join('')||'<div style="color:var(--color-text-faint);font-size:var(--txt-sm)">No connections yet.</div>';
+  }).join('')||'<div class="sb-empty">No connections yet.</div>';
+  // Layer 2: Mentioned in Articles
   const arts=DATA.articles.filter(a=>a.entities&&a.entities.includes(id));
-  document.getElementById('del').innerHTML=arts.map(a=>
-    `<div class="ei"><div class="et"><a href="${esc(a.url)}" target="_blank" rel="noopener noreferrer" style="color:inherit">${esc(a.title)}</a></div><div class="es">"${esc(a.snippet||'')}"</div><div class="ed">${esc(a.date)}</div></div>`
-  ).join('')||'<div style="color:var(--color-text-faint);font-size:var(--txt-sm)">No source articles indexed for this node.</div>';
-  const tags=(nd.tags||[]);
-  document.getElementById('dtags').innerHTML=tags.map(t=>`<span class="tag ${TC[t]||'tgr'}">${t}</span>`).join('')||'<span style="color:var(--color-text-faint);font-size:var(--txt-sm)">None</span>';
-  // Investigate Further — OpenSanctions + ICIJ
-  const invWrap=document.getElementById('dinv-wrap');
+  document.getElementById('sb-l2-articles').innerHTML=arts.map(a=>
+    `<div class="sb-article-item">
+      <div><a class="sb-article-link" href="${esc(a.url)}" target="_blank" rel="noopener noreferrer">${esc(a.title)}</a></div>
+      <div class="sb-article-date">${esc(a.date)}</div>
+    </div>`
+  ).join('')||'<div class="sb-empty">No source articles indexed.</div>';
+  // Layer 2: Centrality Metrics
+  const cm=computeCentrality(id);
+  document.getElementById('sb-l2-centrality').innerHTML=`
+    <div class="sb-metric-row"><span class="sb-metric-label">Degree (direct connections)</span><span class="sb-metric-value">${cm.degree}</span></div>
+    <div class="sb-metric-row"><span class="sb-metric-label">Degree centrality</span><span class="sb-metric-value">${cm.degreeNorm}%</span></div>
+    <div class="sb-metric-row"><span class="sb-metric-label">2-hop reach</span><span class="sb-metric-value">${cm.hop2Reach} nodes (${cm.reachPct}%)</span></div>
+    <div class="sb-metric-row"><span class="sb-metric-label">Clusters bridged</span><span class="sb-metric-value">${cm.clustersBridged} of 5</span></div>`;
+  // Layer 3: Investigation Guides
   const encName=encodeURIComponent(nd.name);
-  invWrap.innerHTML=`
-    <div class="dsh">Investigate Further</div>
-    <div class="inv-box">
-      <a class="inv-btn" href="https://www.opensanctions.org/search/?q=${encName}" target="_blank" rel="noopener noreferrer">
-        <div class="inv-icon inv-icon-os">OS</div>
-        <div><div class="inv-label">OpenSanctions</div><div class="inv-desc">OFAC, EU, UN &amp; UK sanctions lists · PEP registries</div></div>
-        <i data-lucide="external-link" style="width:12px;height:12px;color:var(--color-text-faint);margin-left:auto;flex-shrink:0"></i>
-      </a>
-      <a class="inv-btn" href="https://offshoreleaks.icij.org/search?q=${encName}" target="_blank" rel="noopener noreferrer">
-        <div class="inv-icon inv-icon-icij">ICIJ</div>
-        <div><div class="inv-label">ICIJ Offshore Leaks</div><div class="inv-desc">Panama Papers · Pandora Papers · FinCEN Files</div></div>
-        <i data-lucide="external-link" style="width:12px;height:12px;color:var(--color-text-faint);margin-left:auto;flex-shrink:0"></i>
-      </a>
-    </div>`;
-  // FEC political donation data
+  document.getElementById('sb-inv-wrap').innerHTML=`
+    <a class="sb-inv-btn" href="https://www.opensanctions.org/search/?q=${encName}" target="_blank" rel="noopener noreferrer">
+      <div class="sb-inv-icon sb-inv-icon-os">OS</div>
+      <div><div class="sb-inv-label">OpenSanctions</div><div class="sb-inv-desc">OFAC, EU, UN &amp; UK sanctions lists</div></div>
+    </a>
+    <a class="sb-inv-btn" href="https://offshoreleaks.icij.org/search?q=${encName}" target="_blank" rel="noopener noreferrer">
+      <div class="sb-inv-icon sb-inv-icon-icij">ICIJ</div>
+      <div><div class="sb-inv-label">ICIJ Offshore Leaks</div><div class="sb-inv-desc">Panama Papers, Pandora Papers, FinCEN Files</div></div>
+    </a>`;
+  // FEC
   loadFEC(nd.name, nd.type);
-  // Deep link button + Find on Map button
-  document.getElementById('dlink-wrap').innerHTML=`<div class="dlink" onclick="copyNodeLink(${id})"><i data-lucide="link" style="width:11px;height:11px"></i> Copy shareable link to this node</div><div class="find-map-btn" onclick="findOnMap(${id})"><i data-lucide="map-pin" style="width:11px;height:11px"></i> Find on network map</div>`;
-  // Analytics: track node view
+  // Deep link + Find on map
+  document.getElementById('sb-link-wrap').innerHTML=`
+    <div class="sb-link-row" onclick="copyNodeLink(${id})"><i data-lucide="link"></i> Copy shareable link</div>
+    <div class="sb-link-row" onclick="findOnMap(${id})"><i data-lucide="map-pin"></i> Find on network map</div>`;
   trackEvent('node_view', nd.name, nd.cluster);
-  document.getElementById('dob').classList.add('open');
-  document.getElementById('dp').classList.add('open');
+  // Scroll sidebar content to top
+  const sc=document.querySelector('.sb-content');if(sc) sc.scrollTop=0;
   lucide.createIcons();
 }
+
 // ========== FEC DONATION LOOKUP ==========
-// Uses the public FEC API (api.fec.gov). DEMO_KEY = 30 req/hr/IP.
-// For higher volume get a free key at https://api.data.gov/signup/
 const FEC_KEY = 'DEMO_KEY';
 
 function fmt$(n){
@@ -1006,7 +1161,6 @@ function fmt$(n){
   return '$'+Math.round(n).toLocaleString();
 }
 
-// Timeout-wrapped fetch compatible with all modern browsers
 function fetchWithTimeout(url, ms){
   const ctrl=new AbortController();
   const timer=setTimeout(()=>ctrl.abort(),ms);
@@ -1014,94 +1168,59 @@ function fetchWithTimeout(url, ms){
 }
 
 async function loadFEC(name, nodeType){
-  const wrap=document.getElementById('dfec-wrap');
+  const wrap=document.getElementById('sb-fec-wrap');
   if(!wrap) return;
   if(nodeType==='jurisdiction'||nodeType==='enforcement'){wrap.innerHTML='';return;}
-
-  // Strip suffixes that confuse FEC search ("/ CZ", "(Crypto Czar)" etc.)
   const searchName=name.replace(/\s*\/.*$/,'').replace(/\s*\(.*?\)/g,'').trim();
   const encN=encodeURIComponent(searchName);
   const fecSearchUrl=`https://www.fec.gov/data/receipts/?contributor_name=${encN}`;
-
-  wrap.innerHTML='<div class="dsh">FEC Political Donations</div><div class="fec-loading">Loading FEC data…</div>';
-
+  wrap.innerHTML='<div style="font-size:var(--txt-xs);color:#999;font-family:var(--font-mono);padding:var(--s2) 0;animation:pulse 1.4s ease-in-out infinite">Loading FEC data…</div>';
   try {
-    // Schedule A = contributions made BY this person/org to committees
-    const resp=await fetchWithTimeout(
-      `https://api.fec.gov/v1/schedules/schedule_a/?contributor_name=${encN}&sort=-contribution_receipt_amount&per_page=8&api_key=${FEC_KEY}`,
-      9000
-    );
+    const resp=await fetchWithTimeout(`https://api.fec.gov/v1/schedules/schedule_a/?contributor_name=${encN}&sort=-contribution_receipt_amount&per_page=8&api_key=${FEC_KEY}`,9000);
     if(!resp.ok) throw new Error('HTTP '+resp.status);
     const data=await resp.json();
     const rows=data.results||[];
     const total=(data.pagination&&data.pagination.count)||0;
-
     if(rows.length===0){
-      // Fall back: search as a registered committee (for PACs, orgs)
-      const resp2=await fetchWithTimeout(
-        `https://api.fec.gov/v1/committees/?q=${encN}&sort=-receipts&per_page=3&api_key=${FEC_KEY}`,
-        9000
-      );
+      const resp2=await fetchWithTimeout(`https://api.fec.gov/v1/committees/?q=${encN}&sort=-receipts&per_page=3&api_key=${FEC_KEY}`,9000);
       if(!resp2.ok) throw new Error('HTTP '+resp2.status);
       const d2=await resp2.json();
       const committees=d2.results||[];
-
       if(committees.length===0){
-        wrap.innerHTML=`<div class="dsh">FEC Political Donations</div><div class="fec-wrap"><div class="fec-none">No FEC records found. <a class="fec-more" href="${fecSearchUrl}" target="_blank" rel="noopener noreferrer">Search FEC directly →</a></div></div>`;
+        wrap.innerHTML=`<a class="sb-inv-btn" href="${fecSearchUrl}" target="_blank" rel="noopener noreferrer">
+          <div class="sb-inv-icon sb-inv-icon-fec">FEC</div>
+          <div><div class="sb-inv-label">FEC Records</div><div class="sb-inv-desc">No records found. Search FEC directly.</div></div></a>`;
         return;
       }
-      // Render as committee
-      let html='<div class="dsh">FEC Political Donations</div><div class="fec-wrap">';
-      html+='<div style="font-size:var(--txt-xs);color:var(--color-text-faint);margin-bottom:var(--s2)">Registered committee</div>';
-      html+='<div class="fec-summary">';
+      let html='';
       committees.forEach(function(c){
-        html+=`<div class="fec-stat"><div class="fec-stat-v">${fmt$(c.total_receipts||0)}</div><div class="fec-stat-l">Total raised</div></div>`;
-        html+=`<div class="fec-stat"><div class="fec-stat-v">${fmt$(c.total_disbursements||0)}</div><div class="fec-stat-l">Total spent</div></div>`;
+        html+=`<a class="sb-inv-btn" href="https://www.fec.gov/data/committees/?q=${encN}" target="_blank" rel="noopener noreferrer">
+          <div class="sb-inv-icon sb-inv-icon-fec">FEC</div>
+          <div><div class="sb-inv-label">${esc(c.name||'Committee')}</div><div class="sb-inv-desc">Raised ${fmt$(c.total_receipts||0)} · Spent ${fmt$(c.total_disbursements||0)}</div></div></a>`;
       });
-      html+='</div>';
-      committees.forEach(function(c){
-        html+=`<div style="font-size:var(--txt-xs);color:var(--color-text-muted);font-family:var(--font-mono);margin-bottom:var(--s1)">${esc(c.name||'')} · ${esc(c.committee_type_full||'')} · ${esc(c.state||'')}</div>`;
-      });
-      html+=`<a class="fec-more" href="https://www.fec.gov/data/committees/?q=${encN}" target="_blank" rel="noopener noreferrer">View full FEC committee record →</a></div>`;
       wrap.innerHTML=html;
       return;
     }
-
-    // Render individual contributions
     var totalAmt=0;
     for(var i=0;i<rows.length;i++) totalAmt+=(rows[i].contribution_receipt_amount||0);
-
-    var html='<div class="dsh">FEC Political Donations</div><div class="fec-wrap">';
-    html+=`<div class="fec-summary">
-      <div class="fec-stat"><div class="fec-stat-v">${fmt$(totalAmt)}</div><div class="fec-stat-l">Top ${rows.length} shown</div></div>
-      <div class="fec-stat"><div class="fec-stat-v">${total.toLocaleString()}</div><div class="fec-stat-l">Total FEC records</div></div>
-    </div>`;
-    var show=rows.slice(0,6);
-    for(var j=0;j<show.length;j++){
-      var row=show[j];
-      var recipient=row.committee_name||(row.committee&&row.committee.name)||'Unknown committee';
-      var amt=row.contribution_receipt_amount||0;
-      var date=(row.contribution_receipt_date||'').slice(0,7);
-      html+=`<div class="fec-row">
-        <span class="fec-recipient" title="${esc(recipient)}">${esc(recipient)}</span>
-        <span class="fec-amount">${fmt$(amt)}</span>
-        <span class="fec-date">${esc(date)}</span>
-      </div>`;
-    }
-    if(total>6) html+=`<a class="fec-more" href="${fecSearchUrl}" target="_blank" rel="noopener noreferrer">View all ${total.toLocaleString()} FEC records →</a>`;
-    html+='</div>';
+    var html=`<a class="sb-inv-btn" href="${fecSearchUrl}" target="_blank" rel="noopener noreferrer">
+      <div class="sb-inv-icon sb-inv-icon-fec">FEC</div>
+      <div><div class="sb-inv-label">FEC Political Donations</div><div class="sb-inv-desc">${total.toLocaleString()} records · Top ${rows.length} total ${fmt$(totalAmt)}</div></div></a>`;
     wrap.innerHTML=html;
-
   } catch(err){
-    // Abort = timeout, TypeError = network blocked, others = API error
-    var msg=err.name==='AbortError'?'Request timed out.':'Could not load FEC data.';
-    wrap.innerHTML=`<div class="dsh">FEC Political Donations</div><div class="fec-wrap"><div class="fec-error">${msg} <a class="fec-more" href="${fecSearchUrl}" target="_blank" rel="noopener noreferrer">Search FEC directly →</a></div></div>`;
+    var msg=err.name==='AbortError'?'Timed out':'Unavailable';
+    wrap.innerHTML=`<a class="sb-inv-btn" href="${fecSearchUrl}" target="_blank" rel="noopener noreferrer">
+      <div class="sb-inv-icon sb-inv-icon-fec">FEC</div>
+      <div><div class="sb-inv-label">FEC Political Donations</div><div class="sb-inv-desc">${msg}. Search FEC directly.</div></div></a>`;
   }
 }
 
 function cd(){
-  document.getElementById('dob').classList.remove('open');
-  document.getElementById('dp').classList.remove('open');
+  document.getElementById('sb-welcome').classList.remove('hidden');
+  document.getElementById('sb-node-detail').classList.remove('active');
+  // Also close old detail panel if it was open
+  const dob=document.getElementById('dob');if(dob) dob.classList.remove('open');
+  const dp=document.getElementById('dp');if(dp) dp.classList.remove('open');
   if(location.hash.startsWith('#node/')) history.replaceState(null,null,location.pathname+location.search);
 }
 
@@ -1292,7 +1411,7 @@ function sv(n){
   if(sb&&sb.classList.contains('open')) toggleSidebar();
   trackEvent('view_change', n);
 }
-function sa(el){document.querySelectorAll('.si').forEach(i=>i.classList.remove('active'));el.classList.add('active');}
+function sa(el){/* legacy - sidebar nav items now use sna() */}
 function fc(c){ccf=c;rng();}
 function fn(v){cns=v.toLowerCase();rng();}
 function tf(t,btn){ctf=t;document.querySelectorAll('#tfb .fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');rng();}
