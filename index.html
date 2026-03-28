@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
 <!-- Cloudflare Web Analytics (free, no cookies, GDPR-compliant) -->
 <!-- Replace YOUR_TOKEN_HERE with your Cloudflare beacon token -->
 <!-- Get yours at: https://dash.cloudflare.com → Analytics & Logs → Web Analytics → Add a site -->
@@ -415,6 +416,10 @@ a{color:inherit;text-decoration:none}
 #gcc{background:var(--color-surface);border:1px solid var(--color-divider);border-radius:var(--radius-xl);overflow:hidden;position:relative;flex:1;min-height:400px}
 #gc{width:100%;height:100%;cursor:grab;display:block}
 #gc:active{cursor:grabbing}
+.graph-edge{stroke-linecap:round}
+.graph-node{cursor:pointer}
+.graph-node circle{transition:r .15s ease}
+.graph-label{font-family:'IBM Plex Sans',sans-serif;pointer-events:none;text-anchor:middle;dominant-baseline:auto}
 .gleg{position:absolute;bottom:var(--s4);left:var(--s4);display:flex;flex-direction:column;gap:var(--s1);background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border:1px solid var(--color-divider);border-radius:var(--radius-lg);padding:var(--s3)}
 [data-theme="light"] .gleg{background:rgba(255,255,255,.8)}
 .gli{display:flex;align-items:center;gap:var(--s2);font-size:var(--txt-xs);color:var(--color-text-muted)}
@@ -937,7 +942,7 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
       <button class="fbtn" onclick="gf('influence',this)">Influence</button>
     </div>
     <div id="gcc">
-      <canvas id="gc"></canvas>
+      <svg id="gc"></svg>
       <div class="gctrl">
         <input type="text" id="graph-find" placeholder="Find node on map…" autocomplete="off" style="width:140px;height:28px;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:0 var(--s2);font-size:var(--txt-xs);color:var(--color-text);font-family:var(--font-mono)" oninput="graphFind(this.value)">
         <button class="gcb" onclick="zg(1.2)" title="Zoom in">+</button>
@@ -2069,350 +2074,232 @@ function nodeRadius(connCount){
 }
 
 function ig(){
-  const canvas=document.getElementById('gc'),cont=document.getElementById('gcc');
-  if(!canvas||!cont||cont.clientWidth===0) return;
-  canvas.width=cont.clientWidth;canvas.height=cont.clientHeight;
-  console.log('[Graph] Cluster layout: canvas %d×%d',canvas.width,canvas.height);
-  if(canvas.height<200){
-    canvas.height=Math.max(400,window.innerHeight-64);
-  }
+  const svg=d3.select('#gc'),cont=document.getElementById('gcc');
+  if(!cont||cont.clientWidth===0) return;
+  const W=cont.clientWidth,H=cont.clientHeight;
+  svg.attr('width',W).attr('height',H);
+  console.log('[D3 Graph] SVG %d×%d',W,H);
+
   const vn=gaf==='all'?DATA.nodes:DATA.nodes.filter(n=>n.tags&&n.tags.includes(gaf));
   const vi=new Set(vn.map(n=>n.id));
   esim=DATA.edges.filter(e=>vi.has(e.source)&&vi.has(e.target));
-  // Precompute connection counts and cross-cluster flag
   const connMap={};
   esim.forEach(e=>{connMap[e.source]=(connMap[e.source]||0)+1;connMap[e.target]=(connMap[e.target]||0)+1;});
-  const nodeMap={};
-  vn.forEach(n=>nodeMap[n.id]=n);
-  const W=canvas.width,H=canvas.height;
-  const pad=50; // edge padding
 
-  // ── Cluster region centers ──
-  // Distribute 5 clusters: 4 quadrants + center
-  const regionCenters={
-    sanctions:  {x:W*0.22, y:H*0.25},
-    crypto:     {x:W*0.78, y:H*0.25},
-    energy:     {x:W*0.22, y:H*0.75},
-    princelings:{x:W*0.78, y:H*0.75},
-    influence:  {x:W*0.50, y:H*0.50}
-  };
-  // Region radii (how far nodes can spread from center)
-  const regionR=Math.min(W,H)*0.2;
-
-  // ── Classify each node: bridge or cluster-only ──
-  function getNeighborClusters(nid){
-    const cls=new Set();
-    esim.forEach(e=>{
-      if(e.source===nid){const t=nodeMap[e.target];if(t) cls.add(t.cluster);}
-      if(e.target===nid){const s=nodeMap[e.source];if(s) cls.add(s.cluster);}
-    });
-    return cls;
-  }
-
-  const clusterBuckets={sanctions:[],crypto:[],energy:[],princelings:[],influence:[],_bridge:[]};
-  const bridgePositions={};
-
-  vn.forEach(n=>{
-    const cc=connMap[n.id]||0;
-    const neighborClusters=getNeighborClusters(n.id);
-    neighborClusters.delete(n.cluster); // remove own cluster
-    const isBridge=neighborClusters.size>=2||
-      (neighborClusters.size===1&&cc>=3); // connects to another cluster with 3+ edges total
-    if(isBridge&&neighborClusters.size>0){
-      // Position bridge nodes between their cluster and the clusters they connect to
-      const ownCenter=regionCenters[n.cluster]||regionCenters.influence;
-      let avgX=ownCenter.x,avgY=ownCenter.y,count=1;
-      neighborClusters.forEach(c=>{
-        const rc=regionCenters[c];
-        if(rc){avgX+=rc.x;avgY+=rc.y;count++;}
-      });
-      bridgePositions[n.id]={x:avgX/count,y:avgY/count};
-      clusterBuckets._bridge.push(n);
-    } else {
-      const bucket=clusterBuckets[n.cluster];
-      if(bucket) bucket.push(n);
-      else (clusterBuckets.influence).push(n); // fallback
-    }
-  });
-
-  // ── Position nodes within each cluster using spiral layout ──
-  function spiralLayout(nodes,cx,cy,maxR){
-    // Sort by connection count descending (most connected near center)
-    const sorted=nodes.slice().sort((a,b)=>(connMap[b.id]||0)-(connMap[a.id]||0));
-    const positions={};
-    sorted.forEach((n,i)=>{
-      if(i===0){
-        positions[n.id]={x:cx,y:cy};
-        return;
-      }
-      // Archimedean spiral: r = a + b*theta
-      const theta=i*0.8;
-      const r=Math.min(maxR,18+i*12);
-      positions[n.id]={
-        x:cx+r*Math.cos(theta),
-        y:cy+r*Math.sin(theta)
-      };
-    });
-    return positions;
-  }
-
-  const allPositions={};
-
-  // Layout each cluster
-  ['sanctions','crypto','energy','princelings','influence'].forEach(cluster=>{
-    const nodes=clusterBuckets[cluster];
-    if(!nodes.length) return;
-    const center=regionCenters[cluster];
-    const positions=spiralLayout(nodes,center.x,center.y,regionR);
-    Object.assign(allPositions,positions);
-  });
-
-  // Place bridge nodes at their computed positions
-  clusterBuckets._bridge.forEach(n=>{
-    const bp=bridgePositions[n.id];
-    allPositions[n.id]={x:bp.x,y:bp.y};
-  });
-
-  // ── Overlap resolution (simple iterative push, 30 passes) ──
-  const posArr=vn.map(n=>({id:n.id,x:allPositions[n.id]?allPositions[n.id].x:W/2,y:allPositions[n.id]?allPositions[n.id].y:H/2,r:nodeRadius(connMap[n.id]||0)}));
-  for(let pass=0;pass<30;pass++){
-    let moved=false;
-    for(let i=0;i<posArr.length;i++){
-      for(let j=i+1;j<posArr.length;j++){
-        const a=posArr[i],b=posArr[j];
-        const minD=a.r+b.r+20;
-        const dx=b.x-a.x,dy=b.y-a.y;
-        const d=Math.sqrt(dx*dx+dy*dy)||0.1;
-        if(d<minD){
-          const push=(minD-d)*0.3;
-          const px=push*(dx/d),py=push*(dy/d);
-          a.x-=px;a.y-=py;b.x+=px;b.y+=py;
-          moved=true;
-        }
-      }
-    }
-    // Clamp to canvas
-    posArr.forEach(p=>{
-      p.x=Math.max(pad,Math.min(W-pad,p.x));
-      p.y=Math.max(pad,Math.min(H-pad,p.y));
-    });
-    if(!moved) break;
-  }
-  // Write final positions back
-  posArr.forEach(p=>{allPositions[p.id]={x:p.x,y:p.y};});
-
-  // ── Build nsim array ──
+  // Build nsim with radius and connection count
   nsim=vn.map(n=>{
-    const pos=allPositions[n.id]||{x:W/2,y:H/2};
     const cc=connMap[n.id]||0;
-    return{...n,x:pos.x,y:pos.y,vx:0,vy:0,_cc:cc,_r:nodeRadius(cc)};
+    return{...n,_cc:cc,_r:nodeRadius(cc)};
   });
 
-  // Cancel any lingering animation frame from previous runs
-  if(raf) cancelAnimationFrame(raf);
-  raf=null;
+  // ── D3 force simulation (pre-tick to stabilize) ──
+  const simNodes=nsim.map(n=>({id:n.id,x:W/2+(Math.random()-.5)*W*.4,y:H/2+(Math.random()-.5)*H*.4,_r:n._r}));
+  const simLinks=esim.map(e=>({source:e.source,target:e.target}));
 
-  // Single render (deterministic, no animation)
+  const simulation=d3.forceSimulation(simNodes)
+    .force('link',d3.forceLink(simLinks).id(d=>d.id).distance(100).strength(0.3))
+    .force('charge',d3.forceManyBody().strength(-400))
+    .force('center',d3.forceCenter(W/2,H/2).strength(0.1))
+    .force('collide',d3.forceCollide().radius(d=>(d._r||10)+15).strength(0.8))
+    .force('boundary',function(){
+      const pad=50;
+      return function(){
+        simNodes.forEach(n=>{
+          if(n.x<pad) n.vx+=(pad-n.x)*0.1;
+          if(n.x>W-pad) n.vx-=(n.x-(W-pad))*0.1;
+          if(n.y<pad) n.vy+=(pad-n.y)*0.1;
+          if(n.y>H-pad) n.vy-=(n.y-(H-pad))*0.1;
+        });
+      };
+    }())
+    .stop();
+
+  // Pre-tick 300 iterations to stabilize
+  for(let i=0;i<300;i++) simulation.tick();
+
+  // Copy positions back to nsim
+  const posMap={};
+  simNodes.forEach(sn=>{posMap[sn.id]={x:sn.x,y:sn.y};});
+  nsim.forEach(n=>{
+    const p=posMap[n.id];
+    if(p){n.x=p.x;n.y=p.y;}else{n.x=W/2;n.y=H/2;}
+  });
+
+  // ── Build SVG structure ──
+  svg.selectAll('*').remove();
+  // Zoom group
+  const g=svg.append('g').attr('class','graph-root');
+
+  // Cluster backgrounds
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  const clGroups={};
+  nsim.forEach(n=>{const c=n.cluster||'default';if(!clGroups[c])clGroups[c]=[];clGroups[c].push(n);});
+  Object.entries(clGroups).forEach(([cluster,nodes])=>{
+    if(nodes.length<2) return;
+    const bgBase=CLUSTER_BG[cluster];if(!bgBase) return;
+    let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+    nodes.forEach(n=>{const r=n._r||10;minX=Math.min(minX,n.x-r);minY=Math.min(minY,n.y-r);maxX=Math.max(maxX,n.x+r);maxY=Math.max(maxY,n.y+r);});
+    const p=35;
+    g.append('rect').attr('x',minX-p).attr('y',minY-p).attr('width',maxX-minX+p*2).attr('height',maxY-minY+p*2)
+      .attr('rx',12).attr('fill',bgBase+(dark?'0.08)':'0.05)')).attr('stroke',bgBase+(dark?'0.12)':'0.08)'))
+      .attr('stroke-width',1);
+  });
+
+  // Edges
+  const nodeById={};nsim.forEach(n=>nodeById[n.id]=n);
+  svgEdges=g.selectAll('.graph-edge').data(esim).join('line')
+    .attr('class','graph-edge')
+    .attr('x1',d=>(nodeById[d.source]||{}).x||0).attr('y1',d=>(nodeById[d.source]||{}).y||0)
+    .attr('x2',d=>(nodeById[d.target]||{}).x||0).attr('y2',d=>(nodeById[d.target]||{}).y||0);
+
+  // Node groups
+  svgNodes=g.selectAll('.graph-node').data(nsim,d=>d.id).join('g')
+    .attr('class','graph-node')
+    .attr('transform',d=>`translate(${d.x},${d.y})`);
+
+  // Outer glow
+  svgNodes.append('circle').attr('class','node-glow').attr('r',d=>d._r+3);
+  // Main circle
+  svgNodes.append('circle').attr('class','node-main').attr('r',d=>d._r);
+  // Selection ring
+  svgNodes.append('circle').attr('class','node-ring').attr('r',d=>d._r+4).attr('fill','none').attr('stroke-width',3);
+  // Found glow
+  svgNodes.append('circle').attr('class','node-found').attr('r',d=>d._r+8).attr('fill','none').attr('stroke-width',2.5);
+  // Connection badge
+  svgNodes.filter(d=>d._cc>=4).append('g').attr('class','node-badge')
+    .attr('transform',d=>`translate(${d._r*0.65},${-d._r*0.65})`)
+    .each(function(d){
+      const bg=d3.select(this);
+      bg.append('circle').attr('r',7).attr('stroke-width',1);
+      bg.append('text').text(d._cc).attr('text-anchor','middle').attr('dominant-baseline','central')
+        .attr('font-size','8px').attr('font-family','IBM Plex Mono,monospace').attr('font-weight','600');
+    });
+  // Label
+  svgNodes.append('text').attr('class','graph-label').attr('y',d=>d._r+13).attr('font-size','10.5px')
+    .text(d=>d.name.length>17?d.name.slice(0,16)+'\u2026':d.name);
+
+  // ── Interactions ──
+  // Hover
+  svgNodes.on('mouseenter',function(event,d){
+    gHoverNode=d.id;dg();
+    const tt=document.getElementById('gtt'),ttn=document.getElementById('ttn'),tty=document.getElementById('tty');
+    if(tt&&ttn&&tty){
+      const r=cont.getBoundingClientRect();
+      tt.style.left=(event.clientX-r.left+16)+'px';
+      tt.style.top=(event.clientY-r.top-34)+'px';
+      ttn.textContent=d.name;tty.textContent=d.type.toUpperCase()+' \u00b7 '+d._cc+' connection'+(d._cc!==1?'s':'');
+      tt.classList.add('vis');
+    }
+  }).on('mouseleave',function(){
+    gHoverNode=null;dg();
+    document.getElementById('gtt').classList.remove('vis');
+  }).on('click',function(event,d){
+    event.stopPropagation();
+    gHighlight=gHighlight===d.id?null:d.id;gFoundNode=null;dg();on(d.id);
+  });
+
+  // Click background to deselect
+  svg.on('click',function(){gHighlight=null;gFoundNode=null;dg();});
+
+  // D3 zoom
+  d3Zoom=d3.zoom().scaleExtent([0.3,3]).on('zoom',function(event){
+    g.attr('transform',event.transform);
+    gz=event.transform.k;
+    go={x:event.transform.x,y:event.transform.y};
+    const zl=document.getElementById('zoom-level');
+    if(zl) zl.textContent=Math.round(gz*100)+'%';
+  });
+  svg.call(d3Zoom);
+
+  // Cancel any old raf
+  if(raf) cancelAnimationFrame(raf);raf=null;
+
+  // Apply visual state
   dg();
 
-  // Log layout stats
-  const xs=nsim.map(n=>n.x),ys=nsim.map(n=>n.y);
-  console.log('[Graph] Cluster layout complete. %d nodes, %d bridges. X: %d–%d of %d. Y: %d–%d of %d.',
-    nsim.length, clusterBuckets._bridge.length,
-    Math.round(Math.min(...xs)),Math.round(Math.max(...xs)),W,
-    Math.round(Math.min(...ys)),Math.round(Math.max(...ys)),H);
+  console.log('[D3 Graph] Rendered %d nodes, %d edges',nsim.length,esim.length);
 }
 
 function dg(){
-  const canvas=document.getElementById('gc');if(!canvas) return;
-  const ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height;
-  ctx.clearRect(0,0,W,H);ctx.save();
-  ctx.translate(go.x,go.y);ctx.scale(gz,gz);
-  const m={};nsim.forEach(n=>m[n.id]=n);
+  if(!svgEdges||!svgNodes) return;
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
 
-  // ── Cluster backgrounds (very light tinted regions) ──
-  const clusterGroups={};
-  nsim.forEach(n=>{
-    const c=n.cluster||'default';
-    if(!clusterGroups[c]) clusterGroups[c]=[];
-    clusterGroups[c].push(n);
-  });
-  Object.entries(clusterGroups).forEach(([cluster,nodes])=>{
-    if(nodes.length<2) return;
-    const bgBase=CLUSTER_BG[cluster];
-    if(!bgBase) return;
-    let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
-    nodes.forEach(n=>{
-      const r=n._r||10;
-      if(n.x-r<minX) minX=n.x-r;
-      if(n.y-r<minY) minY=n.y-r;
-      if(n.x+r>maxX) maxX=n.x+r;
-      if(n.y+r>maxY) maxY=n.y+r;
-    });
-    const pad=35/gz;
-    minX-=pad;minY-=pad;maxX+=pad;maxY+=pad;
-    const rr=12/gz;
-    ctx.beginPath();
-    ctx.moveTo(minX+rr,minY);ctx.lineTo(maxX-rr,minY);ctx.quadraticCurveTo(maxX,minY,maxX,minY+rr);
-    ctx.lineTo(maxX,maxY-rr);ctx.quadraticCurveTo(maxX,maxY,maxX-rr,maxY);
-    ctx.lineTo(minX+rr,maxY);ctx.quadraticCurveTo(minX,maxY,minX,maxY-rr);
-    ctx.lineTo(minX,minY+rr);ctx.quadraticCurveTo(minX,minY,minX+rr,minY);
-    ctx.closePath();
-    ctx.fillStyle=bgBase+(dark?'0.08)':'0.05)');
-    ctx.fill();
-    ctx.strokeStyle=bgBase+(dark?'0.12)':'0.08)');
-    ctx.lineWidth=1/gz;
-    ctx.stroke();
-  });
-
-  // ── Highlight set (node selection OR pathway) ──
-  let hlSet=null;
+  // Determine active highlight mode
   let pathMode=gPathNodes&&gPathNodes.size>0;
-  if(pathMode){
-    hlSet=gPathNodes;
-  } else if(gHighlight){
+  let hlSet=null;
+  if(pathMode){hlSet=gPathNodes;}
+  else if(gHighlight){
     hlSet=new Set([gHighlight]);
     esim.forEach(e=>{if(e.source===gHighlight) hlSet.add(e.target);if(e.target===gHighlight) hlSet.add(e.source);});
   }
 
-  // ── Edges ──
-  esim.forEach(e=>{
-    const a=m[e.source],b=m[e.target];if(!a||!b) return;
+  // ── Update edges ──
+  svgEdges.each(function(e){
+    const line=d3.select(this);
     const isPathEdge=pathMode&&gPathEdges&&(gPathEdges.has(e.source+'-'+e.target)||gPathEdges.has(e.target+'-'+e.source));
     const isHl=!pathMode&&hlSet&&(hlSet.has(e.source)&&hlSet.has(e.target));
     const dim=hlSet&&!isHl&&!isPathEdge;
-    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
-    // Edge thickness: default 1px, weighted edges up to 3px
-    let baseWidth=1;
-    if(e.amount){
-      const numStr=(e.amount+'').replace(/[^0-9.]/g,'');
-      const val=parseFloat(numStr)||0;
-      if(val>=1e9) baseWidth=3;
-      else if(val>=1e6) baseWidth=2.5;
-      else if(val>=1e3) baseWidth=1.8;
-      else if(val>0) baseWidth=1.3;
-    }
-    if(e.weight) baseWidth=Math.min(3,Math.max(1,e.weight));
-    if(isPathEdge){ctx.strokeStyle='#FF6B52';ctx.lineWidth=3/gz;}
-    else if(isHl){ctx.strokeStyle=dark?'rgba(255,255,255,.4)':'rgba(0,0,0,.35)';ctx.lineWidth=Math.max(baseWidth+1,2.5)/gz;}
-    else if(dim){ctx.strokeStyle=dark?'rgba(255,255,255,.025)':'rgba(0,0,0,.025)';ctx.lineWidth=baseWidth/gz;}
-    else{ctx.strokeStyle=dark?'rgba(255,255,255,.09)':'rgba(0,0,0,.09)';ctx.lineWidth=baseWidth/gz;}
-    ctx.stroke();
+    // Width
+    let w=1;
+    if(e.amount){const v=parseFloat((e.amount+'').replace(/[^0-9.]/g,''))||0;if(v>=1e9)w=3;else if(v>=1e6)w=2.5;else if(v>=1e3)w=1.8;else if(v>0)w=1.3;}
+    if(e.weight) w=Math.min(3,Math.max(1,e.weight));
+    if(isPathEdge){line.attr('stroke','#FF6B52').attr('stroke-width',3).attr('opacity',1);}
+    else if(isHl){line.attr('stroke',dark?'rgba(255,255,255,.4)':'rgba(0,0,0,.35)').attr('stroke-width',Math.max(w+1,2.5)).attr('opacity',1);}
+    else if(dim){line.attr('stroke',dark?'rgba(255,255,255,.04)':'rgba(0,0,0,.04)').attr('stroke-width',w).attr('opacity',1);}
+    else{line.attr('stroke',dark?'rgba(255,255,255,.1)':'rgba(0,0,0,.1)').attr('stroke-width',w).attr('opacity',1);}
   });
 
-  // ── Nodes ──
-  nsim.forEach(n=>{
-    let r=n._r||10;
+  // ── Update nodes ──
+  svgNodes.each(function(n){
+    const g=d3.select(this);
+    const color=nc(n);
     const isHover=gHoverNode===n.id;
     const isSelected=gHighlight===n.id;
     const isFound=gFoundNode===n.id;
     const isInPath=pathMode&&gPathNodes.has(n.id);
-    const color=nc(n);
     const dim=pathMode?!isInPath:(hlSet&&!hlSet.has(n.id));
-    ctx.globalAlpha=dim?0.2:1;
+    const r=isHover&&!dim?n._r*1.2:n._r;
 
-    // Hover grow effect
-    if(isHover&&!dim) r=r*1.2;
-
-    // Glow for found node (from graph-find search)
-    if(isFound){
-      ctx.beginPath();ctx.arc(n.x,n.y,r+12,0,Math.PI*2);ctx.fillStyle=color+'44';ctx.fill();
-      ctx.beginPath();ctx.arc(n.x,n.y,r+8,0,Math.PI*2);ctx.strokeStyle=color;ctx.lineWidth=2.5/gz;ctx.setLineDash([4/gz,3/gz]);ctx.stroke();ctx.setLineDash([]);
+    g.attr('opacity',dim?0.2:1);
+    // Glow
+    g.select('.node-glow').attr('r',r+3).attr('fill',color+(dim?'10':'1A'));
+    // Main
+    g.select('.node-main').attr('r',r).attr('fill',color).attr('stroke',dark?'rgba(255,255,255,.15)':'rgba(255,255,255,.5)').attr('stroke-width',1);
+    // Selection/path ring
+    const showRing=(isSelected&&!pathMode)||isInPath;
+    g.select('.node-ring').attr('r',r+4).attr('stroke',showRing?'#FF6B52':'none');
+    // Found glow
+    g.select('.node-found').attr('r',r+8).attr('stroke',isFound?color:'none').attr('stroke-dasharray',isFound?'4 3':'none');
+    // Badge
+    const badge=g.select('.node-badge');
+    if(!badge.empty()){
+      badge.select('circle').attr('fill',dark?'rgba(0,0,0,.75)':'rgba(255,255,255,.92)').attr('stroke',color);
+      badge.select('text').attr('fill',color);
     }
-
-    // Outer glow
-    ctx.beginPath();ctx.arc(n.x,n.y,r+3,0,Math.PI*2);ctx.fillStyle=color+(dim?'10':'1A');ctx.fill();
-
-    // Main circle
-    ctx.beginPath();ctx.arc(n.x,n.y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
-    // Subtle inner border
-    ctx.strokeStyle=dark?'rgba(255,255,255,.15)':'rgba(255,255,255,.5)';ctx.lineWidth=1/gz;ctx.stroke();
-
-    // Selected node: 3px coral red outline
-    if(isSelected&&!pathMode){
-      ctx.beginPath();ctx.arc(n.x,n.y,r+4,0,Math.PI*2);
-      ctx.strokeStyle='#FF6B52';ctx.lineWidth=3/gz;ctx.stroke();
-    }
-    // Path node: coral red outline
-    if(isInPath){
-      ctx.beginPath();ctx.arc(n.x,n.y,r+4,0,Math.PI*2);
-      ctx.strokeStyle='#FF6B52';ctx.lineWidth=3/gz;ctx.stroke();
-    }
-
-    // Connection count badge for 4+ connections
-    if(n._cc>=4 && !dim){
-      const bx=n.x+r*0.65,by=n.y-r*0.65;
-      ctx.beginPath();ctx.arc(bx,by,7/gz,0,Math.PI*2);ctx.fillStyle=dark?'rgba(0,0,0,.75)':'rgba(255,255,255,.92)';ctx.fill();
-      ctx.strokeStyle=color;ctx.lineWidth=1/gz;ctx.stroke();
-      ctx.font=`${Math.max(7,8/gz)}px 'IBM Plex Mono',monospace`;ctx.fillStyle=color;ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.fillText(n._cc,bx,by);ctx.textBaseline='alphabetic';
-    }
-
     // Label
-    ctx.font=`${Math.max(9.5,10.5/gz)}px 'IBM Plex Sans',sans-serif`;
-    ctx.fillStyle=dark?'rgba(220,220,218,.82)':'rgba(26,25,21,.82)';
-    ctx.textAlign='center';
-    const l=n.name.length>17?n.name.slice(0,16)+'\u2026':n.name;
-    ctx.fillText(l,n.x,n.y+r+13/gz);
-    ctx.globalAlpha=1;
+    g.select('.graph-label').attr('y',r+13).attr('fill',dark?'rgba(220,220,218,.82)':'rgba(26,25,21,.82)');
   });
-  ctx.restore();
+
   // Zoom indicator
   const zl=document.getElementById('zoom-level');
   if(zl) zl.textContent=Math.round(gz*100)+'%';
 }
 
-function zg(f){gz=Math.max(.3,Math.min(3,gz*f));dg();}
-function rg(){gz=1;go={x:0,y:0};gFoundNode=null;gHighlight=null;gHoverNode=null;gPathNodes=null;gPathEdges=null;const fi=document.getElementById('graph-find');if(fi)fi.value='';ig();}
+function zg(f){
+  const svg=d3.select('#gc');
+  if(!d3Zoom) return;
+  svg.transition().duration(200).call(d3Zoom.scaleBy,f);
+}
+function rg(){
+  gz=1;go={x:0,y:0};gFoundNode=null;gHighlight=null;gHoverNode=null;gPathNodes=null;gPathEdges=null;
+  const fi=document.getElementById('graph-find');if(fi) fi.value='';
+  const svg=d3.select('#gc');
+  if(d3Zoom) svg.call(d3Zoom.transform,d3.zoomIdentity);
+  ig();
+}
 
-// Canvas interaction
-window.addEventListener('load',()=>{
-  const cv=document.getElementById('gc'),tt=document.getElementById('gtt');
-  cv.addEventListener('mousedown',e=>{gd=true;gds={x:e.clientX-go.x,y:e.clientY-go.y};cv.style.cursor='grabbing';});
-  window.addEventListener('mouseup',()=>{gd=false;cv.style.cursor='grab';});
-  cv.addEventListener('mousemove',e=>{
-    if(gd){go.x=e.clientX-gds.x;go.y=e.clientY-gds.y;dg();return;}
-    const rect=cv.getBoundingClientRect();
-    const mx=(e.clientX-rect.left-go.x)/gz,my=(e.clientY-rect.top-go.y)/gz;
-    let hit=null;
-    nsim.forEach(n=>{const hr=n._r||10;if(Math.sqrt((n.x-mx)**2+(n.y-my)**2)<hr+6) hit=n;});
-    // Hover grow: track hovered node and redraw
-    const prevHover=gHoverNode;
-    gHoverNode=hit?hit.id:null;
-    if(gHoverNode!==prevHover) dg();
-    if(hit){
-      tt.style.left=(e.clientX-rect.left+16)+'px';tt.style.top=(e.clientY-rect.top-34)+'px';
-      document.getElementById('ttn').textContent=hit.name;
-      document.getElementById('tty').textContent=hit.type.toUpperCase()+' \u00b7 '+(hit._cc||0)+' connection'+((hit._cc||0)!==1?'s':'');
-      tt.classList.add('vis');cv.style.cursor='pointer';
-    } else{tt.classList.remove('vis');cv.style.cursor=gd?'grabbing':'grab';}
-  });
-  cv.addEventListener('click',e=>{
-    if(gd) return;
-    const rect=cv.getBoundingClientRect();
-    const mx=(e.clientX-rect.left-go.x)/gz,my=(e.clientY-rect.top-go.y)/gz;
-    let hit=null;
-    nsim.forEach(n=>{const hr=n._r||10;if(Math.sqrt((n.x-mx)**2+(n.y-my)**2)<hr+6) hit=n;});
-    if(hit){gHighlight=gHighlight===hit.id?null:hit.id;gFoundNode=null;dg();on(hit.id);}
-    else{gHighlight=null;gFoundNode=null;dg();}
-  });
-  cv.addEventListener('wheel',e=>{e.preventDefault();zg(e.deltaY<0?1.1:.9);},{passive:false});
-  // Touch support
-  let lastTouchDist=0;
-  cv.addEventListener('touchstart',e=>{
-    if(e.touches.length===1){gd=true;gds={x:e.touches[0].clientX-go.x,y:e.touches[0].clientY-go.y};}
-    if(e.touches.length===2){const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY;lastTouchDist=Math.sqrt(dx*dx+dy*dy);}
-  },{passive:true});
-  cv.addEventListener('touchmove',e=>{
-    e.preventDefault();
-    if(e.touches.length===1&&gd){go.x=e.touches[0].clientX-gds.x;go.y=e.touches[0].clientY-gds.y;dg();}
-    if(e.touches.length===2){const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY;const d=Math.sqrt(dx*dx+dy*dy);if(lastTouchDist){zg(d/lastTouchDist);}lastTouchDist=d;}
-  },{passive:false});
-  cv.addEventListener('touchend',()=>{gd=false;lastTouchDist=0;});
-  // Mouse leave clears hover
-  cv.addEventListener('mouseleave',()=>{if(gHoverNode){gHoverNode=null;dg();}document.getElementById('gtt').classList.remove('vis');});
-});
+// D3 selections stored globally for dg() access
+let svgEdges=null,svgNodes=null,d3Zoom=null;
 
 // ========== SEARCH ==========
 document.getElementById('gs').addEventListener('input',function(){
@@ -2470,14 +2357,7 @@ function toggleSidebar(){
 function toggleCollapse(){
   const app=document.getElementById('app');
   app.classList.toggle('sb-collapsed');
-  // Re-render graph after sidebar state changes
-  setTimeout(()=>{
-    const canvas=document.getElementById('gc'),cont=document.getElementById('gcc');
-    if(canvas&&cont&&cont.clientWidth>0&&cont.clientHeight>0){
-      canvas.width=cont.clientWidth;canvas.height=cont.clientHeight;
-      if(nsim.length){ig();}
-    }
-  },50);
+  setTimeout(()=>{if(nsim.length) ig();},50);
 }
 
 // ========== SIDEBAR DRAG RESIZE ==========
@@ -2506,14 +2386,8 @@ function toggleCollapse(){
     handle.classList.remove('active');
     document.body.style.cursor='';
     document.body.style.userSelect='';
-    // Re-render graph after resize
-    const canvas=document.getElementById('gc'),cont=document.getElementById('gcc');
-    if(canvas&&cont&&cont.clientWidth>0&&cont.clientHeight>0){
-      canvas.width=cont.clientWidth;canvas.height=cont.clientHeight;
-      if(nsim.length) dg();
-    }
+    if(nsim.length) ig();
   });
-  // Touch support for resize
   handle.addEventListener('touchstart',function(e){
     dragging=true;
     handle.classList.add('active');
@@ -2530,11 +2404,7 @@ function toggleCollapse(){
     if(!dragging) return;
     dragging=false;
     handle.classList.remove('active');
-    const canvas=document.getElementById('gc'),cont=document.getElementById('gcc');
-    if(canvas&&cont&&cont.clientWidth>0&&cont.clientHeight>0){
-      canvas.width=cont.clientWidth;canvas.height=cont.clientHeight;
-      if(nsim.length) dg();
-    }
+    if(nsim.length) ig();
   });
 })();
 
@@ -2591,10 +2461,8 @@ function updateSearchPlaceholder(){
 }
 window.addEventListener('resize',()=>{
   updateSearchPlaceholder();
-  const canvas=document.getElementById('gc'),cont=document.getElementById('gcc');
-  if(canvas&&cont&&cont.clientWidth>0){
-    canvas.width=cont.clientWidth;canvas.height=cont.clientHeight;
-    // Restart simulation so nodes redistribute to new dimensions
+  const cont=document.getElementById('gcc');
+  if(cont&&cont.clientWidth>0){
     if(nsim.length) ig();
   }
 });
@@ -2603,14 +2471,10 @@ updateSearchPlaceholder();
 if(typeof ResizeObserver!=='undefined'){
   let _resizeTimer=null;
   new ResizeObserver(()=>{
-    const canvas=document.getElementById('gc'),cont=document.getElementById('gcc');
-    if(canvas&&cont&&cont.clientWidth>0&&cont.clientHeight>0){
-      if(canvas.width!==cont.clientWidth||canvas.height!==cont.clientHeight){
-        canvas.width=cont.clientWidth;canvas.height=cont.clientHeight;
-        // Debounce simulation restart to avoid thrashing during drag-resize
-        clearTimeout(_resizeTimer);
-        _resizeTimer=setTimeout(()=>{if(nsim.length) ig();},150);
-      }
+    const cont=document.getElementById('gcc');
+    if(cont&&cont.clientWidth>0&&cont.clientHeight>0){
+      clearTimeout(_resizeTimer);
+      _resizeTimer=setTimeout(()=>{if(nsim.length) ig();},150);
     }
   }).observe(document.getElementById('gcc')||document.body);
 }
@@ -3003,11 +2867,11 @@ function graphFind(query){
   const match=nsim.find(n=>n.name.toLowerCase().includes(q));
   if(match){
     gFoundNode=match.id;
-    // Center the map on the found node
-    const canvas=document.getElementById('gc');
-    if(canvas){
-      go.x=canvas.width/2 - match.x*gz;
-      go.y=canvas.height/2 - match.y*gz;
+    const svg=document.getElementById('gc');
+    if(svg&&d3Zoom){
+      const W=+svg.getAttribute('width')||800,H=+svg.getAttribute('height')||600;
+      const t=d3.zoomIdentity.translate(W/2-match.x*gz,H/2-match.y*gz).scale(gz);
+      d3.select(svg).call(d3Zoom.transform,t);
     }
     dg();
   } else {
@@ -3025,14 +2889,14 @@ function findOnMap(id){
     if(node){
       gFoundNode=id;
       gHighlight=id;
-      const canvas=document.getElementById('gc');
-      if(canvas){
-        gz=1.5; // zoom in a bit
-        go.x=canvas.width/2 - node.x*gz;
-        go.y=canvas.height/2 - node.y*gz;
+      const svg=document.getElementById('gc');
+      if(svg&&d3Zoom){
+        gz=1.5;
+        const W=+svg.getAttribute('width')||800,H=+svg.getAttribute('height')||600;
+        const t=d3.zoomIdentity.translate(W/2-node.x*gz,H/2-node.y*gz).scale(gz);
+        d3.select(svg).transition().duration(400).call(d3Zoom.transform,t);
       }
       dg();
-      // Also populate the find input
       const findInput=document.getElementById('graph-find');
       if(findInput){
         const nd=DATA.nodes.find(n=>n.id===id);
