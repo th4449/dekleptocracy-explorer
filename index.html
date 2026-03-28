@@ -2093,7 +2093,7 @@ function ig(){
   });
 
   // ── D3 force simulation (pre-tick to stabilize) ──
-  const simNodes=nsim.map(n=>({id:n.id,x:W/2+(Math.random()-.5)*W*.4,y:H/2+(Math.random()-.5)*H*.4,_r:n._r}));
+  const simNodes=nsim.map(n=>({id:n.id,x:W/2+(Math.random()-.5)*W*.4,y:H/2+(Math.random()-.5)*H*.4,_r:n._r,_cc:n._cc}));
   const simLinks=esim.map(e=>({source:e.source,target:e.target}));
 
   const simulation=d3.forceSimulation(simNodes)
@@ -2101,6 +2101,21 @@ function ig(){
     .force('charge',d3.forceManyBody().strength(-400))
     .force('center',d3.forceCenter(W/2,H/2).strength(0.1))
     .force('collide',d3.forceCollide().radius(d=>(d._r||10)+15).strength(0.8))
+    .force('centrality',function(){
+      // Pull highly connected nodes toward center proportional to connection count
+      // 6+ connections: strong pull (0.06), 3-5: moderate (0.025), 1-2: none
+      return function(){
+        simNodes.forEach(n=>{
+          const cc=n._cc||0;
+          let strength=0;
+          if(cc>=6) strength=0.06;
+          else if(cc>=3) strength=0.025;
+          else return;
+          n.vx+=(W/2-n.x)*strength;
+          n.vy+=(H/2-n.y)*strength;
+        });
+      };
+    }())
     .force('boundary',function(){
       const pad=50;
       return function(){
@@ -2129,21 +2144,6 @@ function ig(){
   svg.selectAll('*').remove();
   // Zoom group
   const g=svg.append('g').attr('class','graph-root');
-
-  // Cluster backgrounds
-  const dark=document.documentElement.getAttribute('data-theme')==='dark';
-  const clGroups={};
-  nsim.forEach(n=>{const c=n.cluster||'default';if(!clGroups[c])clGroups[c]=[];clGroups[c].push(n);});
-  Object.entries(clGroups).forEach(([cluster,nodes])=>{
-    if(nodes.length<2) return;
-    const bgBase=CLUSTER_BG[cluster];if(!bgBase) return;
-    let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
-    nodes.forEach(n=>{const r=n._r||10;minX=Math.min(minX,n.x-r);minY=Math.min(minY,n.y-r);maxX=Math.max(maxX,n.x+r);maxY=Math.max(maxY,n.y+r);});
-    const p=35;
-    g.append('rect').attr('x',minX-p).attr('y',minY-p).attr('width',maxX-minX+p*2).attr('height',maxY-minY+p*2)
-      .attr('rx',12).attr('fill',bgBase+(dark?'0.08)':'0.05)')).attr('stroke',bgBase+(dark?'0.12)':'0.08)'))
-      .attr('stroke-width',1);
-  });
 
   // Edges
   const nodeById={};nsim.forEach(n=>nodeById[n.id]=n);
