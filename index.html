@@ -177,6 +177,13 @@ a{color:inherit;text-decoration:none}
 .sb-metric-row:last-child{border-bottom:none}
 .sb-metric-label{color:#333}
 .sb-metric-value{font-family:var(--font-mono);font-weight:600;color:#3D5C2F}
+.sb-breakdown-title{font-size:var(--txt-xs);font-weight:600;color:#3D5C2F;text-transform:uppercase;letter-spacing:.04em;margin-top:var(--s3);margin-bottom:var(--s2)}
+[data-theme="dark"] .sb-breakdown-title{color:#7ab368}
+.sb-breakdown-row{display:flex;align-items:center;gap:var(--s2);padding:4px 0;font-size:var(--txt-xs)}
+.sb-breakdown-label{flex:1;color:#333;text-transform:capitalize}
+[data-theme="dark"] .sb-breakdown-label{color:var(--color-text-muted)}
+.sb-breakdown-count{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:20px;padding:0 6px;border-radius:var(--radius-sm);color:#fff;font-family:var(--font-mono);font-weight:600;font-size:.65rem}
+.sb-breakdown-bar{flex:0 0 auto;height:6px;border-radius:3px;margin-right:var(--s2);transition:width .3s ease}
 .sb-inv-btn{display:flex;align-items:center;gap:var(--s2);padding:8px var(--s3);background:#fff;border:1px solid #e0e0e0;border-radius:var(--radius-md);text-decoration:none;transition:border-color var(--transition);margin-bottom:var(--s2);font-size:var(--txt-xs)}
 .sb-inv-btn:last-child{margin-bottom:0}
 .sb-inv-btn:hover{border-color:#3D5C2F}
@@ -971,6 +978,7 @@ function init(){
     if(el) el.textContent=n.filter(x=>x.tags&&x.tags.includes(c)).length;
   });
   rcc();rtt();rng();rat();ig();refreshEdgeSelectors();refreshUrlList();updateFilterCounts();
+  enrichNodes();
   // Graph view stats
   const gn=document.getElementById('gstat-n'),ge=document.getElementById('gstat-e'),ga=document.getElementById('gstat-a');
   if(gn) gn.textContent=n.length;
@@ -1070,20 +1078,71 @@ function toggleSection(id){
 }
 function sna(el){document.querySelectorAll('.sb-nav-item').forEach(i=>i.classList.remove('active'));el.classList.add('active');}
 
+// ========== DATA ENRICHMENT (runs once on load, caches on node objects) ==========
+function enrichNodes(){
+  const nodes=DATA.nodes, edges=DATA.edges;
+  const adj={};
+  edges.forEach(e=>{
+    if(!adj[e.source]) adj[e.source]=[];
+    if(!adj[e.target]) adj[e.target]=[];
+    adj[e.source].push(e.target);
+    adj[e.target].push(e.source);
+  });
+  nodes.forEach(nd=>{
+    const id=nd.id;
+    const neighborIds=adj[id]||[];
+    // uniqueClusters: count of distinct clusters among connected nodes
+    const clusterSet=new Set();
+    const breakdown={sanctions:0,crypto:0,energy:0,princelings:0,influence:0};
+    neighborIds.forEach(nid=>{
+      const neighbor=nodes.find(n=>n.id===nid);
+      if(neighbor&&neighbor.cluster){
+        clusterSet.add(neighbor.cluster);
+        if(breakdown.hasOwnProperty(neighbor.cluster)) breakdown[neighbor.cluster]++;
+      }
+    });
+    nd._uniqueClusters=clusterSet.size;
+    nd._clusterBreakdown=breakdown;
+    // Degree and 2-hop reach
+    const degree=neighborIds.length;
+    const hop2=new Set(neighborIds);
+    neighborIds.forEach(nid=>{
+      (adj[nid]||[]).forEach(n2=>{if(n2!==id) hop2.add(n2);});
+    });
+    nd._degree=degree;
+    nd._degreeNorm=nodes.length>1?((degree/(nodes.length-1))*100).toFixed(1):'0';
+    nd._hop2Reach=hop2.size;
+    nd._reachPct=nodes.length>1?((hop2.size/(nodes.length-1))*100).toFixed(1):'0';
+    nd._enriched=true;
+  });
+  console.group('%c Dekleptocracy Enrichment','color:#3D5C2F;font-weight:bold');
+  console.log('Enriched %d nodes from %d edges',nodes.length,edges.length);
+  nodes.forEach(nd=>{
+    console.log(
+      '%c'+nd.name+'%c  degree=%d  uniqueClusters=%d  breakdown=%o',
+      'font-weight:bold;color:#3D5C2F','font-weight:normal;color:inherit',
+      nd._degree, nd._uniqueClusters, nd._clusterBreakdown
+    );
+  });
+  console.groupEnd();
+}
+
 function computeCentrality(id){
+  const nd=DATA.nodes.find(n=>n.id===id);
+  if(nd&&nd._enriched){
+    return {degree:nd._degree,degreeNorm:nd._degreeNorm,hop2Reach:nd._hop2Reach,reachPct:nd._reachPct,clustersBridged:nd._uniqueClusters};
+  }
+  // Fallback: compute live if enrichment has not run
   const n=DATA.nodes,e=DATA.edges,total=n.length;
-  // Degree centrality
   const degree=e.filter(x=>x.source===id||x.target===id).length;
   const degreeNorm=total>1?((degree/(total-1))*100).toFixed(1):0;
-  // 2-hop reach: unique nodes within 2 edges
   const neighbors=new Set();
   e.forEach(x=>{if(x.source===id) neighbors.add(x.target);if(x.target===id) neighbors.add(x.source);});
   const hop2=new Set(neighbors);
   neighbors.forEach(nid=>{e.forEach(x=>{if(x.source===nid&&x.target!==id) hop2.add(x.target);if(x.target===nid&&x.source!==id) hop2.add(x.source);});});
   const reachPct=total>1?((hop2.size/(total-1))*100).toFixed(1):0;
-  // Cluster bridging: how many distinct clusters this node's neighbors belong to
   const neighborClusters=new Set();
-  neighbors.forEach(nid=>{const nd=n.find(x=>x.id===nid);if(nd&&nd.cluster) neighborClusters.add(nd.cluster);});
+  neighbors.forEach(nid=>{const nd2=n.find(x=>x.id===nid);if(nd2&&nd2.cluster) neighborClusters.add(nd2.cluster);});
   return {degree,degreeNorm,hop2Reach:hop2.size,reachPct,clustersBridged:neighborClusters.size};
 }
 
@@ -1121,13 +1180,27 @@ function on(id){
       <div class="sb-article-date">${esc(a.date)}</div>
     </div>`
   ).join('')||'<div class="sb-empty">No source articles indexed.</div>';
-  // Layer 2: Centrality Metrics
+  // Layer 2: Centrality Metrics + Cluster Breakdown
   const cm=computeCentrality(id);
+  const cb=nd._clusterBreakdown||{sanctions:0,crypto:0,energy:0,princelings:0,influence:0};
+  const maxConn=Math.max(1,...Object.values(cb));
+  const clusterLabels={sanctions:'Sanctions-Busting',crypto:'Crypto Rails',energy:'Energy Networks',princelings:'Princelings',influence:'Influence Ops'};
+  let breakdownHtml=Object.entries(cb).map(([cluster,count])=>{
+    const color=CLUSTER_COLORS[cluster]||'#888';
+    const barW=count>0?Math.max(12,Math.round((count/maxConn)*60)):0;
+    return `<div class="sb-breakdown-row">
+      <span class="sb-breakdown-label">${clusterLabels[cluster]||cluster}</span>
+      ${barW>0?`<div class="sb-breakdown-bar" style="width:${barW}px;background:${color}"></div>`:''}
+      <span class="sb-breakdown-count" style="background:${count>0?color:'#ccc'}">${count}</span>
+    </div>`;
+  }).join('');
   document.getElementById('sb-l2-centrality').innerHTML=`
     <div class="sb-metric-row"><span class="sb-metric-label">Degree (direct connections)</span><span class="sb-metric-value">${cm.degree}</span></div>
     <div class="sb-metric-row"><span class="sb-metric-label">Degree centrality</span><span class="sb-metric-value">${cm.degreeNorm}%</span></div>
     <div class="sb-metric-row"><span class="sb-metric-label">2-hop reach</span><span class="sb-metric-value">${cm.hop2Reach} nodes (${cm.reachPct}%)</span></div>
-    <div class="sb-metric-row"><span class="sb-metric-label">Clusters bridged</span><span class="sb-metric-value">${cm.clustersBridged} of 5</span></div>`;
+    <div class="sb-metric-row"><span class="sb-metric-label">Clusters bridged</span><span class="sb-metric-value">${cm.clustersBridged} of 5</span></div>
+    <div class="sb-breakdown-title">Cluster Breakdown</div>
+    ${breakdownHtml}`;
   // Layer 3: Investigation Guides
   const encName=encodeURIComponent(nd.name);
   document.getElementById('sb-inv-wrap').innerHTML=`
