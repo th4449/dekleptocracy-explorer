@@ -250,6 +250,36 @@ a{color:inherit;text-decoration:none}
 [data-theme="dark"] .sb-step-body{background:var(--color-surface-offset);border-color:var(--color-border)}
 [data-theme="dark"] .sb-step-desc{color:var(--color-text-muted)}
 [data-theme="dark"] .sb-step-example{color:var(--color-text-faint)}
+/* ── Flow tracing ── */
+.sb-flow-header{display:flex;align-items:center;gap:var(--s2);padding:10px var(--s3);background:#fff;border:1px solid #e0e0e0;border-radius:var(--radius-md);margin-bottom:var(--s3)}
+.sb-flow-node{flex:1;min-width:0;text-align:center}
+.sb-flow-name{font-size:var(--txt-xs);font-weight:600;color:#3D5C2F;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-flow-type{font-size:.6rem;color:#999;font-family:var(--font-mono);text-transform:uppercase}
+.sb-flow-arrow{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:2px;color:#FF6B52}
+.sb-flow-arrow-line{font-size:16px;font-weight:700;line-height:1}
+.sb-flow-arrow-label{font-size:.55rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.sb-flow-pick{display:flex;flex-direction:column;gap:var(--s2)}
+.sb-flow-pick-label{font-size:var(--txt-xs);font-weight:600;color:#3D5C2F;text-transform:uppercase;letter-spacing:.04em;margin-bottom:var(--s1)}
+.sb-flow-pick-row{display:flex;align-items:center;gap:var(--s2);padding:8px var(--s3);background:#fff;border:1px solid #e0e0e0;border-radius:var(--radius-md);cursor:pointer;transition:border-color var(--transition),background var(--transition)}
+.sb-flow-pick-row:hover{border-color:#FF6B52;background:rgba(255,107,82,.04)}
+.sb-flow-pick-name{font-size:var(--txt-xs);font-weight:500;color:#333;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-flow-pick-rel{font-size:.6rem;color:#999;font-family:var(--font-mono);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-flow-pick-strength{display:flex;gap:1px;flex-shrink:0}
+.sb-flow-pick-dot{width:6px;height:6px;border-radius:var(--radius-full);background:#ddd}
+.sb-flow-pick-dot.filled{background:#FF6B52}
+.sb-flow-tag{display:inline-block;padding:2px 8px;border-radius:var(--radius-full);font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.03em;margin-bottom:var(--s2)}
+.sb-flow-tag-financial{background:rgba(61,92,47,.1);color:#3D5C2F}
+.sb-flow-tag-influence{background:rgba(153,204,255,.25);color:#1a5a7a}
+.sb-flow-tag-sanctions{background:rgba(45,80,22,.1);color:#2D5016}
+.sb-flow-tag-general{background:#f0f0f0;color:#666}
+.sb-flow-back{display:inline-flex;align-items:center;gap:4px;font-size:var(--txt-xs);color:#3D5C2F;cursor:pointer;margin-bottom:var(--s3);font-weight:500}
+.sb-flow-back:hover{opacity:.7}
+[data-theme="dark"] .sb-flow-header{background:var(--color-surface);border-color:var(--color-border)}
+[data-theme="dark"] .sb-flow-name{color:#7ab368}
+[data-theme="dark"] .sb-flow-pick-row{background:var(--color-surface);border-color:var(--color-border)}
+[data-theme="dark"] .sb-flow-pick-row:hover{border-color:#FF6B52;background:rgba(255,107,82,.08)}
+[data-theme="dark"] .sb-flow-pick-name{color:var(--color-text)}
+[data-theme="dark"] .sb-flow-back{color:#7ab368}
 /* Dark mode overrides for sidebar panels */
 [data-theme="dark"] .sb-welcome-title{color:#7ab368}
 [data-theme="dark"] .sb-welcome-text{color:var(--color-text-muted)}
@@ -696,9 +726,10 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
         </div>
         <div class="sb-section-body">
           <div id="sb-l3-mode-toggle"></div>
-          <!-- Corruption Flow Tracing mode (quick links) -->
+          <!-- Corruption Flow Tracing mode -->
           <div id="sb-flow-wrap" class="sb-flow-wrap active">
-            <div id="sb-inv-wrap"></div>
+            <div id="sb-flow-content"></div>
+            <div id="sb-inv-wrap" style="margin-top:var(--s3)"></div>
             <div id="sb-fec-wrap"></div>
           </div>
           <!-- Node Tradecraft mode (methodology steps) -->
@@ -1421,6 +1452,174 @@ function renderMethodology(nd){
   lucide.createIcons();
 }
 
+// ========== CORRUPTION FLOW TRACING ==========
+let flowSourceId=null; // current node being investigated
+
+const flowTemplates={
+  financial:[
+    {title:'Identify the Money Source',
+     desc:'Determine where the funds originate. Trace through the source entity\u2019s accounts, disclosed assets, and known revenue streams. Look for sovereign wealth funds, state budgets, or corporate treasuries.',
+     tools:[{name:'OpenSanctions',url:'https://www.opensanctions.org/search/?q={source}'},{name:'SEC EDGAR',url:'https://efts.sec.gov/LATEST/search-index?q=%22{source}%22'}],
+     example:'Follow the money backward. Who funded the source entity?'},
+    {title:'Map Intermediaries',
+     desc:'Identify all entities between source and destination. Look for SPVs, correspondent banks, escrow agents, and nominee companies used to obscure the flow.',
+     tools:[{name:'ICIJ Offshore Leaks',url:'https://offshoreleaks.icij.org/search?q={source}'},{name:'OpenCorporates',url:'https://opencorporates.com/companies?q={target}'}],
+     example:'Shell companies often share registered agents or addresses. Check for co-located entities.'},
+    {title:'Trace the Destination',
+     desc:'Confirm where the funds end up. Check the target entity\u2019s financial disclosures, asset purchases, and investment patterns post-transaction.',
+     tools:[{name:'OpenSanctions',url:'https://www.opensanctions.org/search/?q={target}'},{name:'FEC',url:'https://www.fec.gov/data/receipts/?contributor_name={source}'}],
+     example:'Look for asset purchases, political donations, or reinvestment that coincide with the flow timing.'},
+    {title:'Verify Transaction Details',
+     desc:'Cross-reference the amount, date, and stated purpose against public records. Check for discrepancies between disclosed and actual transaction values.',
+     tools:[{name:'SEC EDGAR',url:'https://efts.sec.gov/LATEST/search-index?q=%22{target}%22'},{name:'Treasury OFAC',url:'https://sanctionssearch.ofac.treas.gov/'}],
+     example:'Compare stated transaction amounts with market valuations. Significant discrepancies suggest kickbacks or bribes.'},
+    {title:'Check Sanctions Exposure',
+     desc:'Verify whether any party in the flow chain is sanctioned, owned by a sanctioned entity, or operating in a comprehensively sanctioned jurisdiction.',
+     tools:[{name:'OFAC SDN Search',url:'https://sanctionssearch.ofac.treas.gov/'},{name:'UN Consolidated List',url:'https://www.un.org/securitycouncil/content/un-sc-consolidated-list'}],
+     example:'Check all parties including intermediaries. Sanctions apply to entities 50%+ owned by designated persons.'}
+  ],
+  influence:[
+    {title:'Identify the Influence Actor',
+     desc:'Determine who is exercising influence and what their motivations are. Check for foreign government connections, financial incentives, or ideological alignment.',
+     tools:[{name:'OpenSanctions',url:'https://www.opensanctions.org/search/?q={source}'},{name:'FARA Search',url:'https://efile.fara.gov/ords/fara/f?p=185:200:0::NO:RP,200:P200_REG_NUMBER,P200_DOC_TYPE,P200_COUNTRY:,,'}],
+     example:'Check FARA registrations. Unregistered foreign agents are a key corruption indicator.'},
+    {title:'Map the Influence Target',
+     desc:'Identify who is being influenced and what decisions or policies are affected. Look for voting patterns, policy changes, or regulatory decisions that align with the actor\u2019s interests.',
+     tools:[{name:'OpenSanctions',url:'https://www.opensanctions.org/search/?q={target}'},{name:'FEC',url:'https://www.fec.gov/data/receipts/?contributor_name={source}'}],
+     example:'Track policy positions before and after the relationship began. Look for unexplained reversals.'},
+    {title:'Trace the Influence Method',
+     desc:'Determine how influence is exercised. Common methods include campaign donations, lobbying, media placement, social media operations, and personal relationships.',
+     tools:[{name:'FEC',url:'https://www.fec.gov/data/disbursements/?recipient_name={target}'},{name:'ICIJ Offshore Leaks',url:'https://offshoreleaks.icij.org/search?q={source}'}],
+     example:'Follow dark money through 501(c)(4) organizations and PACs to identify the true source.'},
+    {title:'Assess Impact and Evidence',
+     desc:'Document the outcomes of the influence operation. Gather evidence linking the actor\u2019s actions to specific policy or decision changes.',
+     tools:[{name:'OpenSanctions',url:'https://www.opensanctions.org/search/?q={target}'},{name:'SEC EDGAR',url:'https://efts.sec.gov/LATEST/search-index?q=%22{target}%22'}],
+     example:'Build a timeline showing contact, action, and outcome. Contemporaneous evidence is strongest.'}
+  ],
+  sanctions:[
+    {title:'Identify the Front Entity',
+     desc:'Determine which entity serves as the sanctions-evasion front. Look for recently created companies, entities in free trade zones, or companies with opaque ownership in non-sanctioned jurisdictions.',
+     tools:[{name:'OpenSanctions',url:'https://www.opensanctions.org/search/?q={target}'},{name:'OpenCorporates',url:'https://opencorporates.com/companies?q={target}'}],
+     example:'Check incorporation dates. Entities created shortly after sanctions designations are suspicious.'},
+    {title:'Link to Sanctioned Party',
+     desc:'Establish the connection between the front entity and the sanctioned party. Check for shared directors, registered agents, addresses, or beneficial owners.',
+     tools:[{name:'OFAC SDN Search',url:'https://sanctionssearch.ofac.treas.gov/'},{name:'ICIJ Offshore Leaks',url:'https://offshoreleaks.icij.org/search?q={source}'}],
+     example:'The 50% rule means entities majority-owned by SDN-listed persons are themselves blocked.'},
+    {title:'Trace the Good or Service',
+     desc:'Identify what is being transacted. For energy, trace crude oil shipments and refining. For technology, trace export-controlled items. For finance, trace correspondent banking relationships.',
+     tools:[{name:'BIS Entity List',url:'https://www.bis.doc.gov/index.php/policy-guidance/lists-of-parties-of-concern/entity-list'},{name:'Treasury OFAC',url:'https://sanctionssearch.ofac.treas.gov/'}],
+     example:'Ship-to-ship transfers, relabeling, and transshipment through third countries are common evasion methods.'},
+    {title:'Trace the Payment Method',
+     desc:'Follow the money. Check for cryptocurrency rails, hawala networks, trade-based money laundering, or payments routed through non-sanctioned jurisdictions.',
+     tools:[{name:'OpenSanctions',url:'https://www.opensanctions.org/search/?q={source}'},{name:'ICIJ Offshore Leaks',url:'https://offshoreleaks.icij.org/search?q={target}'}],
+     example:'Tether/USDT and other stablecoins are increasingly used to circumvent banking restrictions.'},
+    {title:'Verify Jurisdictional Exposure',
+     desc:'Determine which sanctions regimes apply and whether the arrangement creates secondary sanctions risk for third-party actors.',
+     tools:[{name:'OFAC Programs',url:'https://ofac.treasury.gov/sanctions-programs-and-country-information'},{name:'UN Consolidated List',url:'https://www.un.org/securitycouncil/content/un-sc-consolidated-list'}],
+     example:'US secondary sanctions can apply to non-US persons facilitating significant transactions with sanctioned entities.'}
+  ]
+};
+
+function classifyEdge(edge, sourceNode, targetNode){
+  // Financial: edge has amount, or relation mentions money/invest/fund/payment/deal
+  if(edge.amount) return 'financial';
+  const rel=(edge.relation||'').toLowerCase();
+  if(/invest|fund|\$|billion|million|payment|financ|capital|deal|bought|purchase|loan/.test(rel)) return 'financial';
+  // Sanctions: either node in sanctions cluster or relation mentions sanction/evad/bust
+  if(sourceNode.cluster==='sanctions'||targetNode.cluster==='sanctions'){
+    if(/sanction|evad|bust|front|shell|launder|smurfing|circumvent/.test(rel)) return 'sanctions';
+  }
+  if(/sanction|evad|bust/.test(rel)) return 'sanctions';
+  // Influence: either node in influence cluster or relation mentions influence/lobby/donor/campaign/policy
+  if(sourceNode.cluster==='influence'||targetNode.cluster==='influence') return 'influence';
+  if(/influence|lobby|donor|campaign|policy|backed|mentor|appoint|aligned/.test(rel)) return 'influence';
+  // Fallback: if financial-adjacent clusters
+  if(sourceNode.cluster==='energy'||targetNode.cluster==='energy') return 'financial';
+  if(sourceNode.cluster==='crypto'||targetNode.cluster==='crypto') return 'sanctions';
+  return 'financial';
+}
+
+function flowEdgeStrength(e){
+  let s=1;
+  if(e.amount){
+    const v=parseFloat((e.amount+'').replace(/[^0-9.]/g,''))||0;
+    if(v>=1e9) s=5;else if(v>=1e8) s=4;else if(v>=1e6) s=3;else if(v>=1e3) s=2;else if(v>0) s=1.5;
+  }
+  if(e.weight) s=Math.max(s,Math.min(5,e.weight));
+  if(e.date){const d=new Date(e.date);if(!isNaN(d)){const age=(Date.now()-d.getTime())/(365.25*24*60*60*1000);if(age<1)s+=0.8;else if(age<2)s+=0.5;else if(age<4)s+=0.2;}}
+  return Math.min(5,Math.round(s*10)/10);
+}
+
+function renderFlowPicker(nodeId){
+  const wrap=document.getElementById('sb-flow-content');
+  if(!wrap) return;
+  const nd=DATA.nodes.find(n=>n.id===nodeId);
+  if(!nd){wrap.innerHTML='';return;}
+  flowSourceId=nodeId;
+  // Get all connections sorted by strength
+  const conns=DATA.edges.filter(e=>e.source===nodeId||e.target===nodeId).map(e=>{
+    const oId=e.source===nodeId?e.target:e.source;
+    const o=DATA.nodes.find(n=>n.id===oId);
+    if(!o) return null;
+    return{edge:e,otherId:oId,otherName:o.name,relation:e.relation||'',strength:flowEdgeStrength(e)};
+  }).filter(Boolean).sort((a,b)=>b.strength-a.strength).slice(0,5);
+  if(!conns.length){wrap.innerHTML='<div class="sb-empty">No connections to trace.</div>';return;}
+  wrap.innerHTML=`
+    <div class="sb-flow-pick">
+      <div class="sb-flow-pick-label">Select a connection to trace</div>
+      ${conns.map(c=>{
+        const dots=Array.from({length:5},(_,i)=>`<div class="sb-flow-pick-dot${i<Math.round(c.strength)?' filled':''}"></div>`).join('');
+        return `<div class="sb-flow-pick-row" onclick="renderFlowTrace(${nodeId},${c.otherId})">
+          <span class="sb-flow-pick-name">${esc(c.otherName)}</span>
+          <span class="sb-flow-pick-rel">${esc(c.relation)}</span>
+          <span class="sb-flow-pick-strength">${dots}</span>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function renderFlowTrace(sourceId,targetId){
+  const wrap=document.getElementById('sb-flow-content');
+  if(!wrap) return;
+  const srcNode=DATA.nodes.find(n=>n.id===sourceId);
+  const tgtNode=DATA.nodes.find(n=>n.id===targetId);
+  if(!srcNode||!tgtNode){wrap.innerHTML='';return;}
+  const edge=DATA.edges.find(e=>(e.source===sourceId&&e.target===targetId)||(e.source===targetId&&e.target===sourceId));
+  if(!edge){wrap.innerHTML='<div class="sb-empty">No direct edge found.</div>';return;}
+  const flowType=classifyEdge(edge,srcNode,tgtNode);
+  const steps=flowTemplates[flowType]||flowTemplates.financial;
+  const encSrc=encodeURIComponent(srcNode.name),encTgt=encodeURIComponent(tgtNode.name);
+  const tagClass={financial:'sb-flow-tag-financial',influence:'sb-flow-tag-influence',sanctions:'sb-flow-tag-sanctions'}[flowType]||'sb-flow-tag-general';
+  const tagLabel={financial:'Money Flow',influence:'Influence Operation',sanctions:'Sanctions Evasion'}[flowType]||'General';
+  let html=`<div class="sb-flow-back" onclick="renderFlowPicker(${sourceId})">\u2190 Back to connections</div>`;
+  html+=`<span class="sb-flow-tag ${tagClass}">${tagLabel}</span>`;
+  html+=`<div class="sb-flow-header">
+    <div class="sb-flow-node"><div class="sb-flow-name">${esc(srcNode.name)}</div><div class="sb-flow-type">${srcNode.type}</div></div>
+    <div class="sb-flow-arrow"><div class="sb-flow-arrow-line">\u2192</div><div class="sb-flow-arrow-label">${esc(edge.relation||'linked')}</div></div>
+    <div class="sb-flow-node"><div class="sb-flow-name">${esc(tgtNode.name)}</div><div class="sb-flow-type">${tgtNode.type}</div></div>
+  </div>`;
+  html+=steps.map((step,i)=>{
+    const toolsHtml=step.tools.map(t=>{
+      const url=t.url.replace(/\{source\}/g,encSrc).replace(/\{target\}/g,encTgt);
+      return `<a class="sb-tool-link" href="${url}" target="_blank" rel="noopener noreferrer"><i data-lucide="external-link"></i>${esc(t.name)}</a>`;
+    }).join('');
+    return `<div class="sb-step collapsed">
+      <div class="sb-step-header" onclick="toggleStep(this)">
+        <span class="sb-step-num">${i+1}</span>
+        <span class="sb-step-title">${esc(step.title)}</span>
+        <span class="sb-step-chevron">\u25BC</span>
+      </div>
+      <div class="sb-step-body">
+        <div class="sb-step-desc">${esc(step.desc)}</div>
+        <div class="sb-step-example">${esc(step.example)}</div>
+        <div class="sb-step-tools">${toolsHtml}</div>
+      </div>
+    </div>`;
+  }).join('');
+  wrap.innerHTML=html;
+  lucide.createIcons();
+}
+
 function on(id){
   const nd=DATA.nodes.find(n=>n.id===id);if(!nd) return;
   history.replaceState(null,null,'#node/'+id);
@@ -1513,7 +1712,8 @@ function on(id){
       <div class="sb-mode-btn${l3Mode==='flow'?' active':''}" data-mode="flow" onclick="setL3Mode('flow')">Corruption Flow Tracing</div>
       <div class="sb-mode-btn${l3Mode==='tradecraft'?' active':''}" data-mode="tradecraft" onclick="setL3Mode('tradecraft')">Node Tradecraft</div>
     </div>`;
-  // Flow mode: quick links
+  // Flow mode: connection picker + quick links
+  renderFlowPicker(id);
   document.getElementById('sb-inv-wrap').innerHTML=`
     <a class="sb-inv-btn" href="https://www.opensanctions.org/search/?q=${encName}" target="_blank" rel="noopener noreferrer">
       <div class="sb-inv-icon sb-inv-icon-os">OS</div>
