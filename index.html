@@ -41,7 +41,7 @@
 --txt-xl:clamp(1.25rem,1rem + 1vw,1.75rem);
 --s1:.25rem;--s2:.5rem;--s3:.75rem;--s4:1rem;--s5:1.25rem;
 --s6:1.5rem;--s8:2rem;--s10:2.5rem;--s12:3rem;--s16:4rem;
---sw:252px;--sh:52px;
+--sw:252px;--sh:64px;
 }
 [data-theme="dark"]{
 --color-bg:#0f0e0d;--color-surface:#141312;--color-surface-2:#191817;
@@ -73,24 +73,24 @@ a{color:inherit;text-decoration:none}
 .app{display:grid;grid-template-rows:var(--sh) 1fr;grid-template-columns:var(--sw) auto 1fr;height:100dvh;overflow:hidden}
 .app.embed-mode{grid-template-columns:1fr;grid-template-rows:42px 1fr}
 .app.embed-mode .sidebar,.app.embed-mode .sob,.app.embed-mode .sb-resize,.app.embed-mode .sb-expand{display:none}
-.app.embed-mode .topbar{padding:0 var(--s3)}
+.app.embed-mode .topbar{padding:0 12px}
 .app.embed-mode .tlogo{display:none}
 .app.embed-mode .hmb{display:none}
 
 /* ========== TOPBAR ========== */
-.topbar{grid-column:1/-1;grid-row:1;display:flex;align-items:center;gap:var(--s3);padding:0 var(--s4);background:var(--color-surface);border-bottom:1px solid var(--color-divider);z-index:100}
-.tlogo{display:flex;align-items:center;gap:var(--s2);flex-shrink:0;width:calc(var(--sw) - var(--s4))}
-.tlogo svg{color:var(--color-primary)}
-.tlogo-t{font-size:var(--txt-sm);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
-.tlogo-s{font-size:var(--txt-xs);color:var(--color-text-muted);font-family:var(--font-mono)}
-.tsearch{flex:1;max-width:500px;position:relative}
-.tsearch i{position:absolute;left:var(--s3);top:50%;transform:translateY(-50%);color:var(--color-text-muted);pointer-events:none;width:14px;height:14px}
-#gs{width:100%;background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:var(--s2) var(--s3) var(--s2) calc(var(--s3) + 20px);font-size:var(--txt-sm);color:var(--color-text);transition:border-color var(--transition),box-shadow var(--transition)}
-#gs::placeholder{color:var(--color-text-faint)}
-#gs:focus{outline:none;border-color:var(--color-primary);box-shadow:0 0 0 3px var(--color-primary-highlight)}
-.tactions{margin-left:auto;display:flex;align-items:center;gap:var(--s2)}
-.ib{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:var(--radius-md);color:var(--color-text-muted);transition:background var(--transition),color var(--transition);position:relative}
-.ib:hover{background:var(--color-surface-offset);color:var(--color-text)}
+.topbar{grid-column:1/-1;grid-row:1;display:flex;align-items:center;gap:var(--s3);padding:0 12px;background:#3D5C2F;border-bottom:none;z-index:100;height:var(--sh)}
+.tlogo{display:flex;align-items:center;gap:var(--s2);flex-shrink:0}
+.tlogo svg{color:#fff}
+.tlogo-t{font-size:var(--txt-sm);font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#fff;font-family:var(--font-body)}
+.tlogo-s{font-size:var(--txt-xs);color:rgba(255,255,255,.7);font-family:var(--font-body)}
+.tsearch{margin-left:auto;width:260px;max-width:320px;position:relative;flex-shrink:0}
+.tsearch i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.6);pointer-events:none;width:14px;height:14px}
+#gs{width:100%;background:rgba(255,255,255,.1);border:1px solid #555;border-radius:8px;padding:8px 8px 8px 32px;font-size:var(--txt-sm);color:#fff;font-family:var(--font-body);transition:border-color var(--transition),box-shadow var(--transition)}
+#gs::placeholder{color:rgba(255,255,255,.5)}
+#gs:focus{outline:none;border-color:#5a8a47;box-shadow:0 0 0 3px rgba(61,92,47,.45);background:rgba(255,255,255,.15)}
+.tactions{display:flex;align-items:center;gap:var(--s2);margin-left:var(--s3)}
+.ib{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:var(--radius-md);color:rgba(255,255,255,.7);transition:background var(--transition),color var(--transition);position:relative}
+.ib:hover{background:rgba(255,255,255,.12);color:#fff}
 
 /* ========== SIDEBAR ========== */
 .sidebar{grid-column:1;grid-row:2;background:var(--color-surface);border-right:none;overflow-y:auto;padding:var(--s4) 0;display:flex;flex-direction:column;position:relative;min-width:0}
@@ -367,8 +367,8 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
 .ebtn:hover{border-color:var(--color-text-muted);color:var(--color-text);background:var(--color-surface-offset)}
 
 /* HAMBURGER */
-.hmb{display:none;align-items:center;justify-content:center;width:34px;height:34px;border-radius:var(--radius-md);color:var(--color-text-muted);transition:background var(--transition),color var(--transition);cursor:pointer}
-.hmb:hover{background:var(--color-surface-offset);color:var(--color-text)}
+.hmb{display:none;align-items:center;justify-content:center;width:34px;height:34px;border-radius:var(--radius-md);color:rgba(255,255,255,.7);transition:background var(--transition),color var(--transition);cursor:pointer}
+.hmb:hover{background:rgba(255,255,255,.12);color:#fff}
 
 /* SIDEBAR OVERLAY -- position:fixed on all sizes to stay out of grid flow */
 .sob{position:fixed;inset:0;top:var(--sh);background:rgba(0,0,0,.3);z-index:149;opacity:0;pointer-events:none;transition:opacity .2s ease;display:none}
@@ -423,11 +423,11 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
       <circle cx="11" cy="13" r="2" fill="currentColor"/>
       <path d="M17.5 10L20.5 13L17.5 16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity=".5"/>
     </svg>
-    <div><div class="tlogo-t">Dekleptocracy</div><div class="tlogo-s">Network Explorer</div></div>
+    <div><div class="tlogo-t">Dekleptocracy</div><div class="tlogo-s">Explorer</div></div>
   </div>
   <div class="tsearch">
     <i data-lucide="search"></i>
-    <input type="text" id="gs" placeholder="Search nodes, entities, deals, jurisdictions…" autocomplete="off">
+    <input type="text" id="gs" placeholder="Find a node" autocomplete="off">
   </div>
   <div class="tactions">
     <button class="ib" id="tt" title="Toggle theme"><i data-lucide="sun" style="width:15px;height:15px;"></i></button>
