@@ -671,11 +671,55 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
   .tsearch{width:auto;flex:1 1 auto}
 }
 
+/* ========== HELP SYSTEM ========== */
+.help-btn{display:flex;align-items:center;justify-content:center;width:28px;height:28px;background:#3D5C2F;color:#fff;border-radius:var(--radius-md);font-size:13px;font-weight:700;font-family:var(--font-body);cursor:pointer;transition:opacity var(--transition);flex-shrink:0}
+.help-btn:hover{opacity:.85}
+.help-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:400;opacity:0;pointer-events:none;transition:opacity .25s ease;display:flex;align-items:center;justify-content:center}
+.help-bg.open{opacity:1;pointer-events:all}
+.help-modal{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);width:min(620px,92vw);max-height:80vh;display:flex;flex-direction:column;box-shadow:var(--shadow-lg);overflow:hidden}
+.help-top{display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid var(--color-divider);gap:12px}
+.help-title{font-size:var(--txt-lg);font-weight:600;color:#3D5C2F;flex:1}
+[data-theme="dark"] .help-title{color:#7ab368}
+.help-close{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-md);color:var(--color-text-muted);cursor:pointer;transition:background var(--transition)}
+.help-close:hover{background:var(--color-surface-offset)}
+.help-tabs{display:flex;border-bottom:1px solid var(--color-divider);padding:0 20px}
+.help-tab{padding:10px 16px;font-size:var(--txt-xs);font-weight:500;color:var(--color-text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--transition),border-color var(--transition)}
+.help-tab:hover{color:var(--color-text)}
+.help-tab.active{color:#3D5C2F;border-bottom-color:#3D5C2F;font-weight:600}
+[data-theme="dark"] .help-tab.active{color:#7ab368;border-bottom-color:#7ab368}
+.help-body{flex:1;overflow-y:auto;padding:20px}
+.help-body::-webkit-scrollbar{width:3px}
+.help-body::-webkit-scrollbar-thumb{background:var(--color-border);border-radius:var(--radius-full)}
+.help-section{margin-bottom:20px}
+.help-h2{font-size:var(--txt-base);font-weight:600;color:#3D5C2F;margin-bottom:8px}
+[data-theme="dark"] .help-h2{color:#7ab368}
+.help-p{font-size:var(--txt-sm);color:var(--color-text-muted);line-height:1.7;margin-bottom:8px}
+.help-kbd{display:inline;padding:1px 5px;background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:3px;font-family:var(--font-mono);font-size:.75em}
+.faq-item{border:1px solid var(--color-divider);border-radius:var(--radius-md);margin-bottom:8px;overflow:hidden}
+.faq-q{display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:pointer;font-size:var(--txt-sm);font-weight:500;color:var(--color-text);transition:background var(--transition)}
+.faq-q:hover{background:var(--color-surface-offset)}
+.faq-arrow{font-size:9px;color:#3D5C2F;transition:transform .2s ease;flex-shrink:0}
+.faq-item.collapsed .faq-arrow{transform:rotate(-90deg)}
+.faq-a{padding:0 14px 12px 14px;font-size:var(--txt-sm);color:var(--color-text-muted);line-height:1.7}
+.faq-item.collapsed .faq-a{display:none}
+.tut-step-card{background:var(--color-surface-offset);border:1px solid var(--color-divider);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px}
+.tut-step-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:var(--radius-full);background:#3D5C2F;color:#fff;font-size:.65rem;font-weight:700;font-family:var(--font-mono);margin-right:8px}
+.tut-step-title{font-size:var(--txt-sm);font-weight:600;color:var(--color-text);display:inline}
+.tut-step-desc{font-size:var(--txt-sm);color:var(--color-text-muted);line-height:1.6;margin-top:6px}
+.tut-nav{display:flex;align-items:center;gap:8px;margin-top:16px}
+.tut-nav-btn{padding:6px 16px;border-radius:var(--radius-md);font-size:var(--txt-xs);font-weight:500;cursor:pointer;transition:all var(--transition)}
+.tut-prev{background:var(--color-surface);border:1px solid var(--color-border);color:var(--color-text-muted)}
+.tut-prev:hover{border-color:var(--color-text-muted)}
+.tut-next{background:#3D5C2F;border:1px solid #3D5C2F;color:#fff}
+.tut-next:hover{opacity:.85}
+.tut-progress{flex:1;text-align:center;font-size:var(--txt-xs);color:var(--color-text-faint);font-family:var(--font-mono)}
+.tut-highlight{position:fixed;border:3px solid #FF6B52;border-radius:var(--radius-lg);z-index:399;pointer-events:none;transition:all .3s ease;box-shadow:0 0 0 4000px rgba(0,0,0,.3)}
+@media(max-width:640px){.help-modal{width:96vw;max-height:85vh}.help-tabs{padding:0 12px}.help-tab{padding:8px 10px;font-size:.7rem}.help-body{padding:14px}}
 /* ========== PRINT ========== */
 @media print{
   body{overflow:visible;background:#fff;color:#000}
   .app{display:block;height:auto;overflow:visible}
-  .topbar,.sidebar,.sob,.gctrl,.gleg,.gtt,.do-bg,.dp,.tour-bg,.dm-toast,.sb-resize,.sb-expand,.sb-toggle{display:none!important}
+  .topbar,.sidebar,.sob,.gctrl,.gleg,.gtt,.do-bg,.dp,.tour-bg,.help-bg,.tut-highlight,.dm-toast,.sb-resize,.sb-expand,.sb-toggle{display:none!important}
   .main{overflow:visible;display:block}
   .view{display:none!important;page-break-inside:avoid}
   .view.active{display:block!important}
@@ -711,6 +755,7 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
       <input type="text" id="gs" placeholder="Find a node" autocomplete="off">
     </div>
     <div class="tactions">
+      <button class="help-btn" onclick="toggleHelp()" title="Help &amp; Tutorial">?</button>
       <button class="ib" id="tt" title="Toggle theme"><i data-lucide="sun" style="width:15px;height:15px;"></i></button>
       <button class="ib" title="Guided Tour" onclick="startTour()"><i data-lucide="compass" style="width:15px;height:15px;"></i></button>
       <button class="ib" title="Print View" onclick="window.print()"><i data-lucide="printer" style="width:15px;height:15px;"></i></button>
@@ -1086,6 +1131,23 @@ python -m spacy download en_core_web_sm</pre></div></div>
     </div>
   </div>
 </div>
+
+<!-- HELP MODAL -->
+<div class="help-bg" id="help-bg" onclick="if(event.target===this)closeHelp()">
+  <div class="help-modal">
+    <div class="help-top">
+      <div class="help-title">Dekleptocracy Explorer Help</div>
+      <button class="help-close" onclick="closeHelp()"><i data-lucide="x" style="width:14px;height:14px"></i></button>
+    </div>
+    <div class="help-tabs">
+      <div class="help-tab active" onclick="helpTab('manual',this)">User Manual</div>
+      <div class="help-tab" onclick="helpTab('faq',this)">FAQ</div>
+      <div class="help-tab" onclick="helpTab('tutorial',this)">Start Tutorial</div>
+    </div>
+    <div class="help-body" id="help-body"></div>
+  </div>
+</div>
+<div class="tut-highlight" id="tut-highlight" style="display:none"></div>
 
 <!-- TOAST -->
 <div class="dm-toast" id="toast"></div>
@@ -2433,6 +2495,8 @@ function toggleCollapse(){
 // ========== KEYBOARD ==========
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
+    if(helpOpen){closeHelp();return;}
+    if(tutActive){endTutorial();return;}
     cd();
     closeTour();
     const sb=document.getElementById('sidebar');
@@ -2703,6 +2767,169 @@ function renderTour(){
   document.getElementById('tour-prev').style.visibility=tourIdx===0?'hidden':'visible';
   document.getElementById('tour-next').textContent=tourIdx===TOUR.length-1?'Explore':'Next';
 }
+
+// ========== HELP SYSTEM ==========
+let helpOpen=false;
+let tutStep=0;
+let tutActive=false;
+
+function toggleHelp(){helpOpen?closeHelp():openHelp();}
+function openHelp(){
+  helpOpen=true;
+  document.getElementById('help-bg').classList.add('open');
+  helpTab('manual',document.querySelector('.help-tab'));
+  lucide.createIcons();
+}
+function closeHelp(){
+  helpOpen=false;
+  document.getElementById('help-bg').classList.remove('open');
+  endTutorial();
+}
+function helpTab(tab,el){
+  document.querySelectorAll('.help-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const body=document.getElementById('help-body');
+  if(tab==='manual') body.innerHTML=renderManual();
+  else if(tab==='faq') body.innerHTML=renderFAQ();
+  else if(tab==='tutorial') {body.innerHTML=renderTutorial();restoreTutProgress();}
+}
+
+// ── User Manual ──
+function renderManual(){
+  return `
+<div class="help-section"><div class="help-h2">What is the Dekleptocracy Explorer?</div>
+<div class="help-p">The Dekleptocracy Explorer is an interactive knowledge graph that visualizes corruption networks, foreign influence operations, and financial conflicts of interest. It is built from investigative journalism published at dekleptocracy.substack.com.</div></div>
+<div class="help-section"><div class="help-h2">Navigating the Graph</div>
+<div class="help-p">The main view is a force-directed network map. Each circle (node) represents a person, organization, deal, jurisdiction, or enforcement action. Lines (edges) represent documented relationships between entities.</div>
+<div class="help-p">Drag the canvas to pan. Scroll to zoom in and out. Click any node to open its detail panel in the sidebar.</div></div>
+<div class="help-section"><div class="help-h2">The Sidebar</div>
+<div class="help-p">When you click a node, the sidebar shows three progressive layers of information.</div>
+<div class="help-p"><strong>Layer 1 — Basic Facts</strong> shows the node name, type, description, cluster badge, and connection count. This appears immediately.</div>
+<div class="help-p"><strong>Layer 2 — Enriched Context</strong> contains collapsible sections for key connections (direct neighbors), mentioned articles, centrality metrics, cluster breakdown, and cross-cluster connections.</div>
+<div class="help-p"><strong>Layer 3 — Investigation Guides</strong> has two modes. "Corruption Flow Tracing" lets you select a connected node and shows step-by-step tracing methodology. "How to Investigate This" shows investigation steps tailored to the node type (person, organization, country, or network).</div></div>
+<div class="help-section"><div class="help-h2">Pathfinding</div>
+<div class="help-p">At the bottom of the sidebar, the "Find a Path" section lets you trace the shortest connection between the current node and any other node in the graph. Select a target from the dropdown and the path will be highlighted on the map in coral red.</div></div>
+<div class="help-section"><div class="help-h2">Search</div>
+<div class="help-p">Use the search box in the top bar to find any node by name, description, type, or tag. Results appear as you type.</div></div>
+<div class="help-section"><div class="help-h2">Keyboard Shortcuts</div>
+<div class="help-p"><span class="help-kbd">Esc</span> Close panels and overlays</div>
+<div class="help-p"><span class="help-kbd">Ctrl+Shift+A</span> Toggle admin mode (data editing)</div></div>
+<div class="help-section"><div class="help-h2">Clusters</div>
+<div class="help-p">Nodes are organized into five thematic clusters, each with a distinct color on the map. Sanctions-Busting (dark green), Crypto Rails (coral), Energy Networks (forest green), Princelings (pink), and Influence Operations (blue).</div></div>`;
+}
+
+// ── FAQ ──
+const FAQ_DATA=[
+  {q:'What data sources power this graph?',a:'The graph is built from investigative articles published at dekleptocracy.substack.com. Each node and edge is sourced from published reporting. External data from the FEC API (political donations) and links to OpenSanctions and ICIJ Offshore Leaks are also integrated.'},
+  {q:'How often is the data updated?',a:'The article corpus is updated approximately four times per week as new articles are published. Node and edge data is updated in batch whenever new entities are identified in reporting.'},
+  {q:'Can I contribute data or suggest corrections?',a:'The Dekleptocracy Explorer is maintained by the Informed Democracy Project, a Texas-based 501(c)(4) nonprofit. Contact us through the Substack newsletter for corrections or data contributions.'},
+  {q:'What do the node sizes mean?',a:'Node size reflects connection count (degree centrality). Small nodes have 1-2 connections, medium nodes have 3-5, and large nodes have 6 or more. More connected nodes are more central to the corruption network.'},
+  {q:'What do the cluster colors mean?',a:'Dark green = Sanctions-Busting, Coral = Crypto Rails, Forest green = Energy Networks, Pink = Princelings (dynastic networks), Blue = Influence Operations. Nodes can belong to multiple clusters via their tags.'},
+  {q:'How does the pathfinding work?',a:'The pathfinder uses breadth-first search to find the shortest connection between any two nodes. The path is highlighted on the map in coral red. If no path exists, the nodes are in disconnected components of the graph.'},
+  {q:'Is this data biased?',a:'The graph reflects documented connections from investigative reporting. It does not make legal conclusions. All edges cite source articles. Users should verify claims through the external investigation tools provided in Layer 3.'},
+  {q:'Can I embed this in my own website?',a:'Yes. The Explorer supports an embed mode. Add ?embed=true to the URL to hide the sidebar and show a compact view suitable for iframes.'}
+];
+
+function renderFAQ(){
+  return FAQ_DATA.map((item,i)=>
+    `<div class="faq-item collapsed" id="faq-${i}">
+      <div class="faq-q" onclick="document.getElementById('faq-${i}').classList.toggle('collapsed')">
+        <span class="faq-arrow">\u25BC</span>
+        <span>${esc(item.q)}</span>
+      </div>
+      <div class="faq-a">${esc(item.a)}</div>
+    </div>`
+  ).join('');
+}
+
+// ── Interactive Tutorial ──
+const TUT_STEPS=[
+  {title:'Search for a Node',desc:'Type a name in the search box at the top of the page. Try "Kushner" or "Binance". Results appear as you type.',target:'#gs',action:'Click the search box and type a name.'},
+  {title:'Click a Node on the Map',desc:'Click any circle on the network map to select it. The sidebar will show detailed information about that entity.',target:'#gcc',action:'Click any node circle on the graph.'},
+  {title:'Explore Basic Facts (Layer 1)',desc:'The top of the sidebar shows the node name, type, description, and cluster badge. This is Layer 1 — basic facts that appear immediately.',target:'#sb-node-detail .sb-l1',action:'Read the basic facts card.'},
+  {title:'Expand Connections (Layer 2)',desc:'Below the basic facts, collapsible sections show key connections, mentioned articles, and centrality metrics. Click the headers to expand or collapse them.',target:'#sb-l2-conns-section',action:'Click "Key Connections" to expand it.'},
+  {title:'Try "How to Investigate This"',desc:'In the Investigation Guides section, toggle to "How to Investigate This" mode. It shows step-by-step investigation methodology with external tool links tailored to the node type.',target:'#sb-l3-section',action:'Click the "How to Investigate This" toggle.'},
+  {title:'Try Corruption Flow Tracing',desc:'Switch to "Corruption Flow Tracing" mode. Select a connected node to trace the corruption flow between them. The system classifies the edge type and shows relevant tracing steps.',target:'#sb-l3-section',action:'Select a connection to trace.'},
+  {title:'Find a Path Between Nodes',desc:'At the bottom of the sidebar, use the "Find a Path" dropdown to select any node in the graph. The shortest path will be highlighted in coral red on the map.',target:'#sb-path-section',action:'Select a target node from the dropdown.'}
+];
+
+function renderTutorial(){
+  const saved=getTutProgress();
+  return TUT_STEPS.map((step,i)=>{
+    const done=i<saved;
+    return `<div class="tut-step-card" style="${done?'opacity:.5':''}">
+      <span class="tut-step-num" style="${done?'background:#999':''}">${i+1}</span>
+      <div class="tut-step-title">${esc(step.title)}${done?' \u2713':''}</div>
+      <div class="tut-step-desc">${esc(step.desc)}</div>
+    </div>`;
+  }).join('')+`
+    <div class="tut-nav">
+      <button class="tut-nav-btn tut-next" onclick="startInteractiveTut()">
+        ${saved>0?'Resume from Step '+(saved+1):'Start Tutorial'}
+      </button>
+      ${saved>0?'<button class="tut-nav-btn tut-prev" onclick="resetTutProgress()">Reset Progress</button>':''}
+    </div>`;
+}
+
+function getTutProgress(){try{return parseInt(localStorage.getItem('dex-tut-step'))||0;}catch(e){return 0;}}
+function saveTutProgress(step){try{localStorage.setItem('dex-tut-step',step);}catch(e){}}
+function resetTutProgress(){
+  try{localStorage.removeItem('dex-tut-step');}catch(e){}
+  tutStep=0;
+  helpTab('tutorial',document.querySelectorAll('.help-tab')[2]);
+}
+function restoreTutProgress(){tutStep=getTutProgress();}
+
+function startInteractiveTut(){
+  closeHelp();
+  tutActive=true;
+  tutStep=getTutProgress();
+  showTutStep();
+}
+function endTutorial(){
+  tutActive=false;
+  const hl=document.getElementById('tut-highlight');
+  if(hl) hl.style.display='none';
+}
+function tutNext(){
+  tutStep++;
+  saveTutProgress(tutStep);
+  if(tutStep>=TUT_STEPS.length){endTutorial();toast('Tutorial complete!');return;}
+  showTutStep();
+}
+function tutPrev(){
+  if(tutStep>0) tutStep--;
+  saveTutProgress(tutStep);
+  showTutStep();
+}
+function showTutStep(){
+  if(!tutActive||tutStep>=TUT_STEPS.length) return;
+  const step=TUT_STEPS[tutStep];
+  const hl=document.getElementById('tut-highlight');
+  const target=document.querySelector(step.target);
+  if(target&&hl){
+    const r=target.getBoundingClientRect();
+    hl.style.display='block';
+    hl.style.left=(r.left-4)+'px';
+    hl.style.top=(r.top-4)+'px';
+    hl.style.width=(r.width+8)+'px';
+    hl.style.height=(r.height+8)+'px';
+    // Instruction overlay inside the highlight box
+    hl.innerHTML=`<div style="position:absolute;bottom:-80px;left:0;right:0;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:12px 16px;box-shadow:var(--shadow-lg);z-index:401;pointer-events:auto">
+      <div style="font-size:var(--txt-xs);font-weight:600;color:#3D5C2F;margin-bottom:4px">Step ${tutStep+1} of ${TUT_STEPS.length}: ${esc(step.title)}</div>
+      <div style="font-size:var(--txt-xs);color:var(--color-text-muted);line-height:1.5;margin-bottom:8px">${esc(step.action)}</div>
+      <div style="display:flex;gap:6px">
+        ${tutStep>0?'<button class="tut-nav-btn tut-prev" onclick="tutPrev()" style="pointer-events:auto;padding:4px 12px;font-size:.7rem">Previous</button>':''}
+        <button class="tut-nav-btn tut-next" onclick="tutNext()" style="pointer-events:auto;padding:4px 12px;font-size:.7rem">${tutStep===TUT_STEPS.length-1?'Finish':'Next'}</button>
+        <button class="tut-nav-btn tut-prev" onclick="endTutorial()" style="pointer-events:auto;padding:4px 12px;font-size:.7rem;margin-left:auto">Skip</button>
+      </div>
+    </div>`;
+  } else {
+    if(hl) hl.style.display='none';
+  }
+}
+// Re-position tutorial highlight on scroll/resize
+window.addEventListener('scroll',function(){if(tutActive) showTutStep();},true);
 
 // ========== TOAST ==========
 function toast(msg){
