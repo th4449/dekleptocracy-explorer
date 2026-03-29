@@ -721,6 +721,39 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
 .tut-progress{flex:1;text-align:center;font-size:var(--txt-xs);color:var(--color-text-faint);font-family:var(--font-mono)}
 .tut-highlight{position:fixed;border:3px solid #FF6B52;border-radius:var(--radius-lg);z-index:399;pointer-events:none;transition:all .3s ease;box-shadow:0 0 0 4000px rgba(0,0,0,.3)}
 @media(max-width:640px){.help-modal{width:96vw;max-height:85vh}.help-tabs{padding:0 12px}.help-tab{padding:8px 10px;font-size:.7rem}.help-body{padding:14px}}
+/* ── Link type legend ── */
+.gleg-links{position:absolute;bottom:8px;left:8px;display:flex;gap:10px;padding:4px 10px;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border-radius:var(--radius-md);border:1px solid var(--color-divider);font-size:.6rem;color:var(--color-text-faint);pointer-events:none}
+.gleg-links .gli{display:flex;align-items:center;gap:4px}
+.gleg-links .gll{width:18px;height:2px;border-radius:1px;flex-shrink:0}
+.gll-dash{background:repeating-linear-gradient(90deg,#99CCFF 0 5px,transparent 5px 8px)}
+/* ── Popular searches ── */
+.sb-popular{margin-top:var(--s3);padding-top:var(--s3);border-top:1px solid var(--color-divider)}
+.sb-popular-title{font-size:var(--txt-xs);font-weight:600;color:#3D5C2F;text-transform:uppercase;letter-spacing:.06em;margin-bottom:var(--s2)}
+[data-theme="dark"] .sb-popular-title{color:#7ab368}
+.sb-popular-item{display:inline-block;padding:3px 10px;margin:0 4px 4px 0;background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-full);font-size:var(--txt-xs);color:var(--color-text-muted);cursor:pointer;transition:all var(--transition)}
+.sb-popular-item:hover{border-color:#3D5C2F;color:#3D5C2F}
+.sb-popular-count{font-family:var(--font-mono);font-size:.6rem;color:var(--color-text-faint);margin-left:3px}
+/* ── Investigation leads ── */
+.sb-lead{padding:10px var(--s3);margin-bottom:var(--s2);background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-md);border-left:3px solid #3D5C2F}
+.sb-lead-title{font-size:var(--txt-xs);font-weight:600;color:#3D5C2F;margin-bottom:3px}
+[data-theme="dark"] .sb-lead-title{color:#7ab368}
+.sb-lead-desc{font-size:var(--txt-xs);color:var(--color-text-muted);line-height:1.55}
+.sb-lead-action{display:inline-block;margin-top:4px;font-size:var(--txt-xs);color:#FF6B52;cursor:pointer;text-decoration:none}
+.sb-lead-action:hover{text-decoration:underline}
+/* ── Comparison mode ── */
+.sb-compare-wrap{margin-top:var(--s3);padding:var(--s3);background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-md)}
+.sb-compare-title{font-size:var(--txt-xs);font-weight:600;color:#3D5C2F;text-transform:uppercase;letter-spacing:.04em;margin-bottom:var(--s2)}
+[data-theme="dark"] .sb-compare-title{color:#7ab368}
+.sb-compare-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--color-divider);font-size:var(--txt-xs)}
+.sb-compare-row:last-child{border-bottom:none}
+.sb-compare-label{color:var(--color-text-muted)}
+.sb-compare-val{font-weight:500;color:var(--color-text);font-family:var(--font-mono)}
+.sb-compare-shared{margin-top:var(--s2)}
+.sb-compare-shared-item{display:inline-block;padding:2px 8px;margin:2px 3px 2px 0;background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);border-radius:var(--radius-full);font-size:.65rem;color:var(--color-text-muted);cursor:pointer}
+.sb-compare-shared-item:hover{border-color:#FFD700}
+/* ── Export button ── */
+.sb-export-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;margin-top:var(--s3);background:#3D5C2F;color:#fff;border-radius:var(--radius-md);font-size:var(--txt-xs);font-weight:500;cursor:pointer;transition:opacity var(--transition);width:fit-content}
+.sb-export-btn:hover{opacity:.85}
 /* ========== PRINT ========== */
 @media print{
   body{overflow:visible;background:#fff;color:#000}
@@ -787,6 +820,7 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
         <div class="sb-cluster-pill" onclick="fc('princelings');sv('nodes')"><span class="cdot" style="background:#fff;opacity:.6"></span>Princelings<span class="sb-pill-count" id="cp">—</span></div>
         <div class="sb-cluster-pill" onclick="fc('influence');sv('nodes')"><span class="cdot" style="background:#fff;opacity:.6"></span>Influence Ops<span class="sb-pill-count" id="ci2">—</span></div>
       </div>
+      <div class="sb-popular" id="sb-popular"></div>
     </div>
     <!-- Node Detail State (three layers) -->
     <div id="sb-node-detail" class="sb-node">
@@ -879,6 +913,18 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
             </select>
             <div id="sb-path-result"></div>
           </div>
+          <!-- Comparison mode -->
+          <div class="sb-path-section" id="sb-compare-section">
+            <div class="sb-path-label">Compare with Another Entity</div>
+            <select class="sb-path-select" id="sb-compare-target" onchange="runComparison(this.value)">
+              <option value="">Select an entity to compare…</option>
+            </select>
+            <div id="sb-compare-result"></div>
+          </div>
+          <!-- Investigation leads -->
+          <div id="sb-leads-wrap" style="margin-top:var(--s3)"></div>
+          <!-- Export -->
+          <div id="sb-export-wrap"></div>
         </div>
       </div>
     </div>
@@ -957,6 +1003,12 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
         <div class="gli"><span class="gld" style="background:#3D5C2F"></span>Energy</div>
         <div class="gli"><span class="gld" style="background:#FF9999"></span>Princelings</div>
         <div class="gli"><span class="gld" style="background:#99CCFF"></span>Influence</div>
+      </div>
+      <div class="gleg-links">
+        <div class="gli"><span class="gll" style="background:#E89040"></span>Financial</div>
+        <div class="gli"><span class="gll gll-dash"></span>Influence</div>
+        <div class="gli"><span class="gll" style="background:#E05555"></span>Sanctions</div>
+        <div class="gli"><span class="gll" style="background:#888"></span>General</div>
       </div>
       <div class="gtt" id="gtt"><div class="gtn" id="ttn"></div><div class="gty" id="tty"></div></div>
     </div>
@@ -1274,6 +1326,7 @@ function init(){
   if(gn) gn.textContent=n.length;
   if(ge) ge.textContent=e.length;
   if(ga) ga.textContent=a.length;
+  renderPopularSearches();
   lucide.createIcons();
 }
 
@@ -1978,6 +2031,19 @@ function on(id){
   // Pathway analysis: populate dropdown, clear previous path
   renderPathFinder(id);
   clearPathway();
+  // Comparison mode: populate dropdown with all other nodes
+  const cmpSel=document.getElementById('sb-compare-target');
+  if(cmpSel){
+    const sorted=DATA.nodes.filter(n=>n.id!==id).sort((a,b)=>a.name.localeCompare(b.name));
+    cmpSel.innerHTML='<option value="">Select an entity to compare\u2026</option>'+sorted.map(n=>`<option value="${n.id}">${esc(n.name)}</option>`).join('');
+  }
+  document.getElementById('sb-compare-result').innerHTML='';
+  gCompareNode=null;
+  // Investigation leads: contextual suggestions based on this node
+  investigationLeads(nd);
+  // Export button
+  const expWrap=document.getElementById('sb-export-wrap');
+  if(expWrap) expWrap.innerHTML=`<div class="sb-export-btn" onclick="exportNeighborhood()"><i data-lucide="image" style="width:12px;height:12px"></i> Export Neighborhood</div>`;
   trackEvent('node_view', nd.name, nd.cluster);
   // Scroll sidebar content to top
   const sc=document.querySelector('.sb-content');if(sc) sc.scrollTop=0;
@@ -2051,8 +2117,8 @@ async function loadFEC(name, nodeType){
 function cd(){
   document.getElementById('sb-welcome').classList.remove('hidden');
   document.getElementById('sb-node-detail').classList.remove('active');
-  // Clear pathway highlighting
-  gPathNodes=null;gPathEdges=null;dg();
+  // Clear pathway and comparison highlighting
+  gPathNodes=null;gPathEdges=null;gCompareNode=null;dg();
   // Also close old detail panel if it was open
   const dob=document.getElementById('dob');if(dob) dob.classList.remove('open');
   const dp=document.getElementById('dp');if(dp) dp.classList.remove('open');
@@ -2155,6 +2221,11 @@ function ig(){
     if(!neighborMap[e.target]) neighborMap[e.target]=[];
     neighborMap[e.source].push(e.target);
     neighborMap[e.target].push(e.source);
+  });
+  // Precompute edge types for visual styling (Feature 3)
+  esim.forEach(e=>{
+    const s=nodeById[e.source],t=nodeById[e.target];
+    e._type=(s&&t)?classifyEdge(e,s,t):'general';
   });
 
   nsim.forEach(n=>{
@@ -2342,14 +2413,18 @@ function dg(){
     const isPathEdge=pathMode&&gPathEdges&&(gPathEdges.has(e.source+'-'+e.target)||gPathEdges.has(e.target+'-'+e.source));
     const isHl=!pathMode&&hlSet&&(hlSet.has(e.source)&&hlSet.has(e.target));
     const dim=hlSet&&!isHl&&!isPathEdge;
-    // Width
+    // Base width from amount/weight
     let w=1;
     if(e.amount){const v=parseFloat((e.amount+'').replace(/[^0-9.]/g,''))||0;if(v>=1e9)w=3;else if(v>=1e6)w=2.5;else if(v>=1e3)w=1.8;else if(v>0)w=1.3;}
     if(e.weight) w=Math.min(3,Math.max(1,e.weight));
-    if(isPathEdge){line.attr('stroke','#FF6B52').attr('stroke-width',3).attr('opacity',1);}
-    else if(isHl){line.attr('stroke',dark?'rgba(255,255,255,.4)':'rgba(0,0,0,.35)').attr('stroke-width',Math.max(w+1,2.5)).attr('opacity',1);}
-    else if(dim){line.attr('stroke',dark?'rgba(255,255,255,.04)':'rgba(0,0,0,.04)').attr('stroke-width',w).attr('opacity',1);}
-    else{line.attr('stroke',dark?'rgba(255,255,255,.1)':'rgba(0,0,0,.1)').attr('stroke-width',w).attr('opacity',1);}
+    // Link type colors (Feature 3)
+    const typeColors={financial:'#E89040',influence:'#99CCFF',sanctions:'#E05555',general:dark?'rgba(255,255,255,.12)':'rgba(0,0,0,.12)'};
+    const baseColor=typeColors[e._type]||typeColors.general;
+    const isDash=e._type==='influence';
+    if(isPathEdge){line.attr('stroke','#FF6B52').attr('stroke-width',3).attr('opacity',1).attr('stroke-dasharray','none');}
+    else if(isHl){line.attr('stroke',baseColor).attr('stroke-width',Math.max(w+1,2.5)).attr('opacity',1).attr('stroke-dasharray',isDash?'5 3':'none');}
+    else if(dim){line.attr('stroke',baseColor).attr('stroke-width',w).attr('opacity',0.08).attr('stroke-dasharray',isDash?'5 3':'none');}
+    else{line.attr('stroke',baseColor).attr('stroke-width',Math.max(w,1.5)).attr('opacity',dark?0.45:0.35).attr('stroke-dasharray',isDash?'5 3':'none');}
   });
 
   // ── Update nodes ──
@@ -2421,6 +2496,11 @@ document.getElementById('gs').addEventListener('input',function(){
       <i data-lucide="chevron-right" style="width:14px;height:14px;color:var(--color-text-faint)"></i>
     </div>`;
   }).join('');
+  // Log search for analytics (debounced: only log if 3+ chars and results found)
+  if(q.length>=3&&res.length>0){
+    clearTimeout(this._searchTimer);
+    this._searchTimer=setTimeout(()=>logSearch(this.value.trim()),600);
+  }
   lucide.createIcons();
 });
 
@@ -3008,6 +3088,227 @@ function findOnMap(id){
       trackEvent('find_on_map', DATA.nodes.find(n=>n.id===id)?.name||'unknown');
     }
   }, 150);
+}
+
+// ========== FEATURE 12: SEARCH ANALYTICS ==========
+function logSearch(term){
+  if(!term||term.length<2) return;
+  try{
+    const data=JSON.parse(localStorage.getItem('dex-searches')||'{}');
+    data[term]=(data[term]||0)+1;
+    localStorage.setItem('dex-searches',JSON.stringify(data));
+  }catch(e){}
+  renderPopularSearches();
+}
+function renderPopularSearches(){
+  const el=document.getElementById('sb-popular');
+  if(!el) return;
+  try{
+    const data=JSON.parse(localStorage.getItem('dex-searches')||'{}');
+    const sorted=Object.entries(data).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    if(!sorted.length){el.innerHTML='';return;}
+    el.innerHTML='<div class="sb-popular-title">Popular Searches</div>'+
+      sorted.map(([term,count])=>
+        `<span class="sb-popular-item" onclick="document.getElementById('gs').value='${esc(term)}';document.getElementById('gs').dispatchEvent(new Event('input'))">${esc(term)}<span class="sb-popular-count">${count}</span></span>`
+      ).join('');
+  }catch(e){el.innerHTML='';}
+}
+
+// ========== FEATURE +1: CONTEXTUAL INVESTIGATION LEADS ==========
+function investigationLeads(nd){
+  const wrap=document.getElementById('sb-leads-wrap');
+  if(!wrap) return;
+  const leads=[];
+  const neighbors=[];
+  DATA.edges.forEach(e=>{
+    if(e.source===nd.id) neighbors.push({id:e.target,edge:e});
+    if(e.target===nd.id) neighbors.push({id:e.source,edge:e});
+  });
+  const neighborNodes=neighbors.map(nb=>DATA.nodes.find(n=>n.id===nb.id)).filter(Boolean);
+  const clusters=new Set();
+  neighborNodes.forEach(n=>clusters.add(n.cluster));
+  const cc=nd._cc||neighbors.length;
+
+  // Lead: Cross-cluster bridges
+  if(clusters.size>=3){
+    const clNames=[...clusters].map(c=>({sanctions:'Sanctions-Busting',crypto:'Crypto Rails',energy:'Energy Networks',princelings:'Princelings',influence:'Influence Ops'}[c]||c));
+    leads.push({title:'Cross-Cluster Bridge',desc:`This entity connects ${clusters.size} clusters (${clNames.join(', ')}). Cross-cluster actors often serve as intermediaries in corruption flows.`,action:'Compare with similar bridge nodes',onclick:`document.getElementById('sb-compare-target').focus()`});
+  }
+  // Lead: High centrality
+  if(cc>=6){
+    const bridged=neighborNodes.filter(n=>n.cluster!==nd.cluster).slice(0,2);
+    const names=bridged.map(n=>n.name).join(' and ')||'multiple entities';
+    leads.push({title:'Hub Entity Analysis',desc:`With ${cc} connections, this is a highly central node. Investigate how it bridges ${names} and whether it serves as a gatekeeper.`,action:'Find paths through this node',onclick:`document.getElementById('sb-path-target').focus()`});
+  }
+  // Lead: Sanctions cluster
+  if(nd.cluster==='sanctions'||(nd.tags&&nd.tags.includes('sanctions'))){
+    const sanctionedNeighbors=neighborNodes.filter(n=>n.cluster==='sanctions'||n.type==='enforcement').length;
+    leads.push({title:'Sanctions Exposure Check',desc:`Connected to ${sanctionedNeighbors} sanctions-related entities. Verify current OFAC designation status and check for secondary sanctions risk.`,action:'Check OFAC SDN List',onclick:`window.open('https://sanctionssearch.ofac.treas.gov/','_blank')`});
+  }
+  // Lead: Crypto cluster
+  if(nd.cluster==='crypto'||(nd.tags&&nd.tags.includes('crypto'))){
+    leads.push({title:'Blockchain Transaction Trail',desc:'Crypto-connected entities may have on-chain transaction histories. Check blockchain explorers for wallet addresses and transaction patterns.',action:'Search OpenSanctions',onclick:`window.open('https://www.opensanctions.org/search/?q=${encodeURIComponent(nd.name)}','_blank')`});
+  }
+  // Lead: Connected to organizations
+  const orgNeighbors=neighborNodes.filter(n=>n.type==='organization');
+  if(orgNeighbors.length>=2&&nd.type==='person'){
+    const orgNames=orgNeighbors.slice(0,3).map(n=>n.name).join(', ');
+    leads.push({title:'Beneficial Ownership Investigation',desc:`Connected to ${orgNeighbors.length} organizations (${orgNames}). Research corporate registration, ownership structure, and potential shell company indicators.`,action:'Search OpenCorporates',onclick:`window.open('https://opencorporates.com/companies?q=${encodeURIComponent(nd.name)}','_blank')`});
+  }
+  // Lead: Connected to deals
+  const dealNeighbors=neighborNodes.filter(n=>n.type==='deal');
+  if(dealNeighbors.length>=1){
+    const dealNames=dealNeighbors.map(n=>n.name).join(', ');
+    leads.push({title:'Deal Flow Analysis',desc:`Involved in ${dealNeighbors.length} deal(s) (${dealNames}). Trace the financial flows, intermediaries, and regulatory filings associated with these transactions.`,action:'Search SEC EDGAR',onclick:`window.open('https://efts.sec.gov/LATEST/search-index?q=%22${encodeURIComponent(nd.name)}%22','_blank')`});
+  }
+  // Lead: Influence cluster person
+  if(nd.cluster==='influence'&&nd.type==='person'){
+    leads.push({title:'Foreign Agent Registration Check',desc:'Individuals in the influence cluster may be required to register under FARA. Check the DOJ FARA database for registration status.',action:'Search FARA Database',onclick:`window.open('https://efile.fara.gov/ords/fara/f?p=185:130:::::P130_DATERANGE:N','_blank')`});
+  }
+
+  if(!leads.length){wrap.innerHTML='';return;}
+  wrap.innerHTML='<div class="sb-path-label" style="margin-bottom:var(--s2)">Investigation Leads</div>'+
+    leads.slice(0,5).map(l=>
+      `<div class="sb-lead"><div class="sb-lead-title">${esc(l.title)}</div><div class="sb-lead-desc">${esc(l.desc)}</div><span class="sb-lead-action" onclick="${l.onclick}">${esc(l.action)} \u2192</span></div>`
+    ).join('');
+}
+
+// ========== FEATURE 10: COMPARISON MODE ==========
+let gCompareNode=null;
+function runComparison(val){
+  const result=document.getElementById('sb-compare-result');
+  if(!result) return;
+  gCompareNode=null;
+  if(!val||!gHighlight){result.innerHTML='';dg();return;}
+  const idB=parseInt(val);
+  const ndA=DATA.nodes.find(n=>n.id===gHighlight);
+  const ndB=DATA.nodes.find(n=>n.id===idB);
+  if(!ndA||!ndB||ndA.id===ndB.id){result.innerHTML='';return;}
+  gCompareNode=idB;
+
+  // Shared connections
+  const neighborsA=new Set();
+  DATA.edges.forEach(e=>{if(e.source===ndA.id)neighborsA.add(e.target);if(e.target===ndA.id)neighborsA.add(e.source);});
+  const neighborsB=new Set();
+  DATA.edges.forEach(e=>{if(e.source===ndB.id)neighborsB.add(e.target);if(e.target===ndB.id)neighborsB.add(e.source);});
+  const shared=[...neighborsA].filter(id=>neighborsB.has(id));
+  const sharedNodes=shared.map(id=>DATA.nodes.find(n=>n.id===id)).filter(Boolean);
+
+  // Shared clusters
+  const tagsA=new Set(ndA.tags||[]);
+  const tagsB=new Set(ndB.tags||[]);
+  const sharedClusters=[...tagsA].filter(t=>tagsB.has(t));
+
+  // Articles mentioning both
+  const nameA=ndA.name.toLowerCase(),nameB=ndB.name.toLowerCase();
+  const sharedArticles=(DATA.articles||[]).filter(a=>{
+    const ids=a.entity_ids||[];
+    return ids.includes(ndA.id)&&ids.includes(ndB.id);
+  });
+
+  // Shortest path
+  const path=findPath(ndA.id,ndB.id,DATA);
+  const pathLen=path?path.length-1:null;
+
+  // Bridge score
+  const bridgeScore=shared.length;
+
+  let html='<div class="sb-compare-wrap">';
+  html+=`<div class="sb-compare-title">${esc(ndA.name)} vs ${esc(ndB.name)}</div>`;
+  html+=`<div class="sb-compare-row"><span class="sb-compare-label">Shortest Path</span><span class="sb-compare-val">${pathLen!==null?pathLen+' hop'+(pathLen!==1?'s':''):'No path'}</span></div>`;
+  html+=`<div class="sb-compare-row"><span class="sb-compare-label">Shared Connections</span><span class="sb-compare-val">${shared.length}</span></div>`;
+  html+=`<div class="sb-compare-row"><span class="sb-compare-label">Shared Clusters</span><span class="sb-compare-val">${sharedClusters.length?sharedClusters.join(', '):'None'}</span></div>`;
+  html+=`<div class="sb-compare-row"><span class="sb-compare-label">Shared Articles</span><span class="sb-compare-val">${sharedArticles.length}</span></div>`;
+  html+=`<div class="sb-compare-row"><span class="sb-compare-label">Network Bridge Score</span><span class="sb-compare-val">${bridgeScore}</span></div>`;
+  if(sharedNodes.length){
+    html+='<div class="sb-compare-shared">';
+    sharedNodes.forEach(n=>{
+      html+=`<span class="sb-compare-shared-item" onclick="on(${n.id})">${esc(n.name)}</span>`;
+    });
+    html+='</div>';
+  }
+  if(sharedArticles.length){
+    html+='<div style="margin-top:var(--s2);font-size:var(--txt-xs);color:var(--color-text-muted)">';
+    sharedArticles.slice(0,3).forEach(a=>{
+      html+=`<div style="margin-bottom:4px"><a href="${esc(a.url||'#')}" target="_blank" rel="noopener noreferrer" style="color:#3D5C2F;text-decoration:none">${esc(a.title)}</a></div>`;
+    });
+    html+='</div>';
+  }
+  html+='</div>';
+  result.innerHTML=html;
+
+  // Highlight on map: set comparison state and redraw
+  gPathNodes=new Set(shared.concat([ndA.id,ndB.id]));
+  if(path){
+    gPathEdges=new Set();
+    for(let i=0;i<path.length-1;i++){gPathEdges.add(path[i]+'-'+path[i+1]);gPathEdges.add(path[i+1]+'-'+path[i]);}
+  }
+  dg();
+}
+
+// ========== FEATURE 2: EXPORT SUBGRAPHS ==========
+function exportNeighborhood(){
+  if(!gHighlight) return;
+  const nd=DATA.nodes.find(n=>n.id===gHighlight);
+  if(!nd) return;
+  // Gather neighborhood
+  const neighborIds=new Set([nd.id]);
+  DATA.edges.forEach(e=>{if(e.source===nd.id)neighborIds.add(e.target);if(e.target===nd.id)neighborIds.add(e.source);});
+  const subNodes=nsim.filter(n=>neighborIds.has(n.id));
+  const subEdges=esim.filter(e=>neighborIds.has(e.source)&&neighborIds.has(e.target));
+  if(!subNodes.length) return;
+
+  // Compute bounding box
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  subNodes.forEach(n=>{const r=(n._r||10)+30;minX=Math.min(minX,n.x-r);minY=Math.min(minY,n.y-r);maxX=Math.max(maxX,n.x+r);maxY=Math.max(maxY,n.y+r);});
+  const pad=40;
+  minX-=pad;minY-=pad;maxX+=pad;maxY+=pad;
+  const w=maxX-minX,h=maxY-minY;
+
+  // Build standalone SVG
+  let svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(w)}" height="${Math.round(h)}" style="background:#1a1a1a;font-family:'IBM Plex Sans',sans-serif">`;
+  // Edges
+  const nbMap={};subNodes.forEach(n=>nbMap[n.id]=n);
+  subEdges.forEach(e=>{
+    const a=nbMap[e.source],b=nbMap[e.target];if(!a||!b)return;
+    const typeColors={financial:'#E89040',influence:'#99CCFF',sanctions:'#E05555',general:'#555'};
+    const col=typeColors[e._type]||typeColors.general;
+    svg+=`<line x1="${a.x-minX}" y1="${a.y-minY}" x2="${b.x-minX}" y2="${b.y-minY}" stroke="${col}" stroke-width="1.5" opacity="0.5"${e._type==='influence'?' stroke-dasharray="5 3"':''}/>`;
+  });
+  // Nodes
+  subNodes.forEach(n=>{
+    const x=n.x-minX,y=n.y-minY,r=n._r||10;
+    const color=nc(n);
+    const isCenter=n.id===nd.id;
+    svg+=`<circle cx="${x}" cy="${y}" r="${r}" fill="${color}" stroke="${isCenter?'#FF6B52':'rgba(255,255,255,.3)'}" stroke-width="${isCenter?3:1}"/>`;
+    const label=n.name.length>20?n.name.slice(0,19)+'\u2026':n.name;
+    svg+=`<text x="${x}" y="${y+r+13}" text-anchor="middle" font-size="10" fill="rgba(220,220,218,.85)">${esc(label)}</text>`;
+  });
+  // Timestamp
+  const ts=new Date().toISOString().slice(0,10);
+  svg+=`<text x="${w-pad}" y="${h-10}" text-anchor="end" font-size="9" fill="rgba(255,255,255,.3)">Dekleptocracy Explorer \u00b7 ${ts}</text>`;
+  svg+='</svg>';
+
+  // Convert SVG to PNG via canvas
+  const img=new Image();
+  const blob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  img.onload=function(){
+    const canvas=document.createElement('canvas');
+    canvas.width=Math.round(w)*2;canvas.height=Math.round(h)*2;
+    const ctx=canvas.getContext('2d');
+    ctx.scale(2,2);
+    ctx.drawImage(img,0,0);
+    URL.revokeObjectURL(url);
+    canvas.toBlob(function(pngBlob){
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(pngBlob);
+      a.download=(nd.name.toLowerCase().replace(/[^a-z0-9]+/g,'-'))+'-network-'+ts+'.png';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    },'image/png');
+  };
+  img.src=url;
 }
 
 // ========== EXTERNAL DATA INTEGRATION ==========
