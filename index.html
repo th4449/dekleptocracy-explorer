@@ -771,6 +771,19 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
 .sb-compare-shared{margin-top:var(--s2)}
 .sb-compare-shared-item{display:inline-block;padding:2px 8px;margin:2px 3px 2px 0;background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);border-radius:var(--radius-full);font-size:.65rem;color:var(--color-text-muted);cursor:pointer}
 .sb-compare-shared-item:hover{border-color:#FFD700}
+/* ── Hidden connections finder ── */
+.sb-hc-header{font-size:var(--txt-xs);font-weight:600;color:#3D5C2F;text-transform:uppercase;letter-spacing:.04em;margin-bottom:var(--s2)}
+[data-theme="dark"] .sb-hc-header{color:#7ab368}
+.sb-hc-card{padding:10px var(--s3);margin-bottom:var(--s2);background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-md);cursor:pointer;transition:border-color var(--transition)}
+.sb-hc-card:hover,.sb-hc-card.active{border-color:#FF6B52}
+.sb-hc-rank{font-size:.6rem;font-family:var(--font-mono);font-weight:600;color:#FF6B52;text-transform:uppercase;margin-bottom:3px}
+.sb-hc-chain{font-size:var(--txt-xs);font-weight:500;color:var(--color-text);line-height:1.5;margin-bottom:4px;word-break:break-word}
+.sb-hc-chain span{color:#FF6B52}
+.sb-hc-meta{font-size:.6rem;color:var(--color-text-faint);font-family:var(--font-mono);margin-bottom:4px}
+.sb-hc-analysis{font-size:var(--txt-xs);color:var(--color-text-muted);line-height:1.5}
+.sb-hc-clear{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;margin-top:var(--s2);background:#FF6B52;color:#fff;border-radius:var(--radius-md);font-size:var(--txt-xs);font-weight:500;cursor:pointer;transition:opacity var(--transition)}
+.sb-hc-clear:hover{opacity:.85}
+.sb-hc-empty{font-size:var(--txt-xs);color:var(--color-text-muted);font-style:italic;padding:var(--s2) 0}
 /* ── Export button ── */
 .sb-export-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;margin-top:var(--s3);background:#3D5C2F;color:#fff;border-radius:var(--radius-md);font-size:var(--txt-xs);font-weight:500;cursor:pointer;transition:opacity var(--transition);width:fit-content}
 .sb-export-btn:hover{opacity:.85}
@@ -972,6 +985,14 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
               <option value="">Select an entity to compare…</option>
             </select>
             <div id="sb-compare-result"></div>
+          </div>
+          <!-- Hidden connections finder -->
+          <div class="sb-path-section" id="sb-hidden-section">
+            <div class="sb-path-label">Find Hidden Connections</div>
+            <select class="sb-path-select" id="sb-hidden-target" onchange="runHiddenConnections(this.value)">
+              <option value="">Select an unconnected entity…</option>
+            </select>
+            <div id="sb-hidden-result"></div>
           </div>
           <!-- Investigation leads -->
           <div id="sb-leads-wrap" style="margin-top:var(--s3)"></div>
@@ -2099,6 +2120,15 @@ function on(id){
   }
   document.getElementById('sb-compare-result').innerHTML='';
   gCompareNode=null;
+  // Hidden connections: populate dropdown with non-direct-neighbors only
+  const directNeighbors=new Set([id]);
+  DATA.edges.forEach(e=>{if(e.source===id)directNeighbors.add(e.target);if(e.target===id)directNeighbors.add(e.source);});
+  const hcSel=document.getElementById('sb-hidden-target');
+  if(hcSel){
+    const unconnected=DATA.nodes.filter(n=>!directNeighbors.has(n.id)).sort((a,b)=>a.name.localeCompare(b.name));
+    hcSel.innerHTML='<option value="">Select an unconnected entity\u2026</option>'+unconnected.map(n=>`<option value="${n.id}">${esc(n.name)}</option>`).join('');
+  }
+  document.getElementById('sb-hidden-result').innerHTML='';
   // Investigation leads: contextual suggestions based on this node
   investigationLeads(nd);
   // Export button
@@ -2183,6 +2213,7 @@ function cd(){
   document.getElementById('sb-node-detail').classList.remove('active');
   // Clear pathway, comparison, and article view highlighting
   gPathNodes=null;gPathEdges=null;gCompareNode=null;gArticleNodes=null;gArticleEdges=null;
+  window._hiddenPaths=null;
   document.getElementById('sb-article-view').classList.remove('active');
   dg();
   // Refresh welcome screen content
@@ -2984,6 +3015,9 @@ function renderManual(){
 <div class="help-p">In Layer 3, the "Find a Path" section lets you trace the shortest connection between the current node and any other node in the graph. Select a target from the dropdown and the path will be highlighted on the map in coral red.</div></div>
 <div class="help-section"><div class="help-h2">Comparison Mode</div>
 <div class="help-p">Below pathfinding in Layer 3, "Compare with Another Entity" lets you select a second node to compare against the current one. The comparison shows the shortest path between them, shared connections (entities both are connected to), shared clusters, articles mentioning both entities, and a network bridge score. Shared connections appear as clickable pills. Both nodes and the path between them are highlighted on the map.</div></div>
+<div class="help-section"><div class="help-h2">Hidden Connection Finder</div>
+<div class="help-p">Below comparison mode in Layer 3, "Find Hidden Connections" lets you discover indirect paths between two entities that are not directly linked. The dropdown filters to show only entities with no direct edge to the current node. Select a target and the system finds all paths up to five hops, ranks them by connection strength (average node degree divided by hop count), and displays the top five.</div>
+<div class="help-p">Each path card shows the strength score, hop count, the chain of entities from source to target, and a contextual analysis explaining what types of connections (financial, influence, sanctions) form the path and who the key intermediaries are. Click any path card to highlight it on the map. Click "Clear Hidden Connections" to exit.</div></div>
 <div class="help-section"><div class="help-h2">Investigation Leads</div>
 <div class="help-p">The "Investigation Leads" section in Layer 3 analyzes the current node and generates three to five contextual suggestions based on its network position. Unlike the templated methodology steps, these are specific to this particular node — for example, suggesting you check OFAC designations if the node connects to sanctioned entities, or recommending a beneficial ownership search if the node connects to multiple organizations. Each lead includes a clickable link to an external investigation tool.</div></div>
 <div class="help-section"><div class="help-h2">Export Neighborhood</div>
@@ -3017,6 +3051,7 @@ const FAQ_DATA=[
   {q:'What do the edge colors mean?',a:'Orange solid lines are financial flows (investments, payments, deals). Blue dashed lines are influence operations (lobbying, appointments). Red solid lines are sanctions evasion (shell companies, circumvention). Gray lines are general or unclassified connections. The legend at the bottom-left of the graph explains these.'},
   {q:'How does the pathfinding work?',a:'The pathfinder uses breadth-first search to find the shortest connection between any two nodes. The path is highlighted on the map in coral red. If no path exists, the nodes are in disconnected components of the graph.'},
   {q:'How does comparison mode work?',a:'Select a node, then scroll to "Compare with Another Entity" in the sidebar and pick a second node. The system computes shared connections, shared clusters, shared articles, shortest path length, and a network bridge score. Both nodes and the path between them are highlighted on the map.'},
+  {q:'What is the Hidden Connection Finder?',a:'Select a node, then scroll to "Find Hidden Connections" in the sidebar. The dropdown shows only entities with no direct edge to the current node. Select one and the system finds all indirect paths (up to 5 hops), ranks them by connection strength, and shows the top 5 with analysis of connection types and key intermediaries. Click any path to highlight it on the map.'},
   {q:'What are Investigation Leads?',a:'Investigation Leads are contextual suggestions generated by analyzing the selected node\'s network position. Unlike the generic methodology steps, these are specific to each node — for example, suggesting OFAC checks for sanctions-connected entities or beneficial ownership searches for nodes tied to multiple organizations. Each lead links to an external investigation tool.'},
   {q:'How do I export a subgraph image?',a:'Select a node and scroll to the "Export Neighborhood" button at the bottom of the sidebar. It downloads a publication-ready PNG showing the selected node, all its direct connections, colored edges, labels, and a timestamp. The image is rendered at 2x resolution for print quality.'},
   {q:'What is the Due Diligence Checklist?',a:'Select a node and click "Generate Checklist" in Layer 3. A printable investigation checklist opens in a new tab, tailored to the entity type (person, organization, jurisdiction, deal, or enforcement action). Each item has a checkbox, description, and suggested sources. You can print it, save as PDF, or check boxes on screen while researching.'},
@@ -3052,6 +3087,7 @@ const TUT_STEPS=[
   {title:'Try Corruption Flow Tracing',desc:'Switch to "Corruption Flow Tracing" mode. Select a connected node to trace the corruption flow between them. The system classifies the edge type and shows relevant tracing steps.',target:'#sb-l3-section',action:'Select a connection to trace.'},
   {title:'Find a Path Between Nodes',desc:'Use the "Find a Path" dropdown to select any node in the graph. The shortest path will be highlighted in coral red on the map.',target:'#sb-path-section',action:'Select a target node from the dropdown.'},
   {title:'Compare Two Entities',desc:'Use the "Compare with Another Entity" dropdown to select a second node. You will see shared connections, shared clusters, shared articles, shortest path length, and a bridge score. Both nodes are highlighted on the map.',target:'#sb-compare-section',action:'Select a node to compare.'},
+  {title:'Find Hidden Connections',desc:'Use the "Find Hidden Connections" dropdown to select an entity that is NOT directly connected. The system finds all indirect paths up to 5 hops, ranks them by strength, and shows the top 5 with analysis. Click a path card to highlight it on the map.',target:'#sb-hidden-section',action:'Select an unconnected entity.'},
   {title:'Review Investigation Leads',desc:'Scroll to "Investigation Leads" to see contextual suggestions generated for this specific node based on its network position, cluster membership, and connection patterns. Click a lead\'s action link to open an external investigation tool.',target:'#sb-leads-wrap',action:'Read the leads and click an action link.'},
   {title:'Export the Neighborhood',desc:'Click "Export Neighborhood" to download a PNG image of this node and all its direct connections. The image is publication-ready with colored edges, labels, and a timestamp.',target:'#sb-export-wrap',action:'Click the Export Neighborhood button.'},
   {title:'Generate a Checklist',desc:'Click "Generate Checklist" to open a printable due diligence checklist tailored to this entity type. Each item has a checkbox, description, and suggested investigation sources. Use Ctrl+P to print or save as PDF.',target:'#sb-checklist-wrap',action:'Click the Generate Checklist button.'},
@@ -3499,6 +3535,157 @@ function runComparison(val){
     gPathEdges=new Set();
     for(let i=0;i<path.length-1;i++){gPathEdges.add(path[i]+'-'+path[i+1]);gPathEdges.add(path[i+1]+'-'+path[i]);}
   }
+  dg();
+}
+
+// ========== FEATURE 2b: HIDDEN CONNECTION FINDER ==========
+function findAllPaths(startId,endId,maxDepth){
+  if(startId===endId) return [];
+  // BFS layer by layer, collecting all paths up to maxDepth
+  const adj={};
+  DATA.edges.forEach(e=>{
+    if(!adj[e.source]) adj[e.source]=[];
+    if(!adj[e.target]) adj[e.target]=[];
+    adj[e.source].push(e.target);
+    adj[e.target].push(e.source);
+  });
+  const results=[];
+  // Queue entries: [currentNode, pathSoFar]
+  let queue=[[startId,[startId]]];
+  for(let depth=0;depth<maxDepth&&queue.length>0;depth++){
+    const nextQueue=[];
+    for(let qi=0;qi<queue.length;qi++){
+      const [cur,path]=queue[qi];
+      const neighbors=adj[cur]||[];
+      for(let ni=0;ni<neighbors.length;ni++){
+        const nb=neighbors[ni];
+        if(path.includes(nb)) continue; // no cycles
+        const newPath=path.concat(nb);
+        if(nb===endId){
+          results.push(newPath);
+          if(results.length>=50) return results; // cap for performance
+        } else if(newPath.length-1<maxDepth){
+          nextQueue.push([nb,newPath]);
+        }
+      }
+    }
+    queue=nextQueue;
+    if(results.length>=50) break;
+  }
+  return results;
+}
+
+function pathStrength(path){
+  // Average degree of nodes in path / path hop count
+  const connMap={};
+  DATA.edges.forEach(e=>{connMap[e.source]=(connMap[e.source]||0)+1;connMap[e.target]=(connMap[e.target]||0)+1;});
+  let totalDeg=0;
+  path.forEach(id=>{totalDeg+=(connMap[id]||0);});
+  const avgDeg=totalDeg/path.length;
+  const hops=path.length-1;
+  return hops>0?avgDeg/hops:0;
+}
+
+function analyzePathTypes(path){
+  const nodeMap={};DATA.nodes.forEach(n=>nodeMap[n.id]=n);
+  const edgeMap={};
+  DATA.edges.forEach(e=>{edgeMap[e.source+'-'+e.target]=e;edgeMap[e.target+'-'+e.source]=e;});
+  const types={financial:0,influence:0,sanctions:0,general:0};
+  for(let i=0;i<path.length-1;i++){
+    const e=edgeMap[path[i]+'-'+path[i+1]];
+    if(e){
+      const s=nodeMap[e.source],t=nodeMap[e.target];
+      const eType=(s&&t)?classifyEdge(e,s,t):'general';
+      types[eType]=(types[eType]||0)+1;
+    }
+  }
+  // Build analysis text
+  const hops=path.length-1;
+  const dominant=Object.entries(types).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  if(!dominant.length) return 'Connection type could not be determined.';
+  const typeNames={financial:'financial flows',influence:'influence operations',sanctions:'sanctions evasion',general:'general connections'};
+  const primary=typeNames[dominant[0][0]]||'connections';
+  const ndA=nodeMap[path[0]],ndB=nodeMap[path[path.length-1]];
+  const nA=ndA?ndA.name:'Entity A',nB=ndB?ndB.name:'Entity B';
+  let text='This '+hops+'-hop path connects '+nA+' to '+nB+' primarily through '+primary+'.';
+  if(dominant.length>1&&dominant[1][1]>0){
+    text+=' Secondary link type: '+typeNames[dominant[1][0]]+'.';
+  }
+  // Intermediate entities
+  if(path.length>2){
+    const intermediates=path.slice(1,-1).map(id=>{const n=nodeMap[id];return n?n.name:'?';});
+    text+=' Key intermediaries: '+intermediates.join(', ')+'.';
+  }
+  return text;
+}
+
+function runHiddenConnections(val){
+  const result=document.getElementById('sb-hidden-result');
+  if(!result) return;
+  if(!val||!gHighlight){result.innerHTML='';gPathNodes=null;gPathEdges=null;dg();return;}
+  const idB=parseInt(val);
+  const ndA=DATA.nodes.find(n=>n.id===gHighlight);
+  const ndB=DATA.nodes.find(n=>n.id===idB);
+  if(!ndA||!ndB){result.innerHTML='';return;}
+
+  // Find all paths up to 5 hops
+  const allPaths=findAllPaths(ndA.id,ndB.id,5);
+  if(!allPaths.length){
+    result.innerHTML='<div class="sb-hc-empty">No hidden connections found within 5 hops.</div>';
+    gPathNodes=null;gPathEdges=null;dg();
+    return;
+  }
+  // Score and rank
+  const scored=allPaths.map(p=>({path:p,strength:pathStrength(p),hops:p.length-1}));
+  scored.sort((a,b)=>b.strength-a.strength);
+  const top5=scored.slice(0,5);
+
+  const nodeMap={};DATA.nodes.forEach(n=>nodeMap[n.id]=n);
+  let html=`<div class="sb-hc-header">Hidden Connections Found: ${allPaths.length} path${allPaths.length!==1?'s':''}</div>`;
+  top5.forEach((item,i)=>{
+    const chain=item.path.map(id=>{const n=nodeMap[id];return n?n.name:'?';}).join(' <span>\u2192</span> ');
+    const analysis=analyzePathTypes(item.path);
+    html+=`<div class="sb-hc-card${i===0?' active':''}" onclick="selectHiddenPath(${i})" data-path-idx="${i}">
+      <div class="sb-hc-rank">Path ${i+1} \u00b7 Strength ${item.strength.toFixed(2)} \u00b7 ${item.hops} hop${item.hops!==1?'s':''}</div>
+      <div class="sb-hc-chain">${chain}</div>
+      <div class="sb-hc-analysis">${esc(analysis)}</div>
+    </div>`;
+  });
+  html+=`<div class="sb-hc-clear" onclick="clearHiddenConnections()"><i data-lucide="x" style="width:10px;height:10px"></i> Clear Hidden Connections</div>`;
+  result.innerHTML=html;
+  lucide.createIcons();
+
+  // Store paths for selection
+  window._hiddenPaths=top5;
+  // Highlight first path
+  selectHiddenPath(0);
+}
+
+function selectHiddenPath(idx){
+  const paths=window._hiddenPaths;
+  if(!paths||!paths[idx]) return;
+  const path=paths[idx].path;
+  // Update card active state
+  document.querySelectorAll('.sb-hc-card').forEach((card,i)=>{
+    card.classList.toggle('active',i===idx);
+  });
+  // Set graph highlighting
+  gPathNodes=new Set(path);
+  gPathEdges=new Set();
+  for(let i=0;i<path.length-1;i++){
+    gPathEdges.add(path[i]+'-'+path[i+1]);
+    gPathEdges.add(path[i+1]+'-'+path[i]);
+  }
+  dg();
+}
+
+function clearHiddenConnections(){
+  gPathNodes=null;gPathEdges=null;
+  window._hiddenPaths=null;
+  const result=document.getElementById('sb-hidden-result');
+  if(result) result.innerHTML='';
+  const sel=document.getElementById('sb-hidden-target');
+  if(sel) sel.value='';
   dg();
 }
 
