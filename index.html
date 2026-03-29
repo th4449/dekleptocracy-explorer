@@ -2061,7 +2061,6 @@ function cd(){
 // ========== GRAPH ==========
 // Dekleptocracy palette — fixed colors for both themes
 const CLUSTER_COLORS={sanctions:'#2D5016',crypto:'#FF6B52',energy:'#3D5C2F',princelings:'#FF9999',influence:'#99CCFF',default:'#888'};
-const CLUSTER_BG={sanctions:'rgba(45,80,22,',crypto:'rgba(255,107,82,',energy:'rgba(61,92,47,',princelings:'rgba(255,153,153,',influence:'rgba(153,204,255,'};
 function nc(n){return CLUSTER_COLORS[n.cluster]||CLUSTER_COLORS.default;}
 
 // Track hover state for grow effect
@@ -2157,13 +2156,11 @@ function ig(){
     .attr('class','graph-node')
     .attr('transform',d=>`translate(${d.x},${d.y})`);
 
-  // Outer glow
-  svgNodes.append('circle').attr('class','node-glow').attr('r',d=>d._r+3);
   // Main circle
   svgNodes.append('circle').attr('class','node-main').attr('r',d=>d._r);
-  // Selection ring
+  // Selection ring (hidden by default, shown on click/path)
   svgNodes.append('circle').attr('class','node-ring').attr('r',d=>d._r+4).attr('fill','none').attr('stroke-width',3);
-  // Found glow
+  // Found ring (hidden by default, shown on search)
   svgNodes.append('circle').attr('class','node-found').attr('r',d=>d._r+8).attr('fill','none').attr('stroke-width',2.5);
   // Connection badge
   svgNodes.filter(d=>d._cc>=4).append('g').attr('class','node-badge')
@@ -2261,8 +2258,6 @@ function dg(){
     const r=isHover&&!dim?n._r*1.2:n._r;
 
     g.attr('opacity',dim?0.2:1);
-    // Glow
-    g.select('.node-glow').attr('r',r+3).attr('fill',color+(dim?'10':'1A'));
     // Main
     g.select('.node-main').attr('r',r).attr('fill',color).attr('stroke',dark?'rgba(255,255,255,.15)':'rgba(255,255,255,.5)').attr('stroke-width',1);
     // Selection/path ring
