@@ -2096,10 +2096,10 @@ function ig(){
   const simLinks=esim.map(e=>({source:e.source,target:e.target}));
 
   const simulation=d3.forceSimulation(simNodes)
-    .force('link',d3.forceLink(simLinks).id(d=>d.id).distance(100).strength(0.3))
-    .force('charge',d3.forceManyBody().strength(-400))
-    .force('center',d3.forceCenter(W/2,H/2).strength(0.1))
-    .force('collide',d3.forceCollide().radius(d=>(d._r||10)+15).strength(0.8))
+    .force('link',d3.forceLink(simLinks).id(d=>d.id).distance(150).strength(0.3))
+    .force('charge',d3.forceManyBody().strength(-600))
+    .force('center',d3.forceCenter(W/2,H/2).strength(0.05))
+    .force('collide',d3.forceCollide().radius(d=>(d._r||10)+30).strength(0.8))
     .force('centrality',function(){
       // Pull highly connected nodes toward center proportional to connection count
       // 6+ connections: strong pull (0.06), 3-5: moderate (0.025), 1-2: none
