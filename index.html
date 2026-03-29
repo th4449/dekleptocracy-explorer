@@ -419,7 +419,8 @@ a{color:inherit;text-decoration:none}
 .graph-edge{stroke-linecap:round}
 .graph-node{cursor:pointer}
 .graph-node circle{transition:r .15s ease}
-.graph-label{font-family:'IBM Plex Sans',sans-serif;pointer-events:none;text-anchor:middle;dominant-baseline:auto}
+.graph-label{font-family:'IBM Plex Sans',sans-serif;pointer-events:none;dominant-baseline:auto}
+.label-bg{pointer-events:none}
 .gleg{position:absolute;bottom:var(--s4);left:var(--s4);display:flex;flex-direction:column;gap:var(--s1);background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border:1px solid var(--color-divider);border-radius:var(--radius-lg);padding:var(--s3)}
 [data-theme="light"] .gleg{background:rgba(255,255,255,.8)}
 .gli{display:flex;align-items:center;gap:var(--s2);font-size:var(--txt-xs);color:var(--color-text-muted)}
@@ -2096,10 +2097,10 @@ function ig(){
   const simLinks=esim.map(e=>({source:e.source,target:e.target}));
 
   const simulation=d3.forceSimulation(simNodes)
-    .force('link',d3.forceLink(simLinks).id(d=>d.id).distance(150).strength(0.3))
-    .force('charge',d3.forceManyBody().strength(-450))
-    .force('center',d3.forceCenter(W/2,H/2).strength(0.08))
-    .force('collide',d3.forceCollide().radius(d=>(d._r||10)+30).strength(0.8))
+    .force('link',d3.forceLink(simLinks).id(d=>d.id).distance(120).strength(0.3))
+    .force('charge',d3.forceManyBody().strength(-400))
+    .force('center',d3.forceCenter(W/2,H/2).strength(0.05))
+    .force('collide',d3.forceCollide().radius(d=>(d._r||10)+25).strength(0.8))
     .force('centrality',function(){
       return function(){
         simNodes.forEach(n=>{
@@ -2114,7 +2115,7 @@ function ig(){
       };
     }())
     .force('boundary',function(){
-      const pad=40;
+      const pad=30;
       return function(){
         simNodes.forEach(n=>{
           if(n.x<pad) n.vx+=(pad-n.x)*0.15;
@@ -2129,8 +2130,8 @@ function ig(){
   // Pre-tick 300 iterations to stabilize
   for(let i=0;i<300;i++) simulation.tick();
 
-  // Hard clamp: ensure no node is outside the 40px boundary after simulation
-  const bPad=40;
+  // Hard clamp: ensure no node outside 30px boundary
+  const bPad=30;
   simNodes.forEach(n=>{
     n.x=Math.max(bPad,Math.min(W-bPad,n.x));
     n.y=Math.max(bPad,Math.min(H-bPad,n.y));
@@ -2144,13 +2145,96 @@ function ig(){
     if(p){n.x=p.x;n.y=p.y;}else{n.x=W/2;n.y=H/2;}
   });
 
+  // ── Intelligent label placement ──
+  // For each node, compute label offset based on neighbor positions.
+  // Place label on the side with fewest neighbors to minimize overlap.
+  const nodeById={};nsim.forEach(n=>nodeById[n.id]=n);
+  const neighborMap={};
+  esim.forEach(e=>{
+    if(!neighborMap[e.source]) neighborMap[e.source]=[];
+    if(!neighborMap[e.target]) neighborMap[e.target]=[];
+    neighborMap[e.source].push(e.target);
+    neighborMap[e.target].push(e.source);
+  });
+
+  nsim.forEach(n=>{
+    const neighbors=neighborMap[n.id]||[];
+    const r=n._r||10;
+    if(neighbors.length===0){
+      // No neighbors: place label below
+      n._labelDx=0;n._labelDy=r+13;n._labelAnchor='middle';
+      return;
+    }
+    // Average direction to neighbors
+    let avgDx=0,avgDy=0;
+    neighbors.forEach(nid=>{
+      const nb=nodeById[nid];
+      if(nb){avgDx+=nb.x-n.x;avgDy+=nb.y-n.y;}
+    });
+    // Place label OPPOSITE to average neighbor direction
+    const len=Math.sqrt(avgDx*avgDx+avgDy*avgDy)||1;
+    const ndx=-avgDx/len,ndy=-avgDy/len;
+    // Choose among 4 positions: below, above, right, left
+    // Pick the one closest to the anti-neighbor direction
+    const candidates=[
+      {dx:0,dy:r+13,anchor:'middle',score:ndy},            // below
+      {dx:0,dy:-(r+6),anchor:'middle',score:-ndy},         // above
+      {dx:r+8,dy:4,anchor:'start',score:ndx},              // right
+      {dx:-(r+8),dy:4,anchor:'end',score:-ndx}             // left
+    ];
+    candidates.sort((a,b)=>b.score-a.score);
+    n._labelDx=candidates[0].dx;
+    n._labelDy=candidates[0].dy;
+    n._labelAnchor=candidates[0].anchor;
+  });
+
+  // ── Label collision resolution ──
+  // Estimate bounding boxes and nudge overlapping labels
+  const CHAR_W=5.5,LABEL_H=13;
+  const labelBoxes=nsim.map(n=>{
+    const text=n.name.length>17?n.name.slice(0,16)+'\u2026':n.name;
+    const tw=text.length*CHAR_W;
+    let lx=n.x+n._labelDx;
+    let ly=n.y+n._labelDy;
+    // Adjust x based on anchor
+    if(n._labelAnchor==='middle') lx-=tw/2;
+    else if(n._labelAnchor==='end') lx-=tw;
+    return{id:n.id,x:lx,y:ly-LABEL_H,w:tw,h:LABEL_H+4,nodeIdx:nsim.indexOf(n)};
+  });
+
+  for(let pass=0;pass<5;pass++){
+    let moved=false;
+    for(let i=0;i<labelBoxes.length;i++){
+      for(let j=i+1;j<labelBoxes.length;j++){
+        const a=labelBoxes[i],b=labelBoxes[j];
+        // Check overlap
+        if(a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y){
+          // Overlap detected — move the label of the less-connected node
+          const nA=nsim[a.nodeIdx],nB=nsim[b.nodeIdx];
+          const target=(nA._cc||0)<(nB._cc||0)?a:b;
+          const tNode=nsim[target.nodeIdx];
+          // Shift vertically
+          tNode._labelDy+=14;
+          // Recompute box
+          let lx=tNode.x+tNode._labelDx;
+          let ly=tNode.y+tNode._labelDy;
+          const text=tNode.name.length>17?tNode.name.slice(0,16)+'\u2026':tNode.name;
+          const tw=text.length*CHAR_W;
+          if(tNode._labelAnchor==='middle') lx-=tw/2;
+          else if(tNode._labelAnchor==='end') lx-=tw;
+          target.x=lx;target.y=ly-LABEL_H;target.w=tw;
+          moved=true;
+        }
+      }
+    }
+    if(!moved) break;
+  }
+
   // ── Build SVG structure ──
   svg.selectAll('*').remove();
-  // Zoom group
   const g=svg.append('g').attr('class','graph-root');
 
   // Edges
-  const nodeById={};nsim.forEach(n=>nodeById[n.id]=n);
   svgEdges=g.selectAll('.graph-edge').data(esim).join('line')
     .attr('class','graph-edge')
     .attr('x1',d=>(nodeById[d.source]||{}).x||0).attr('y1',d=>(nodeById[d.source]||{}).y||0)
@@ -2163,9 +2247,9 @@ function ig(){
 
   // Main circle
   svgNodes.append('circle').attr('class','node-main').attr('r',d=>d._r);
-  // Selection ring (hidden by default, shown on click/path)
+  // Selection ring
   svgNodes.append('circle').attr('class','node-ring').attr('r',d=>d._r+4).attr('fill','none').attr('stroke-width',3);
-  // Found ring (hidden by default, shown on search)
+  // Found ring
   svgNodes.append('circle').attr('class','node-found').attr('r',d=>d._r+8).attr('fill','none').attr('stroke-width',2.5);
   // Connection badge
   svgNodes.filter(d=>d._cc>=4).append('g').attr('class','node-badge')
@@ -2176,9 +2260,26 @@ function ig(){
       bg.append('text').text(d._cc).attr('text-anchor','middle').attr('dominant-baseline','central')
         .attr('font-size','8px').attr('font-family','IBM Plex Mono,monospace').attr('font-weight','600');
     });
-  // Label
-  svgNodes.append('text').attr('class','graph-label').attr('y',d=>d._r+13).attr('font-size','10.5px')
-    .text(d=>d.name.length>17?d.name.slice(0,16)+'\u2026':d.name);
+  // Label with background
+  svgNodes.each(function(d){
+    const node=d3.select(this);
+    const text=d.name.length>17?d.name.slice(0,16)+'\u2026':d.name;
+    const tw=text.length*CHAR_W;
+    const lx=d._labelDx||0,ly=d._labelDy||(d._r+13),anchor=d._labelAnchor||'middle';
+    // Background rect
+    let rx=lx;
+    if(anchor==='middle') rx=lx-tw/2-3;
+    else if(anchor==='end') rx=lx-tw-3;
+    else rx=lx-3;
+    node.append('rect').attr('class','label-bg')
+      .attr('x',rx).attr('y',ly-10).attr('width',tw+6).attr('height',14)
+      .attr('rx',3);
+    // Text
+    node.append('text').attr('class','graph-label')
+      .attr('x',lx).attr('y',ly)
+      .attr('text-anchor',anchor).attr('font-size','10.5px')
+      .text(text);
+  });
 
   // ── Interactions ──
   // Hover
@@ -2276,8 +2377,10 @@ function dg(){
       badge.select('circle').attr('fill',dark?'rgba(0,0,0,.75)':'rgba(255,255,255,.92)').attr('stroke',color);
       badge.select('text').attr('fill',color);
     }
-    // Label
-    g.select('.graph-label').attr('y',r+13).attr('fill',dark?'rgba(220,220,218,.82)':'rgba(26,25,21,.82)');
+    // Label background
+    g.select('.label-bg').attr('fill',dark?'rgba(0,0,0,.55)':'rgba(255,255,255,.75)');
+    // Label text
+    g.select('.graph-label').attr('fill',dark?'rgba(220,220,218,.9)':'rgba(26,25,21,.85)');
   });
 
   // Zoom indicator
