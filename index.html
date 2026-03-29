@@ -3541,42 +3541,49 @@ function runComparison(val){
 // ========== FEATURE 2b: HIDDEN CONNECTION FINDER ==========
 function findAllPaths(startId,endId,maxDepth){
   if(startId===endId) return [];
-  // BFS layer by layer, collecting all paths up to maxDepth
+  // Build adjacency list
   const adj={};
   DATA.edges.forEach(e=>{
-    if(!adj[e.source]) adj[e.source]=[];
-    if(!adj[e.target]) adj[e.target]=[];
-    adj[e.source].push(e.target);
-    adj[e.target].push(e.source);
+    const s=e.source,t=e.target;
+    if(!adj[s]) adj[s]=[];
+    if(!adj[t]) adj[t]=[];
+    adj[s].push(t);
+    adj[t].push(s);
   });
+  if(!adj[startId]||!adj[endId]) return []; // isolated node
   const results=[];
-  // Queue entries: [currentNode, pathSoFar]
+  const MAX_RESULTS=50;
+  const MAX_QUEUE=10000; // prevent memory explosion
   let queue=[[startId,[startId]]];
   for(let depth=0;depth<maxDepth&&queue.length>0;depth++){
     const nextQueue=[];
     for(let qi=0;qi<queue.length;qi++){
-      const [cur,path]=queue[qi];
+      const cur=queue[qi][0],path=queue[qi][1];
       const neighbors=adj[cur]||[];
       for(let ni=0;ni<neighbors.length;ni++){
         const nb=neighbors[ni];
-        if(path.includes(nb)) continue; // no cycles
+        // Cycle check — use a Set for paths longer than 4 for speed
+        let hasCycle=false;
+        for(let pi=0;pi<path.length;pi++){if(path[pi]===nb){hasCycle=true;break;}}
+        if(hasCycle) continue;
         const newPath=path.concat(nb);
         if(nb===endId){
           results.push(newPath);
-          if(results.length>=50) return results; // cap for performance
+          if(results.length>=MAX_RESULTS) return results;
         } else if(newPath.length-1<maxDepth){
           nextQueue.push([nb,newPath]);
+          if(nextQueue.length>=MAX_QUEUE) break;
         }
       }
+      if(nextQueue.length>=MAX_QUEUE) break;
     }
     queue=nextQueue;
-    if(results.length>=50) break;
+    if(results.length>=MAX_RESULTS) break;
   }
   return results;
 }
 
 function pathStrength(path){
-  // Average degree of nodes in path / path hop count
   const connMap={};
   DATA.edges.forEach(e=>{connMap[e.source]=(connMap[e.source]||0)+1;connMap[e.target]=(connMap[e.target]||0)+1;});
   let totalDeg=0;
@@ -3599,66 +3606,69 @@ function analyzePathTypes(path){
       types[eType]=(types[eType]||0)+1;
     }
   }
-  // Build analysis text
   const hops=path.length-1;
-  const dominant=Object.entries(types).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  const dominant=Object.entries(types).filter(function(x){return x[1]>0;}).sort(function(a,b){return b[1]-a[1];});
   if(!dominant.length) return 'Connection type could not be determined.';
   const typeNames={financial:'financial flows',influence:'influence operations',sanctions:'sanctions evasion',general:'general connections'};
   const primary=typeNames[dominant[0][0]]||'connections';
   const ndA=nodeMap[path[0]],ndB=nodeMap[path[path.length-1]];
   const nA=ndA?ndA.name:'Entity A',nB=ndB?ndB.name:'Entity B';
-  let text='This '+hops+'-hop path connects '+nA+' to '+nB+' primarily through '+primary+'.';
+  var text='This '+hops+'-hop path connects '+nA+' to '+nB+' primarily through '+primary+'.';
   if(dominant.length>1&&dominant[1][1]>0){
     text+=' Secondary link type: '+typeNames[dominant[1][0]]+'.';
   }
-  // Intermediate entities
   if(path.length>2){
-    const intermediates=path.slice(1,-1).map(id=>{const n=nodeMap[id];return n?n.name:'?';});
+    const intermediates=path.slice(1,-1).map(function(id){var n=nodeMap[id];return n?n.name:'?';});
     text+=' Key intermediaries: '+intermediates.join(', ')+'.';
   }
   return text;
 }
 
 function runHiddenConnections(val){
-  const result=document.getElementById('sb-hidden-result');
+  var result=document.getElementById('sb-hidden-result');
   if(!result) return;
-  if(!val||!gHighlight){result.innerHTML='';gPathNodes=null;gPathEdges=null;dg();return;}
-  const idB=parseInt(val);
-  const ndA=DATA.nodes.find(n=>n.id===gHighlight);
-  const ndB=DATA.nodes.find(n=>n.id===idB);
-  if(!ndA||!ndB){result.innerHTML='';return;}
-
-  // Find all paths up to 5 hops
-  const allPaths=findAllPaths(ndA.id,ndB.id,5);
-  if(!allPaths.length){
-    result.innerHTML='<div class="sb-hc-empty">No hidden connections found within 5 hops.</div>';
-    gPathNodes=null;gPathEdges=null;dg();
+  if(!val||!gHighlight){
+    result.innerHTML='';gPathNodes=null;gPathEdges=null;dg();
     return;
   }
-  // Score and rank
-  const scored=allPaths.map(p=>({path:p,strength:pathStrength(p),hops:p.length-1}));
-  scored.sort((a,b)=>b.strength-a.strength);
-  const top5=scored.slice(0,5);
-
-  const nodeMap={};DATA.nodes.forEach(n=>nodeMap[n.id]=n);
-  let html=`<div class="sb-hc-header">Hidden Connections Found: ${allPaths.length} path${allPaths.length!==1?'s':''}</div>`;
-  top5.forEach((item,i)=>{
-    const chain=item.path.map(id=>{const n=nodeMap[id];return n?n.name:'?';}).join(' <span>\u2192</span> ');
-    const analysis=analyzePathTypes(item.path);
-    html+=`<div class="sb-hc-card${i===0?' active':''}" onclick="selectHiddenPath(${i})" data-path-idx="${i}">
-      <div class="sb-hc-rank">Path ${i+1} \u00b7 Strength ${item.strength.toFixed(2)} \u00b7 ${item.hops} hop${item.hops!==1?'s':''}</div>
-      <div class="sb-hc-chain">${chain}</div>
-      <div class="sb-hc-analysis">${esc(analysis)}</div>
-    </div>`;
-  });
-  html+=`<div class="sb-hc-clear" onclick="clearHiddenConnections()"><i data-lucide="x" style="width:10px;height:10px"></i> Clear Hidden Connections</div>`;
-  result.innerHTML=html;
-  lucide.createIcons();
-
-  // Store paths for selection
-  window._hiddenPaths=top5;
-  // Highlight first path
-  selectHiddenPath(0);
+  var idB=parseInt(val,10);
+  var ndA=DATA.nodes.find(function(n){return n.id===gHighlight;});
+  var ndB=DATA.nodes.find(function(n){return n.id===idB;});
+  if(!ndA||!ndB){
+    result.innerHTML='<div class="sb-hc-empty">Could not find one or both entities.</div>';
+    return;
+  }
+  // Show loading
+  result.innerHTML='<div class="sb-hc-empty" style="animation:pulse 1.4s ease-in-out infinite">Searching for hidden connections\u2026</div>';
+  // Run BFS asynchronously to avoid blocking UI
+  setTimeout(function(){
+    var allPaths=findAllPaths(ndA.id,ndB.id,5);
+    if(!allPaths.length){
+      result.innerHTML='<div class="sb-hc-empty">No hidden connections found within 5 hops between '+esc(ndA.name)+' and '+esc(ndB.name)+'.</div>';
+      gPathNodes=null;gPathEdges=null;dg();
+      return;
+    }
+    // Score and rank
+    var scored=allPaths.map(function(p){return{path:p,strength:pathStrength(p),hops:p.length-1};});
+    scored.sort(function(a,b){return b.strength-a.strength;});
+    var top5=scored.slice(0,5);
+    var nodeMap={};DATA.nodes.forEach(function(n){nodeMap[n.id]=n;});
+    var html='<div class="sb-hc-header">'+allPaths.length+' hidden path'+(allPaths.length!==1?'s':'')+' found</div>';
+    top5.forEach(function(item,i){
+      var chain=item.path.map(function(id){var n=nodeMap[id];return n?n.name:'?';}).join(' <span>\u2192</span> ');
+      var analysis=analyzePathTypes(item.path);
+      html+='<div class="sb-hc-card'+(i===0?' active':'')+'" onclick="selectHiddenPath('+i+')" data-path-idx="'+i+'">';
+      html+='<div class="sb-hc-rank">Path '+(i+1)+' \u00b7 Strength '+item.strength.toFixed(2)+' \u00b7 '+item.hops+' hop'+(item.hops!==1?'s':'')+'</div>';
+      html+='<div class="sb-hc-chain">'+chain+'</div>';
+      html+='<div class="sb-hc-analysis">'+esc(analysis)+'</div>';
+      html+='</div>';
+    });
+    html+='<div class="sb-hc-clear" onclick="clearHiddenConnections()"><i data-lucide="x" style="width:10px;height:10px"></i> Clear</div>';
+    result.innerHTML=html;
+    lucide.createIcons();
+    window._hiddenPaths=top5;
+    selectHiddenPath(0);
+  },50);
 }
 
 function selectHiddenPath(idx){
