@@ -733,6 +733,26 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
 .sb-popular-item{display:inline-block;padding:3px 10px;margin:0 4px 4px 0;background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-full);font-size:var(--txt-xs);color:var(--color-text-muted);cursor:pointer;transition:all var(--transition)}
 .sb-popular-item:hover{border-color:#3D5C2F;color:#3D5C2F}
 .sb-popular-count{font-family:var(--font-mono);font-size:.6rem;color:var(--color-text-faint);margin-left:3px}
+/* ── Watchlist ── */
+.sb-watch-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 14px;margin-top:var(--s2);background:#3D5C2F;color:#fff;border-radius:var(--radius-md);font-size:var(--txt-xs);font-weight:500;cursor:pointer;transition:background var(--transition)}
+.sb-watch-btn:hover{background:#2d4620}
+.sb-watch-btn.watching{background:var(--color-surface-offset);color:#3D5C2F;border:1px solid #3D5C2F}
+[data-theme="dark"] .sb-watch-btn.watching{color:#7ab368;border-color:#7ab368;background:var(--color-surface)}
+.sb-watchlist{margin-top:var(--s3);padding-top:var(--s3);border-top:1px solid var(--color-divider)}
+.sb-wl-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s2)}
+.sb-wl-title{font-size:var(--txt-xs);font-weight:600;color:#3D5C2F;text-transform:uppercase;letter-spacing:.06em}
+[data-theme="dark"] .sb-wl-title{color:#7ab368}
+.sb-wl-count{font-family:var(--font-mono);font-size:.6rem;color:var(--color-text-faint);margin-left:4px}
+.sb-wl-export{padding:3px 10px;background:#FF6B52;color:#fff;border-radius:var(--radius-md);font-size:.6rem;font-weight:500;cursor:pointer;transition:opacity var(--transition)}
+.sb-wl-export:hover{opacity:.85}
+.sb-wl-empty{font-size:var(--txt-xs);color:var(--color-text-faint);font-style:italic;padding:var(--s2) 0}
+.sb-wl-item{display:flex;align-items:center;gap:var(--s2);padding:5px var(--s2);border-radius:var(--radius-md);transition:background var(--transition);cursor:pointer}
+.sb-wl-item:hover{background:var(--color-surface-offset)}
+.sb-wl-num{font-family:var(--font-mono);font-size:.6rem;color:var(--color-text-faint);width:16px;text-align:right;flex-shrink:0}
+.sb-wl-name{flex:1;font-size:var(--txt-xs);color:var(--color-text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-wl-type{font-size:.6rem;color:var(--color-text-faint);font-family:var(--font-mono);flex-shrink:0}
+.sb-wl-rm{font-size:var(--txt-xs);color:#E05555;cursor:pointer;flex-shrink:0;padding:0 4px;line-height:1;opacity:.6;transition:opacity var(--transition)}
+.sb-wl-rm:hover{opacity:1}
 /* ── Investigation leads ── */
 .sb-lead{padding:10px var(--s3);margin-bottom:var(--s2);background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-md);border-left:3px solid #3D5C2F}
 .sb-lead-title{font-size:var(--txt-xs);font-weight:600;color:#3D5C2F;margin-bottom:3px}
@@ -821,6 +841,7 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
         <div class="sb-cluster-pill" onclick="fc('influence');sv('nodes')"><span class="cdot" style="background:#fff;opacity:.6"></span>Influence Ops<span class="sb-pill-count" id="ci2">—</span></div>
       </div>
       <div class="sb-popular" id="sb-popular"></div>
+      <div class="sb-watchlist" id="sb-watchlist"></div>
     </div>
     <!-- Node Detail State (three layers) -->
     <div id="sb-node-detail" class="sb-node">
@@ -839,6 +860,7 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
           <span class="sb-badge-cluster" id="sb-node-cluster"></span>
           <span class="sb-badge-conns" id="sb-node-conns"></span>
         </div>
+        <div id="sb-watch-wrap"></div>
       </div>
       <!-- Layer 2: Enriched Context -->
       <div class="sb-section" id="sb-l2-conns-section">
@@ -1327,6 +1349,7 @@ function init(){
   if(ge) ge.textContent=e.length;
   if(ga) ga.textContent=a.length;
   renderPopularSearches();
+  renderWatchlist();
   lucide.createIcons();
 }
 
@@ -1929,6 +1952,7 @@ function on(id){
   document.getElementById('sb-node-cluster').textContent=cluster;
   const conns=DATA.edges.filter(e=>e.source===id||e.target===id);
   document.getElementById('sb-node-conns').textContent=conns.length+' connection'+(conns.length!==1?'s':'');
+  renderWatchButton(id);
   // Layer 2: Key Connections
   document.getElementById('sb-l2-conns').innerHTML=conns.map(e=>{
     const oId=e.source===id?e.target:e.source;
@@ -2119,6 +2143,8 @@ function cd(){
   document.getElementById('sb-node-detail').classList.remove('active');
   // Clear pathway and comparison highlighting
   gPathNodes=null;gPathEdges=null;gCompareNode=null;dg();
+  // Refresh welcome screen content
+  renderWatchlist();
   // Also close old detail panel if it was open
   const dob=document.getElementById('dob');if(dob) dob.classList.remove('open');
   const dp=document.getElementById('dp');if(dp) dp.classList.remove('open');
@@ -2913,6 +2939,10 @@ function renderManual(){
 <div class="help-p">At the bottom of Layer 3, the "Export Neighborhood" button downloads a publication-ready PNG image showing the current node and all its direct connections (one hop). The image includes colored edges by type, cluster-colored nodes, labels, and a timestamp. The center node is highlighted with a coral red outline. The filename follows the pattern name-network-YYYY-MM-DD.png.</div></div>
 <div class="help-section"><div class="help-h2">Search and Popular Searches</div>
 <div class="help-p">Use the search box in the top bar to find any node by name, description, type, or tag. Results appear as you type. Your searches are tracked locally, and the most popular search terms appear on the Welcome screen as clickable pills so you can quickly return to frequently investigated entities.</div></div>
+<div class="help-section"><div class="help-h2">Watchlist</div>
+<div class="help-p">When viewing a node, click "Watch this entity" in Layer 1 to add it to your personal watchlist. The button changes to "Watching" with a checkmark. Click again to remove it.</div>
+<div class="help-p">Your watchlist appears on the Welcome screen with all watched entities listed by name, type, and the date you added them. Click any name to jump directly to that node. Click the × button to remove an entry.</div>
+<div class="help-p">Use the "Export CSV" button to download your watchlist as a spreadsheet-ready file with columns for node ID, name, type, and date added. The watchlist is stored in your browser's localStorage and persists across sessions.</div></div>
 <div class="help-section"><div class="help-h2">Keyboard Shortcuts</div>
 <div class="help-p"><span class="help-kbd">Esc</span> Close panels, overlays, help modal, or active tutorial</div>
 <div class="help-p"><span class="help-kbd">Ctrl+Shift+A</span> Toggle admin mode (data editing)</div></div>
@@ -2933,6 +2963,7 @@ const FAQ_DATA=[
   {q:'What are Investigation Leads?',a:'Investigation Leads are contextual suggestions generated by analyzing the selected node\'s network position. Unlike the generic methodology steps, these are specific to each node — for example, suggesting OFAC checks for sanctions-connected entities or beneficial ownership searches for nodes tied to multiple organizations. Each lead links to an external investigation tool.'},
   {q:'How do I export a subgraph image?',a:'Select a node and scroll to the "Export Neighborhood" button at the bottom of the sidebar. It downloads a publication-ready PNG showing the selected node, all its direct connections, colored edges, labels, and a timestamp. The image is rendered at 2x resolution for print quality.'},
   {q:'What is Popular Searches?',a:'The Explorer tracks your search terms locally in your browser (not on any server). The most frequently searched terms appear on the Welcome screen as clickable pills so you can quickly return to entities you investigate often. You can clear this data by clearing your browser\'s localStorage.'},
+  {q:'How does the Watchlist work?',a:'Click "Watch this entity" in Layer 1 when viewing any node to add it to your personal watchlist. The button changes to "Watching" with a checkmark. Your watchlist appears on the Welcome screen with each entity\'s name, type, and the date you added it. Click any name to jump to that node. Click × to remove it. Use "Export CSV" to download your watchlist as a spreadsheet. Everything is stored in your browser\'s localStorage — nothing is sent to any server.'},
   {q:'Is this data biased?',a:'The graph reflects documented connections from investigative reporting. It does not make legal conclusions. All edges cite source articles. Users should verify claims through the external investigation tools provided in Layer 3.'},
   {q:'Can I embed this in my own website?',a:'Yes. The Explorer supports an embed mode. Add ?embed=true to the URL to hide the sidebar and show a compact view suitable for iframes.'}
 ];
@@ -2954,6 +2985,7 @@ const TUT_STEPS=[
   {title:'Search for a Node',desc:'Type a name in the search box at the top of the page. Try "Kushner" or "Binance". Results appear as you type. Your searches are tracked and will show up as Popular Searches on the Welcome screen.',target:'#gs',action:'Click the search box and type a name.'},
   {title:'Click a Node on the Map',desc:'Click any circle on the network map to select it. The sidebar will show detailed information about that entity. Notice the edge colors — orange for financial, blue dashed for influence, red for sanctions.',target:'#gcc',action:'Click any node circle on the graph.'},
   {title:'Explore Basic Facts (Layer 1)',desc:'The top of the sidebar shows the node name, type, description, and cluster badge. This is Layer 1 — basic facts that appear immediately.',target:'#sb-node-detail .sb-l1',action:'Read the basic facts card.'},
+  {title:'Watch an Entity',desc:'Below the cluster badge, click "Watch this entity" to add it to your personal watchlist. The button changes to "Watching" with a checkmark. Go back to the Welcome screen to see your watchlist, or export it as CSV.',target:'#sb-watch-wrap',action:'Click the Watch button.'},
   {title:'Expand Connections (Layer 2)',desc:'Below the basic facts, collapsible sections show key connections, mentioned articles, and centrality metrics. Click the headers to expand or collapse them.',target:'#sb-l2-conns-section',action:'Click "Key Connections" to expand it.'},
   {title:'Try "How to Investigate This"',desc:'In the Investigation Guides section, toggle to "How to Investigate This" mode. It shows step-by-step investigation methodology with external tool links tailored to the node type.',target:'#sb-l3-section',action:'Click the "How to Investigate This" toggle.'},
   {title:'Try Corruption Flow Tracing',desc:'Switch to "Corruption Flow Tracing" mode. Select a connected node to trace the corruption flow between them. The system classifies the edge type and shows relevant tracing steps.',target:'#sb-l3-section',action:'Select a connection to trace.'},
@@ -3129,6 +3161,77 @@ function renderPopularSearches(){
         `<span class="sb-popular-item" onclick="document.getElementById('gs').value='${esc(term)}';document.getElementById('gs').dispatchEvent(new Event('input'))">${esc(term)}<span class="sb-popular-count">${count}</span></span>`
       ).join('');
   }catch(e){el.innerHTML='';}
+}
+
+// ========== FEATURE 1: PERSONAL BOOKMARKS / WATCHLIST ==========
+function getWatchlist(){
+  try{return JSON.parse(localStorage.getItem('dex-watchlist')||'[]');}catch(e){return[];}
+}
+function setWatchlist(list){
+  try{localStorage.setItem('dex-watchlist',JSON.stringify(list));}
+  catch(e){toast('Could not save watchlist (storage full)');}
+}
+function isWatched(id){return getWatchlist().some(w=>w.id===id);}
+
+function toggleWatch(id){
+  const nd=DATA.nodes.find(n=>n.id===id);if(!nd) return;
+  let list=getWatchlist();
+  const idx=list.findIndex(w=>w.id===id);
+  if(idx>=0){list.splice(idx,1);}
+  else{list.push({id:nd.id,name:nd.name,type:nd.type.toUpperCase(),date:new Date().toISOString().slice(0,10)});}
+  setWatchlist(list);
+  renderWatchButton(id);
+  renderWatchlist();
+}
+
+function renderWatchButton(id){
+  const wrap=document.getElementById('sb-watch-wrap');if(!wrap) return;
+  const watched=isWatched(id);
+  wrap.innerHTML=`<div class="sb-watch-btn${watched?' watching':''}" onclick="toggleWatch(${id})">
+    ${watched?'Watching \u2713':'Watch this entity'}</div>`;
+}
+
+function renderWatchlist(){
+  const el=document.getElementById('sb-watchlist');if(!el) return;
+  const list=getWatchlist();
+  if(!list.length){
+    el.innerHTML='<div class="sb-wl-header"><span class="sb-wl-title">Your Watchlist</span></div><div class="sb-wl-empty">Your watchlist is empty. Click Watch on any entity to add it.</div>';
+    return;
+  }
+  let html='<div class="sb-wl-header"><span><span class="sb-wl-title">Your Watchlist</span><span class="sb-wl-count">('+list.length+' entit'+(list.length===1?'y':'ies')+')</span></span>';
+  html+='<span class="sb-wl-export" onclick="exportWatchlistCSV()">Export CSV</span></div>';
+  list.forEach(function(w,i){
+    html+=`<div class="sb-wl-item" onclick="on(${w.id})">
+      <span class="sb-wl-num">${i+1}</span>
+      <span class="sb-wl-name">${esc(w.name)}</span>
+      <span class="sb-wl-type">[${esc(w.type.toLowerCase())}]</span>
+      <span class="sb-wl-rm" onclick="event.stopPropagation();removeWatch(${w.id})" title="Remove">\u00d7</span>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+
+function removeWatch(id){
+  let list=getWatchlist();
+  list=list.filter(w=>w.id!==id);
+  setWatchlist(list);
+  renderWatchlist();
+  // If this node is currently selected, update the watch button
+  if(gHighlight===id) renderWatchButton(id);
+}
+
+function exportWatchlistCSV(){
+  const list=getWatchlist();
+  let csv='node_id,node_name,node_type,date_added\n';
+  list.forEach(function(w){
+    csv+=w.id+',"'+w.name.replace(/"/g,'""')+'",'+w.type+','+w.date+'\n';
+  });
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='watchlist_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 
 // ========== FEATURE +1: CONTEXTUAL INVESTIGATION LEADS ==========
