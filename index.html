@@ -774,6 +774,26 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
 /* ── Export button ── */
 .sb-export-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;margin-top:var(--s3);background:#3D5C2F;color:#fff;border-radius:var(--radius-md);font-size:var(--txt-xs);font-weight:500;cursor:pointer;transition:opacity var(--transition);width:fit-content}
 .sb-export-btn:hover{opacity:.85}
+/* ── Article-to-Network View ── */
+.sb-artview{display:none;padding:0}
+.sb-artview.active{display:block}
+.sb-artview-header{display:flex;align-items:center;gap:8px;padding:10px var(--s4);background:rgba(61,92,47,.06);border-bottom:1px solid var(--color-divider)}
+.sb-artview-label{font-size:var(--txt-xs);font-weight:600;color:#3D5C2F;text-transform:uppercase;letter-spacing:.06em;flex:1}
+[data-theme="dark"] .sb-artview-label{color:#7ab368}
+[data-theme="dark"] .sb-artview-header{background:rgba(122,179,104,.06)}
+.sb-artview-close{padding:4px 12px;background:#FF6B52;color:#fff;border-radius:var(--radius-md);font-size:var(--txt-xs);font-weight:500;cursor:pointer;transition:opacity var(--transition);white-space:nowrap}
+.sb-artview-close:hover{opacity:.85}
+.sb-artview-body{padding:var(--s3) var(--s4)}
+.sb-artview-title{font-size:var(--txt-sm);font-weight:500;color:var(--color-text);line-height:1.5;margin-bottom:var(--s2)}
+.sb-artview-title a{color:#3D5C2F;text-decoration:none}
+.sb-artview-title a:hover{text-decoration:underline}
+[data-theme="dark"] .sb-artview-title a{color:#7ab368}
+.sb-artview-count{font-size:var(--txt-xs);color:var(--color-text-muted);font-family:var(--font-mono);margin-bottom:var(--s3)}
+.sb-artview-entity{display:flex;align-items:center;gap:var(--s2);padding:5px 0;border-bottom:1px solid var(--color-divider);cursor:pointer;transition:background var(--transition)}
+.sb-artview-entity:last-child{border-bottom:none}
+.sb-artview-entity:hover{background:var(--color-surface-offset)}
+.sb-artview-ename{font-size:var(--txt-xs);font-weight:500;color:var(--color-text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-artview-etype{font-size:.6rem;color:var(--color-text-faint);font-family:var(--font-mono);text-transform:uppercase;flex-shrink:0}
 /* ========== PRINT ========== */
 @media print{
   body{overflow:visible;background:#fff;color:#000}
@@ -842,6 +862,14 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
       </div>
       <div class="sb-popular" id="sb-popular"></div>
       <div class="sb-watchlist" id="sb-watchlist"></div>
+    </div>
+    <!-- Article-to-Network View -->
+    <div id="sb-article-view" class="sb-artview">
+      <div class="sb-artview-header">
+        <span class="sb-artview-label">Viewing Article</span>
+        <span class="sb-artview-close" onclick="clearArticleView()">Clear View</span>
+      </div>
+      <div class="sb-artview-body" id="sb-artview-body"></div>
     </div>
     <!-- Node Detail State (three layers) -->
     <div id="sb-node-detail" class="sb-node">
@@ -1307,6 +1335,7 @@ const DEMO={
 let DATA=JSON.parse(JSON.stringify(DEMO)),ctf='all',ccf='all',cns='',gaf='all',gz=1,go={x:0,y:0};
 let gd=false,gds={x:0,y:0},raf,nsim=[],esim=[],gHighlight=null,gFoundNode=null;
 let gPathNodes=null,gPathEdges=null; // pathway analysis highlighting
+let gArticleNodes=null,gArticleEdges=null; // article-to-network view highlighting
 
 const TC={sanctions:'tr',crypto:'to',energy:'tg',princelings:'tb',influence:'tn'};
 const TI={person:'user',organization:'building-2',deal:'handshake',jurisdiction:'globe',enforcement:'scale'};
@@ -1967,7 +1996,7 @@ function on(id){
   const arts=DATA.articles.filter(a=>a.entities&&a.entities.includes(id));
   document.getElementById('sb-l2-articles').innerHTML=arts.map(a=>
     `<div class="sb-article-item">
-      <div><a class="sb-article-link" href="${esc(a.url)}" target="_blank" rel="noopener noreferrer">${esc(a.title)}</a></div>
+      <div><a class="sb-article-link" href="${esc(a.url)}" data-article-url="${esc(a.url)}" onclick="event.preventDefault();activateArticleView('${esc(a.url)}')">${esc(a.title)}</a></div>
       <div class="sb-article-date">${esc(a.date)}</div>
     </div>`
   ).join('')||'<div class="sb-empty">No source articles indexed.</div>';
@@ -2055,6 +2084,7 @@ function on(id){
   // Pathway analysis: populate dropdown, clear previous path
   renderPathFinder(id);
   clearPathway();
+  clearArticleView();
   // Comparison mode: populate dropdown with all other nodes
   const cmpSel=document.getElementById('sb-compare-target');
   if(cmpSel){
@@ -2141,8 +2171,10 @@ async function loadFEC(name, nodeType){
 function cd(){
   document.getElementById('sb-welcome').classList.remove('hidden');
   document.getElementById('sb-node-detail').classList.remove('active');
-  // Clear pathway and comparison highlighting
-  gPathNodes=null;gPathEdges=null;gCompareNode=null;dg();
+  // Clear pathway, comparison, and article view highlighting
+  gPathNodes=null;gPathEdges=null;gCompareNode=null;gArticleNodes=null;gArticleEdges=null;
+  document.getElementById('sb-article-view').classList.remove('active');
+  dg();
   // Refresh welcome screen content
   renderWatchlist();
   // Also close old detail panel if it was open
@@ -2425,9 +2457,12 @@ function dg(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
 
   // Determine active highlight mode
-  let pathMode=gPathNodes&&gPathNodes.size>0;
+  // Priority: article view > path mode > node selection
+  let articleMode=gArticleNodes&&gArticleNodes.size>0;
+  let pathMode=!articleMode&&gPathNodes&&gPathNodes.size>0;
   let hlSet=null;
-  if(pathMode){hlSet=gPathNodes;}
+  if(articleMode){hlSet=gArticleNodes;}
+  else if(pathMode){hlSet=gPathNodes;}
   else if(gHighlight){
     hlSet=new Set([gHighlight]);
     esim.forEach(e=>{if(e.source===gHighlight) hlSet.add(e.target);if(e.target===gHighlight) hlSet.add(e.source);});
@@ -2436,9 +2471,10 @@ function dg(){
   // ── Update edges ──
   svgEdges.each(function(e){
     const line=d3.select(this);
+    const isArticleEdge=articleMode&&gArticleEdges&&(gArticleEdges.has(e.source+'-'+e.target)||gArticleEdges.has(e.target+'-'+e.source));
     const isPathEdge=pathMode&&gPathEdges&&(gPathEdges.has(e.source+'-'+e.target)||gPathEdges.has(e.target+'-'+e.source));
-    const isHl=!pathMode&&hlSet&&(hlSet.has(e.source)&&hlSet.has(e.target));
-    const dim=hlSet&&!isHl&&!isPathEdge;
+    const isHl=!pathMode&&!articleMode&&hlSet&&(hlSet.has(e.source)&&hlSet.has(e.target));
+    const dim=hlSet&&!isHl&&!isPathEdge&&!isArticleEdge;
     // Base width from amount/weight
     let w=1;
     if(e.amount){const v=parseFloat((e.amount+'').replace(/[^0-9.]/g,''))||0;if(v>=1e9)w=3;else if(v>=1e6)w=2.5;else if(v>=1e3)w=1.8;else if(v>0)w=1.3;}
@@ -2447,7 +2483,8 @@ function dg(){
     const typeColors={financial:'#E89040',influence:'#99CCFF',sanctions:'#E05555',general:dark?'rgba(255,255,255,.12)':'rgba(0,0,0,.12)'};
     const baseColor=typeColors[e._type]||typeColors.general;
     const isDash=e._type==='influence';
-    if(isPathEdge){line.attr('stroke','#FF6B52').attr('stroke-width',3).attr('opacity',1).attr('stroke-dasharray','none');}
+    if(isArticleEdge){line.attr('stroke','#FF6B52').attr('stroke-width',3).attr('opacity',1).attr('stroke-dasharray','none');}
+    else if(isPathEdge){line.attr('stroke','#FF6B52').attr('stroke-width',3).attr('opacity',1).attr('stroke-dasharray','none');}
     else if(isHl){line.attr('stroke',baseColor).attr('stroke-width',Math.max(w+1,2.5)).attr('opacity',1).attr('stroke-dasharray',isDash?'5 3':'none');}
     else if(dim){line.attr('stroke',baseColor).attr('stroke-width',w).attr('opacity',0.08).attr('stroke-dasharray',isDash?'5 3':'none');}
     else{line.attr('stroke',baseColor).attr('stroke-width',Math.max(w,1.5)).attr('opacity',dark?0.45:0.35).attr('stroke-dasharray',isDash?'5 3':'none');}
@@ -2461,14 +2498,15 @@ function dg(){
     const isSelected=gHighlight===n.id;
     const isFound=gFoundNode===n.id;
     const isInPath=pathMode&&gPathNodes.has(n.id);
-    const dim=pathMode?!isInPath:(hlSet&&!hlSet.has(n.id));
+    const isInArticle=articleMode&&gArticleNodes.has(n.id);
+    const dim=articleMode?!isInArticle:(pathMode?!isInPath:(hlSet&&!hlSet.has(n.id)));
     const r=isHover&&!dim?n._r*1.2:n._r;
 
     g.attr('opacity',dim?0.2:1);
     // Main
     g.select('.node-main').attr('r',r).attr('fill',color).attr('stroke',dark?'rgba(255,255,255,.15)':'rgba(255,255,255,.5)').attr('stroke-width',1);
-    // Selection/path ring
-    const showRing=(isSelected&&!pathMode)||isInPath;
+    // Selection/path/article ring
+    const showRing=(isSelected&&!pathMode&&!articleMode)||isInPath||isInArticle;
     g.select('.node-ring').attr('r',r+4).attr('stroke',showRing?'#FF6B52':'none');
     // Found glow
     g.select('.node-found').attr('r',r+8).attr('stroke',isFound?color:'none').attr('stroke-dasharray',isFound?'4 3':'none');
@@ -2929,6 +2967,9 @@ function renderManual(){
 <div class="help-p"><strong>Layer 1 — Basic Facts</strong> shows the node name, type, description, cluster badge, and connection count. This appears immediately.</div>
 <div class="help-p"><strong>Layer 2 — Enriched Context</strong> contains collapsible sections for key connections (direct neighbors), mentioned articles, centrality metrics, cluster breakdown, and cross-cluster connections.</div>
 <div class="help-p"><strong>Layer 3 — Investigation Guides</strong> has two modes. "Corruption Flow Tracing" lets you select a connected node and shows step-by-step tracing methodology. "How to Investigate This" shows investigation steps tailored to the node type (person, organization, country, or network). Layer 3 also contains pathfinding, comparison, investigation leads, and export tools described below.</div></div>
+<div class="help-section"><div class="help-h2">Article View</div>
+<div class="help-p">In Layer 2, the "Mentioned in Articles" section lists source articles. Click any article title to activate Article View. Instead of opening the article in a new tab, the map highlights every entity mentioned in that article with a coral red outline and fades everything else. Edges between article entities are highlighted in coral red.</div>
+<div class="help-p">The sidebar switches to a "Viewing Article" panel showing the article title (clickable to open in a new tab), the entity count, and a list of all mentioned entities with their types. Click any entity name to select it and return to normal view. Click "Clear View" to dismiss the article highlighting.</div></div>
 <div class="help-section"><div class="help-h2">Pathfinding</div>
 <div class="help-p">In Layer 3, the "Find a Path" section lets you trace the shortest connection between the current node and any other node in the graph. Select a target from the dropdown and the path will be highlighted on the map in coral red.</div></div>
 <div class="help-section"><div class="help-h2">Comparison Mode</div>
@@ -2964,6 +3005,7 @@ const FAQ_DATA=[
   {q:'How do I export a subgraph image?',a:'Select a node and scroll to the "Export Neighborhood" button at the bottom of the sidebar. It downloads a publication-ready PNG showing the selected node, all its direct connections, colored edges, labels, and a timestamp. The image is rendered at 2x resolution for print quality.'},
   {q:'What is Popular Searches?',a:'The Explorer tracks your search terms locally in your browser (not on any server). The most frequently searched terms appear on the Welcome screen as clickable pills so you can quickly return to entities you investigate often. You can clear this data by clearing your browser\'s localStorage.'},
   {q:'How does the Watchlist work?',a:'Click "Watch this entity" in Layer 1 when viewing any node to add it to your personal watchlist. The button changes to "Watching" with a checkmark. Your watchlist appears on the Welcome screen with each entity\'s name, type, and the date you added it. Click any name to jump to that node. Click × to remove it. Use "Export CSV" to download your watchlist as a spreadsheet. Everything is stored in your browser\'s localStorage — nothing is sent to any server.'},
+  {q:'What is Article View?',a:'When viewing a node, Layer 2 shows articles that mention it. Click any article title to activate Article View. The map highlights every entity mentioned in that article with a coral red outline and fades everything else. The sidebar shows the article title, entity count, and a clickable list of all entities. Click "Clear View" to return to normal. This lets you see which entities a specific piece of reporting covers.'},
   {q:'Is this data biased?',a:'The graph reflects documented connections from investigative reporting. It does not make legal conclusions. All edges cite source articles. Users should verify claims through the external investigation tools provided in Layer 3.'},
   {q:'Can I embed this in my own website?',a:'Yes. The Explorer supports an embed mode. Add ?embed=true to the URL to hide the sidebar and show a compact view suitable for iframes.'}
 ];
@@ -2987,6 +3029,7 @@ const TUT_STEPS=[
   {title:'Explore Basic Facts (Layer 1)',desc:'The top of the sidebar shows the node name, type, description, and cluster badge. This is Layer 1 — basic facts that appear immediately.',target:'#sb-node-detail .sb-l1',action:'Read the basic facts card.'},
   {title:'Watch an Entity',desc:'Below the cluster badge, click "Watch this entity" to add it to your personal watchlist. The button changes to "Watching" with a checkmark. Go back to the Welcome screen to see your watchlist, or export it as CSV.',target:'#sb-watch-wrap',action:'Click the Watch button.'},
   {title:'Expand Connections (Layer 2)',desc:'Below the basic facts, collapsible sections show key connections, mentioned articles, and centrality metrics. Click the headers to expand or collapse them.',target:'#sb-l2-conns-section',action:'Click "Key Connections" to expand it.'},
+  {title:'View an Article on the Map',desc:'In the "Mentioned in Articles" section, click any article title. Instead of opening the article, the map highlights every entity mentioned in it. A sidebar panel shows the article title and a list of all entities. Click "Clear View" to return to normal.',target:'#sb-l2-articles-section',action:'Click an article title to activate Article View.'},
   {title:'Try "How to Investigate This"',desc:'In the Investigation Guides section, toggle to "How to Investigate This" mode. It shows step-by-step investigation methodology with external tool links tailored to the node type.',target:'#sb-l3-section',action:'Click the "How to Investigate This" toggle.'},
   {title:'Try Corruption Flow Tracing',desc:'Switch to "Corruption Flow Tracing" mode. Select a connected node to trace the corruption flow between them. The system classifies the edge type and shows relevant tracing steps.',target:'#sb-l3-section',action:'Select a connection to trace.'},
   {title:'Find a Path Between Nodes',desc:'Use the "Find a Path" dropdown to select any node in the graph. The shortest path will be highlighted in coral red on the map.',target:'#sb-path-section',action:'Select a target node from the dropdown.'},
@@ -3137,6 +3180,79 @@ function findOnMap(id){
       trackEvent('find_on_map', DATA.nodes.find(n=>n.id===id)?.name||'unknown');
     }
   }, 150);
+}
+
+// ========== FEATURE 4: ARTICLE-TO-NETWORK VIEW ==========
+function activateArticleView(articleUrl){
+  // Find the article in DATA.articles by URL
+  const article=DATA.articles.find(a=>a.url===articleUrl);
+  if(!article){
+    // Fallback: open the URL in a new tab if article not found in corpus
+    window.open(articleUrl,'_blank');
+    return;
+  }
+  // Get entity IDs from the article
+  const entityIds=new Set(article.entities||[]);
+  // Also find edges whose source_url matches
+  const edgeKeys=new Set();
+  DATA.edges.forEach(e=>{
+    if(e.source_url===articleUrl){
+      entityIds.add(e.source);
+      entityIds.add(e.target);
+      edgeKeys.add(e.source+'-'+e.target);
+      edgeKeys.add(e.target+'-'+e.source);
+    }
+  });
+  // Also include edges between any two article entities
+  DATA.edges.forEach(e=>{
+    if(entityIds.has(e.source)&&entityIds.has(e.target)){
+      edgeKeys.add(e.source+'-'+e.target);
+      edgeKeys.add(e.target+'-'+e.source);
+    }
+  });
+  if(entityIds.size===0){
+    window.open(articleUrl,'_blank');
+    return;
+  }
+  // Set graph state
+  gArticleNodes=entityIds;
+  gArticleEdges=edgeKeys;
+  // Clear other highlight modes
+  gPathNodes=null;gPathEdges=null;
+  // Build sidebar content
+  const entityList=[...entityIds].map(id=>DATA.nodes.find(n=>n.id===id)).filter(Boolean)
+    .sort((a,b)=>a.name.localeCompare(b.name));
+  const body=document.getElementById('sb-artview-body');
+  if(body){
+    let html=`<div class="sb-artview-title"><a href="${esc(articleUrl)}" target="_blank" rel="noopener noreferrer">${esc(article.title)}</a></div>`;
+    html+=`<div class="sb-artview-count">${entityList.length} entit${entityList.length===1?'y':'ies'} mentioned in this article</div>`;
+    entityList.forEach(n=>{
+      html+=`<div class="sb-artview-entity" onclick="clearArticleView();on(${n.id})">
+        <span class="sb-artview-ename">${esc(n.name)}</span>
+        <span class="sb-artview-etype">${esc(n.type)}</span>
+      </div>`;
+    });
+    body.innerHTML=html;
+  }
+  // Show article view panel, hide welcome and node detail
+  document.getElementById('sb-article-view').classList.add('active');
+  document.getElementById('sb-welcome').classList.add('hidden');
+  document.getElementById('sb-node-detail').classList.remove('active');
+  // Switch to graph view and redraw
+  sv('graph');
+  setTimeout(()=>dg(),60);
+  trackEvent('article_view',article.title);
+}
+
+function clearArticleView(){
+  gArticleNodes=null;gArticleEdges=null;
+  const panel=document.getElementById('sb-article-view');
+  if(panel) panel.classList.remove('active');
+  // If no node is selected, show welcome
+  if(!gHighlight){
+    document.getElementById('sb-welcome').classList.remove('hidden');
+  }
+  dg();
 }
 
 // ========== FEATURE 12: SEARCH ANALYTICS ==========
