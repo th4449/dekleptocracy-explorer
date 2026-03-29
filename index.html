@@ -2893,22 +2893,31 @@ function renderManual(){
 <div class="help-section"><div class="help-h2">What is the Dekleptocracy Explorer?</div>
 <div class="help-p">The Dekleptocracy Explorer is an interactive knowledge graph that visualizes corruption networks, foreign influence operations, and financial conflicts of interest. It is built from investigative journalism published at dekleptocracy.substack.com.</div></div>
 <div class="help-section"><div class="help-h2">Navigating the Graph</div>
-<div class="help-p">The main view is a force-directed network map. Each circle (node) represents a person, organization, deal, jurisdiction, or enforcement action. Lines (edges) represent documented relationships between entities.</div>
-<div class="help-p">Drag the canvas to pan. Scroll to zoom in and out. Click any node to open its detail panel in the sidebar.</div></div>
+<div class="help-p">The main view is a force-directed network map powered by D3.js. Each circle (node) represents a person, organization, deal, jurisdiction, or enforcement action. Lines (edges) represent documented relationships between entities. Highly connected nodes are pulled toward the center of the graph.</div>
+<div class="help-p">Drag the canvas to pan. Scroll to zoom in and out. Click any node to open its detail panel in the sidebar. The zoom percentage is displayed in the bottom-right controls.</div></div>
+<div class="help-section"><div class="help-h2">Edge Types</div>
+<div class="help-p">Connections between nodes are color-coded by relationship type. Orange solid lines represent financial flows (investments, payments, deals). Blue dashed lines represent influence operations (lobbying, appointments, policy alignment). Red solid lines represent sanctions evasion (shell companies, circumvention, laundering). Gray lines represent general or unclassified connections.</div>
+<div class="help-p">A legend at the bottom-left of the graph shows these link types alongside the cluster color legend.</div></div>
 <div class="help-section"><div class="help-h2">The Sidebar</div>
 <div class="help-p">When you click a node, the sidebar shows three progressive layers of information.</div>
 <div class="help-p"><strong>Layer 1 — Basic Facts</strong> shows the node name, type, description, cluster badge, and connection count. This appears immediately.</div>
 <div class="help-p"><strong>Layer 2 — Enriched Context</strong> contains collapsible sections for key connections (direct neighbors), mentioned articles, centrality metrics, cluster breakdown, and cross-cluster connections.</div>
-<div class="help-p"><strong>Layer 3 — Investigation Guides</strong> has two modes. "Corruption Flow Tracing" lets you select a connected node and shows step-by-step tracing methodology. "How to Investigate This" shows investigation steps tailored to the node type (person, organization, country, or network).</div></div>
+<div class="help-p"><strong>Layer 3 — Investigation Guides</strong> has two modes. "Corruption Flow Tracing" lets you select a connected node and shows step-by-step tracing methodology. "How to Investigate This" shows investigation steps tailored to the node type (person, organization, country, or network). Layer 3 also contains pathfinding, comparison, investigation leads, and export tools described below.</div></div>
 <div class="help-section"><div class="help-h2">Pathfinding</div>
-<div class="help-p">At the bottom of the sidebar, the "Find a Path" section lets you trace the shortest connection between the current node and any other node in the graph. Select a target from the dropdown and the path will be highlighted on the map in coral red.</div></div>
-<div class="help-section"><div class="help-h2">Search</div>
-<div class="help-p">Use the search box in the top bar to find any node by name, description, type, or tag. Results appear as you type.</div></div>
+<div class="help-p">In Layer 3, the "Find a Path" section lets you trace the shortest connection between the current node and any other node in the graph. Select a target from the dropdown and the path will be highlighted on the map in coral red.</div></div>
+<div class="help-section"><div class="help-h2">Comparison Mode</div>
+<div class="help-p">Below pathfinding in Layer 3, "Compare with Another Entity" lets you select a second node to compare against the current one. The comparison shows the shortest path between them, shared connections (entities both are connected to), shared clusters, articles mentioning both entities, and a network bridge score. Shared connections appear as clickable pills. Both nodes and the path between them are highlighted on the map.</div></div>
+<div class="help-section"><div class="help-h2">Investigation Leads</div>
+<div class="help-p">The "Investigation Leads" section in Layer 3 analyzes the current node and generates three to five contextual suggestions based on its network position. Unlike the templated methodology steps, these are specific to this particular node — for example, suggesting you check OFAC designations if the node connects to sanctioned entities, or recommending a beneficial ownership search if the node connects to multiple organizations. Each lead includes a clickable link to an external investigation tool.</div></div>
+<div class="help-section"><div class="help-h2">Export Neighborhood</div>
+<div class="help-p">At the bottom of Layer 3, the "Export Neighborhood" button downloads a publication-ready PNG image showing the current node and all its direct connections (one hop). The image includes colored edges by type, cluster-colored nodes, labels, and a timestamp. The center node is highlighted with a coral red outline. The filename follows the pattern name-network-YYYY-MM-DD.png.</div></div>
+<div class="help-section"><div class="help-h2">Search and Popular Searches</div>
+<div class="help-p">Use the search box in the top bar to find any node by name, description, type, or tag. Results appear as you type. Your searches are tracked locally, and the most popular search terms appear on the Welcome screen as clickable pills so you can quickly return to frequently investigated entities.</div></div>
 <div class="help-section"><div class="help-h2">Keyboard Shortcuts</div>
-<div class="help-p"><span class="help-kbd">Esc</span> Close panels and overlays</div>
+<div class="help-p"><span class="help-kbd">Esc</span> Close panels, overlays, help modal, or active tutorial</div>
 <div class="help-p"><span class="help-kbd">Ctrl+Shift+A</span> Toggle admin mode (data editing)</div></div>
 <div class="help-section"><div class="help-h2">Clusters</div>
-<div class="help-p">Nodes are organized into five thematic clusters, each with a distinct color on the map. Sanctions-Busting (dark green), Crypto Rails (coral), Energy Networks (forest green), Princelings (pink), and Influence Operations (blue).</div></div>`;
+<div class="help-p">Nodes are organized into five thematic clusters, each with a distinct color on the map. Sanctions-Busting (dark green), Crypto Rails (coral), Energy Networks (forest green), Princelings (pink), and Influence Operations (blue). Nodes can belong to multiple clusters via their tags.</div></div>`;
 }
 
 // ── FAQ ──
@@ -2916,9 +2925,14 @@ const FAQ_DATA=[
   {q:'What data sources power this graph?',a:'The graph is built from investigative articles published at dekleptocracy.substack.com. Each node and edge is sourced from published reporting. External data from the FEC API (political donations) and links to OpenSanctions and ICIJ Offshore Leaks are also integrated.'},
   {q:'How often is the data updated?',a:'The article corpus is updated approximately four times per week as new articles are published. Node and edge data is updated in batch whenever new entities are identified in reporting.'},
   {q:'Can I contribute data or suggest corrections?',a:'The Dekleptocracy Explorer is maintained by the Informed Democracy Project, a Texas-based 501(c)(4) nonprofit. Contact us through the Substack newsletter for corrections or data contributions.'},
-  {q:'What do the node sizes mean?',a:'Node size reflects connection count (degree centrality). Small nodes have 1-2 connections, medium nodes have 3-5, and large nodes have 6 or more. More connected nodes are more central to the corruption network.'},
+  {q:'What do the node sizes mean?',a:'Node size reflects connection count (degree centrality). Small nodes have 1-2 connections, medium nodes have 3-5, and large nodes have 6 or more. More connected nodes are more central to the corruption network and appear closer to the center of the graph.'},
   {q:'What do the cluster colors mean?',a:'Dark green = Sanctions-Busting, Coral = Crypto Rails, Forest green = Energy Networks, Pink = Princelings (dynastic networks), Blue = Influence Operations. Nodes can belong to multiple clusters via their tags.'},
+  {q:'What do the edge colors mean?',a:'Orange solid lines are financial flows (investments, payments, deals). Blue dashed lines are influence operations (lobbying, appointments). Red solid lines are sanctions evasion (shell companies, circumvention). Gray lines are general or unclassified connections. The legend at the bottom-left of the graph explains these.'},
   {q:'How does the pathfinding work?',a:'The pathfinder uses breadth-first search to find the shortest connection between any two nodes. The path is highlighted on the map in coral red. If no path exists, the nodes are in disconnected components of the graph.'},
+  {q:'How does comparison mode work?',a:'Select a node, then scroll to "Compare with Another Entity" in the sidebar and pick a second node. The system computes shared connections, shared clusters, shared articles, shortest path length, and a network bridge score. Both nodes and the path between them are highlighted on the map.'},
+  {q:'What are Investigation Leads?',a:'Investigation Leads are contextual suggestions generated by analyzing the selected node\'s network position. Unlike the generic methodology steps, these are specific to each node — for example, suggesting OFAC checks for sanctions-connected entities or beneficial ownership searches for nodes tied to multiple organizations. Each lead links to an external investigation tool.'},
+  {q:'How do I export a subgraph image?',a:'Select a node and scroll to the "Export Neighborhood" button at the bottom of the sidebar. It downloads a publication-ready PNG showing the selected node, all its direct connections, colored edges, labels, and a timestamp. The image is rendered at 2x resolution for print quality.'},
+  {q:'What is Popular Searches?',a:'The Explorer tracks your search terms locally in your browser (not on any server). The most frequently searched terms appear on the Welcome screen as clickable pills so you can quickly return to entities you investigate often. You can clear this data by clearing your browser\'s localStorage.'},
   {q:'Is this data biased?',a:'The graph reflects documented connections from investigative reporting. It does not make legal conclusions. All edges cite source articles. Users should verify claims through the external investigation tools provided in Layer 3.'},
   {q:'Can I embed this in my own website?',a:'Yes. The Explorer supports an embed mode. Add ?embed=true to the URL to hide the sidebar and show a compact view suitable for iframes.'}
 ];
@@ -2937,13 +2951,16 @@ function renderFAQ(){
 
 // ── Interactive Tutorial ──
 const TUT_STEPS=[
-  {title:'Search for a Node',desc:'Type a name in the search box at the top of the page. Try "Kushner" or "Binance". Results appear as you type.',target:'#gs',action:'Click the search box and type a name.'},
-  {title:'Click a Node on the Map',desc:'Click any circle on the network map to select it. The sidebar will show detailed information about that entity.',target:'#gcc',action:'Click any node circle on the graph.'},
+  {title:'Search for a Node',desc:'Type a name in the search box at the top of the page. Try "Kushner" or "Binance". Results appear as you type. Your searches are tracked and will show up as Popular Searches on the Welcome screen.',target:'#gs',action:'Click the search box and type a name.'},
+  {title:'Click a Node on the Map',desc:'Click any circle on the network map to select it. The sidebar will show detailed information about that entity. Notice the edge colors — orange for financial, blue dashed for influence, red for sanctions.',target:'#gcc',action:'Click any node circle on the graph.'},
   {title:'Explore Basic Facts (Layer 1)',desc:'The top of the sidebar shows the node name, type, description, and cluster badge. This is Layer 1 — basic facts that appear immediately.',target:'#sb-node-detail .sb-l1',action:'Read the basic facts card.'},
   {title:'Expand Connections (Layer 2)',desc:'Below the basic facts, collapsible sections show key connections, mentioned articles, and centrality metrics. Click the headers to expand or collapse them.',target:'#sb-l2-conns-section',action:'Click "Key Connections" to expand it.'},
   {title:'Try "How to Investigate This"',desc:'In the Investigation Guides section, toggle to "How to Investigate This" mode. It shows step-by-step investigation methodology with external tool links tailored to the node type.',target:'#sb-l3-section',action:'Click the "How to Investigate This" toggle.'},
   {title:'Try Corruption Flow Tracing',desc:'Switch to "Corruption Flow Tracing" mode. Select a connected node to trace the corruption flow between them. The system classifies the edge type and shows relevant tracing steps.',target:'#sb-l3-section',action:'Select a connection to trace.'},
-  {title:'Find a Path Between Nodes',desc:'At the bottom of the sidebar, use the "Find a Path" dropdown to select any node in the graph. The shortest path will be highlighted in coral red on the map.',target:'#sb-path-section',action:'Select a target node from the dropdown.'}
+  {title:'Find a Path Between Nodes',desc:'Use the "Find a Path" dropdown to select any node in the graph. The shortest path will be highlighted in coral red on the map.',target:'#sb-path-section',action:'Select a target node from the dropdown.'},
+  {title:'Compare Two Entities',desc:'Use the "Compare with Another Entity" dropdown to select a second node. You will see shared connections, shared clusters, shared articles, shortest path length, and a bridge score. Both nodes are highlighted on the map.',target:'#sb-compare-section',action:'Select a node to compare.'},
+  {title:'Review Investigation Leads',desc:'Scroll to "Investigation Leads" to see contextual suggestions generated for this specific node based on its network position, cluster membership, and connection patterns. Click a lead\'s action link to open an external investigation tool.',target:'#sb-leads-wrap',action:'Read the leads and click an action link.'},
+  {title:'Export the Neighborhood',desc:'Click "Export Neighborhood" to download a PNG image of this node and all its direct connections. The image is publication-ready with colored edges, labels, and a timestamp.',target:'#sb-export-wrap',action:'Click the Export Neighborhood button.'}
 ];
 
 function renderTutorial(){
