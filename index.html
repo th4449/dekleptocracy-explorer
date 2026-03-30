@@ -2146,7 +2146,6 @@ function on(id){
 
 // ========== FEC DONATION LOOKUP ==========
 const FEC_KEY = 'DEMO_KEY';
-const FEC_API_KEY = 'DEMO_KEY'; // Real key injected by Vercel
 
 function fmt$(n){
   if(!n&&n!==0) return '—';
@@ -3408,13 +3407,6 @@ function exportWatchlistCSV(){
 }
 
 // ========== FEATURE +1: CONTEXTUAL INVESTIGATION LEADS ==========
-
-function renderFECLeads(entityName, entityType) {
-  if(entityType !== 'PERSON' && entityType !== 'ORGANIZATION') return '';
-  const url = 'https://www.fec.gov/data/receipts/?contributor_name=' + encodeURIComponent(entityName);
-  return '<div style="margin-top:var(--s3);border-top:1px solid var(--color-border);padding-top:var(--s2)"><div class="sb-path-label">FEC Political Donations</div><a href="' + url + '" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:#FF6B52;color:white;border-radius:var(--radius-md);font-size:var(--txt-xs);font-weight:500;text-decoration:none;transition:opacity var(--transition)"><i data-lucide="external-link" style="width:12px;height:12px"></i> Search FEC Records</a></div>';
-}
-
 function investigationLeads(nd){
   const wrap=document.getElementById('sb-leads-wrap');
   if(!wrap) return;
@@ -3466,13 +3458,867 @@ function investigationLeads(nd){
     leads.push({title:'Foreign Agent Registration Check',desc:'Individuals in the influence cluster may be required to register under FARA. Check the DOJ FARA database for registration status.',action:'Search FARA Database',onclick:`window.open('https://efile.fara.gov/ords/fara/f?p=185:130:::::P130_DATERANGE:N','_blank')`});
   }
 
-  let html='<div class="sb-path-label" style="margin-bottom:var(--s2)">Investigation Leads</div>'+leads.slice(0,5).map(l=>`<div class="sb-lead"><div class="sb-lead-title">${esc(l.title)}</div><div class="sb-lead-desc">${esc(l.desc)}</div><span class="sb-lead-action" onclick="${l.onclick}">${esc(l.action)} →</span></div>`).join('');
-
-  // Add FEC static link
-  const fecHtml = renderFECLeads(nd.name, nd.type);
-  if(fecHtml) html += fecHtml;
-
-  if(!leads.length&&!html.length){wrap.innerHTML='';return;}
-  wrap.innerHTML=html;
-  lucide.createIcons();
+  if(!leads.length){wrap.innerHTML='';return;}
+  wrap.innerHTML='<div class="sb-path-label" style="margin-bottom:var(--s2)">Investigation Leads</div>'+
+    leads.slice(0,5).map(l=>
+      `<div class="sb-lead"><div class="sb-lead-title">${esc(l.title)}</div><div class="sb-lead-desc">${esc(l.desc)}</div><span class="sb-lead-action" onclick="${l.onclick}">${esc(l.action)} \u2192</span></div>`
+    ).join('');
 }
+
+// ========== FEATURE 10: COMPARISON MODE ==========
+let gCompareNode=null;
+function runComparison(val){
+  const result=document.getElementById('sb-compare-result');
+  if(!result) return;
+  gCompareNode=null;
+  if(!val||!gHighlight){result.innerHTML='';dg();return;}
+  const idB=parseInt(val);
+  const ndA=DATA.nodes.find(n=>n.id===gHighlight);
+  const ndB=DATA.nodes.find(n=>n.id===idB);
+  if(!ndA||!ndB||ndA.id===ndB.id){result.innerHTML='';return;}
+  gCompareNode=idB;
+
+  // Shared connections
+  const neighborsA=new Set();
+  DATA.edges.forEach(e=>{if(e.source===ndA.id)neighborsA.add(e.target);if(e.target===ndA.id)neighborsA.add(e.source);});
+  const neighborsB=new Set();
+  DATA.edges.forEach(e=>{if(e.source===ndB.id)neighborsB.add(e.target);if(e.target===ndB.id)neighborsB.add(e.source);});
+  const shared=[...neighborsA].filter(id=>neighborsB.has(id));
+  const sharedNodes=shared.map(id=>DATA.nodes.find(n=>n.id===id)).filter(Boolean);
+
+  // Shared clusters
+  const tagsA=new Set(ndA.tags||[]);
+  const tagsB=new Set(ndB.tags||[]);
+  const sharedClusters=[...tagsA].filter(t=>tagsB.has(t));
+
+  // Articles mentioning both
+  const nameA=ndA.name.toLowerCase(),nameB=ndB.name.toLowerCase();
+  const sharedArticles=(DATA.articles||[]).filter(a=>{
+    const ids=a.entity_ids||[];
+    return ids.includes(ndA.id)&&ids.includes(ndB.id);
+  });
+
+  // Shortest path
+  const path=findPath(ndA.id,ndB.id,DATA);
+  const pathLen=path?path.length-1:null;
+
+  // Bridge score
+  const bridgeScore=shared.length;
+
+  let html='<div class="sb-compare-wrap">';
+  html+=`<div class="sb-compare-title">${esc(ndA.name)} vs ${esc(ndB.name)}</div>`;
+  html+=`<div class="sb-compare-row"><span class="sb-compare-label">Shortest Path</span><span class="sb-compare-val">${pathLen!==null?pathLen+' hop'+(pathLen!==1?'s':''):'No path'}</span></div>`;
+  html+=`<div class="sb-compare-row"><span class="sb-compare-label">Shared Connections</span><span class="sb-compare-val">${shared.length}</span></div>`;
+  html+=`<div class="sb-compare-row"><span class="sb-compare-label">Shared Clusters</span><span class="sb-compare-val">${sharedClusters.length?sharedClusters.join(', '):'None'}</span></div>`;
+  html+=`<div class="sb-compare-row"><span class="sb-compare-label">Shared Articles</span><span class="sb-compare-val">${sharedArticles.length}</span></div>`;
+  html+=`<div class="sb-compare-row"><span class="sb-compare-label">Network Bridge Score</span><span class="sb-compare-val">${bridgeScore}</span></div>`;
+  if(sharedNodes.length){
+    html+='<div class="sb-compare-shared">';
+    sharedNodes.forEach(n=>{
+      html+=`<span class="sb-compare-shared-item" onclick="on(${n.id})">${esc(n.name)}</span>`;
+    });
+    html+='</div>';
+  }
+  if(sharedArticles.length){
+    html+='<div style="margin-top:var(--s2);font-size:var(--txt-xs);color:var(--color-text-muted)">';
+    sharedArticles.slice(0,3).forEach(a=>{
+      html+=`<div style="margin-bottom:4px"><a href="${esc(a.url||'#')}" target="_blank" rel="noopener noreferrer" style="color:#3D5C2F;text-decoration:none">${esc(a.title)}</a></div>`;
+    });
+    html+='</div>';
+  }
+  html+='</div>';
+  result.innerHTML=html;
+
+  // Highlight on map: set comparison state and redraw
+  gPathNodes=new Set(shared.concat([ndA.id,ndB.id]));
+  if(path){
+    gPathEdges=new Set();
+    for(let i=0;i<path.length-1;i++){gPathEdges.add(path[i]+'-'+path[i+1]);gPathEdges.add(path[i+1]+'-'+path[i]);}
+  }
+  dg();
+}
+
+// ========== FEATURE 2b: HIDDEN CONNECTION FINDER ==========
+function findAllPaths(startId,endId,maxDepth){
+  if(startId===endId) return [];
+  // Build adjacency list
+  const adj={};
+  DATA.edges.forEach(e=>{
+    const s=e.source,t=e.target;
+    if(!adj[s]) adj[s]=[];
+    if(!adj[t]) adj[t]=[];
+    adj[s].push(t);
+    adj[t].push(s);
+  });
+  if(!adj[startId]||!adj[endId]) return []; // isolated node
+  const results=[];
+  const MAX_RESULTS=50;
+  const MAX_QUEUE=10000; // prevent memory explosion
+  let queue=[[startId,[startId]]];
+  for(let depth=0;depth<maxDepth&&queue.length>0;depth++){
+    const nextQueue=[];
+    for(let qi=0;qi<queue.length;qi++){
+      const cur=queue[qi][0],path=queue[qi][1];
+      const neighbors=adj[cur]||[];
+      for(let ni=0;ni<neighbors.length;ni++){
+        const nb=neighbors[ni];
+        // Cycle check — use a Set for paths longer than 4 for speed
+        let hasCycle=false;
+        for(let pi=0;pi<path.length;pi++){if(path[pi]===nb){hasCycle=true;break;}}
+        if(hasCycle) continue;
+        const newPath=path.concat(nb);
+        if(nb===endId){
+          results.push(newPath);
+          if(results.length>=MAX_RESULTS) return results;
+        } else if(newPath.length-1<maxDepth){
+          nextQueue.push([nb,newPath]);
+          if(nextQueue.length>=MAX_QUEUE) break;
+        }
+      }
+      if(nextQueue.length>=MAX_QUEUE) break;
+    }
+    queue=nextQueue;
+    if(results.length>=MAX_RESULTS) break;
+  }
+  return results;
+}
+
+function pathStrength(path){
+  const connMap={};
+  DATA.edges.forEach(e=>{connMap[e.source]=(connMap[e.source]||0)+1;connMap[e.target]=(connMap[e.target]||0)+1;});
+  let totalDeg=0;
+  path.forEach(id=>{totalDeg+=(connMap[id]||0);});
+  const avgDeg=totalDeg/path.length;
+  const hops=path.length-1;
+  return hops>0?avgDeg/hops:0;
+}
+
+function analyzePathTypes(path){
+  const nodeMap={};DATA.nodes.forEach(n=>nodeMap[n.id]=n);
+  const edgeMap={};
+  DATA.edges.forEach(e=>{edgeMap[e.source+'-'+e.target]=e;edgeMap[e.target+'-'+e.source]=e;});
+  const types={financial:0,influence:0,sanctions:0,general:0};
+  for(let i=0;i<path.length-1;i++){
+    const e=edgeMap[path[i]+'-'+path[i+1]];
+    if(e){
+      const s=nodeMap[e.source],t=nodeMap[e.target];
+      const eType=(s&&t)?classifyEdge(e,s,t):'general';
+      types[eType]=(types[eType]||0)+1;
+    }
+  }
+  const hops=path.length-1;
+  const dominant=Object.entries(types).filter(function(x){return x[1]>0;}).sort(function(a,b){return b[1]-a[1];});
+  if(!dominant.length) return 'Connection type could not be determined.';
+  const typeNames={financial:'financial flows',influence:'influence operations',sanctions:'sanctions evasion',general:'general connections'};
+  const primary=typeNames[dominant[0][0]]||'connections';
+  const ndA=nodeMap[path[0]],ndB=nodeMap[path[path.length-1]];
+  const nA=ndA?ndA.name:'Entity A',nB=ndB?ndB.name:'Entity B';
+  var text='This '+hops+'-hop path connects '+nA+' to '+nB+' primarily through '+primary+'.';
+  if(dominant.length>1&&dominant[1][1]>0){
+    text+=' Secondary link type: '+typeNames[dominant[1][0]]+'.';
+  }
+  if(path.length>2){
+    const intermediates=path.slice(1,-1).map(function(id){var n=nodeMap[id];return n?n.name:'?';});
+    text+=' Key intermediaries: '+intermediates.join(', ')+'.';
+  }
+  return text;
+}
+
+function runHiddenConnections(val){
+  var result=document.getElementById('sb-hidden-result');
+  if(!result) return;
+  if(!val||!gHighlight){
+    result.innerHTML='';gPathNodes=null;gPathEdges=null;dg();
+    return;
+  }
+  var idB=parseInt(val,10);
+  var ndA=DATA.nodes.find(function(n){return n.id===gHighlight;});
+  var ndB=DATA.nodes.find(function(n){return n.id===idB;});
+  if(!ndA||!ndB){
+    result.innerHTML='<div class="sb-hc-empty">Could not find one or both entities.</div>';
+    return;
+  }
+  // Show loading
+  result.innerHTML='<div class="sb-hc-empty" style="animation:pulse 1.4s ease-in-out infinite">Searching for hidden connections\u2026</div>';
+  // Run BFS asynchronously to avoid blocking UI
+  setTimeout(function(){
+    var allPaths=findAllPaths(ndA.id,ndB.id,5);
+    if(!allPaths.length){
+      result.innerHTML='<div class="sb-hc-empty">No hidden connections found within 5 hops between '+esc(ndA.name)+' and '+esc(ndB.name)+'.</div>';
+      gPathNodes=null;gPathEdges=null;dg();
+      return;
+    }
+    // Score and rank
+    var scored=allPaths.map(function(p){return{path:p,strength:pathStrength(p),hops:p.length-1};});
+    scored.sort(function(a,b){return b.strength-a.strength;});
+    var top5=scored.slice(0,5);
+    var nodeMap={};DATA.nodes.forEach(function(n){nodeMap[n.id]=n;});
+    var html='<div class="sb-hc-header">'+allPaths.length+' hidden path'+(allPaths.length!==1?'s':'')+' found</div>';
+    top5.forEach(function(item,i){
+      var chain=item.path.map(function(id){var n=nodeMap[id];return n?n.name:'?';}).join(' <span>\u2192</span> ');
+      var analysis=analyzePathTypes(item.path);
+      html+='<div class="sb-hc-card'+(i===0?' active':'')+'" onclick="selectHiddenPath('+i+')" data-path-idx="'+i+'">';
+      html+='<div class="sb-hc-rank">Path '+(i+1)+' \u00b7 Strength '+item.strength.toFixed(2)+' \u00b7 '+item.hops+' hop'+(item.hops!==1?'s':'')+'</div>';
+      html+='<div class="sb-hc-chain">'+chain+'</div>';
+      html+='<div class="sb-hc-analysis">'+esc(analysis)+'</div>';
+      html+='</div>';
+    });
+    html+='<div class="sb-hc-clear" onclick="clearHiddenConnections()"><i data-lucide="x" style="width:10px;height:10px"></i> Clear</div>';
+    result.innerHTML=html;
+    lucide.createIcons();
+    window._hiddenPaths=top5;
+    selectHiddenPath(0);
+  },50);
+}
+
+function selectHiddenPath(idx){
+  const paths=window._hiddenPaths;
+  if(!paths||!paths[idx]) return;
+  const path=paths[idx].path;
+  // Update card active state
+  document.querySelectorAll('.sb-hc-card').forEach((card,i)=>{
+    card.classList.toggle('active',i===idx);
+  });
+  // Set graph highlighting
+  gPathNodes=new Set(path);
+  gPathEdges=new Set();
+  for(let i=0;i<path.length-1;i++){
+    gPathEdges.add(path[i]+'-'+path[i+1]);
+    gPathEdges.add(path[i+1]+'-'+path[i]);
+  }
+  dg();
+}
+
+function clearHiddenConnections(){
+  gPathNodes=null;gPathEdges=null;
+  window._hiddenPaths=null;
+  const result=document.getElementById('sb-hidden-result');
+  if(result) result.innerHTML='';
+  const sel=document.getElementById('sb-hidden-target');
+  if(sel) sel.value='';
+  dg();
+}
+
+// ========== FEATURE 2: EXPORT SUBGRAPHS ==========
+function exportNeighborhood(){
+  if(!gHighlight) return;
+  const nd=DATA.nodes.find(n=>n.id===gHighlight);
+  if(!nd) return;
+  // Gather neighborhood
+  const neighborIds=new Set([nd.id]);
+  DATA.edges.forEach(e=>{if(e.source===nd.id)neighborIds.add(e.target);if(e.target===nd.id)neighborIds.add(e.source);});
+  const subNodes=nsim.filter(n=>neighborIds.has(n.id));
+  const subEdges=esim.filter(e=>neighborIds.has(e.source)&&neighborIds.has(e.target));
+  if(!subNodes.length) return;
+
+  // Compute bounding box
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  subNodes.forEach(n=>{const r=(n._r||10)+30;minX=Math.min(minX,n.x-r);minY=Math.min(minY,n.y-r);maxX=Math.max(maxX,n.x+r);maxY=Math.max(maxY,n.y+r);});
+  const pad=40;
+  minX-=pad;minY-=pad;maxX+=pad;maxY+=pad;
+  const w=maxX-minX,h=maxY-minY;
+
+  // Build standalone SVG
+  let svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(w)}" height="${Math.round(h)}" style="background:#1a1a1a;font-family:'IBM Plex Sans',sans-serif">`;
+  // Edges
+  const nbMap={};subNodes.forEach(n=>nbMap[n.id]=n);
+  subEdges.forEach(e=>{
+    const a=nbMap[e.source],b=nbMap[e.target];if(!a||!b)return;
+    const typeColors={financial:'#E89040',influence:'#99CCFF',sanctions:'#E05555',general:'#555'};
+    const col=typeColors[e._type]||typeColors.general;
+    svg+=`<line x1="${a.x-minX}" y1="${a.y-minY}" x2="${b.x-minX}" y2="${b.y-minY}" stroke="${col}" stroke-width="1.5" opacity="0.5"${e._type==='influence'?' stroke-dasharray="5 3"':''}/>`;
+  });
+  // Nodes
+  subNodes.forEach(n=>{
+    const x=n.x-minX,y=n.y-minY,r=n._r||10;
+    const color=nc(n);
+    const isCenter=n.id===nd.id;
+    svg+=`<circle cx="${x}" cy="${y}" r="${r}" fill="${color}" stroke="${isCenter?'#FF6B52':'rgba(255,255,255,.3)'}" stroke-width="${isCenter?3:1}"/>`;
+    const label=n.name.length>20?n.name.slice(0,19)+'\u2026':n.name;
+    svg+=`<text x="${x}" y="${y+r+13}" text-anchor="middle" font-size="10" fill="rgba(220,220,218,.85)">${esc(label)}</text>`;
+  });
+  // Timestamp
+  const ts=new Date().toISOString().slice(0,10);
+  svg+=`<text x="${w-pad}" y="${h-10}" text-anchor="end" font-size="9" fill="rgba(255,255,255,.3)">Dekleptocracy Explorer \u00b7 ${ts}</text>`;
+  svg+='</svg>';
+
+  // Convert SVG to PNG via canvas
+  const img=new Image();
+  const blob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  img.onload=function(){
+    const canvas=document.createElement('canvas');
+    canvas.width=Math.round(w)*2;canvas.height=Math.round(h)*2;
+    const ctx=canvas.getContext('2d');
+    ctx.scale(2,2);
+    ctx.drawImage(img,0,0);
+    URL.revokeObjectURL(url);
+    canvas.toBlob(function(pngBlob){
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(pngBlob);
+      a.download=(nd.name.toLowerCase().replace(/[^a-z0-9]+/g,'-'))+'-network-'+ts+'.png';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    },'image/png');
+  };
+  img.src=url;
+}
+
+// ========== FEATURE 6: DUE DILIGENCE CHECKLIST ==========
+const CHECKLISTS={
+  person:[
+    {title:'Beneficial Ownership',desc:'Research shell companies and hidden assets this person owns or controls.',sources:'OpenSanctions, corporate registries, LinkedIn'},
+    {title:'Financial Disclosures',desc:'Review public financial records and disclosure filings.',sources:'SEC EDGAR, financial statements, news archives'},
+    {title:'Sanctions History',desc:'Check if person appears on government or UN sanctions lists.',sources:'OFAC SDN List, UN Consolidated Sanctions List, EU sanctions'},
+    {title:'Political Donations',desc:'Research political contributions and PAC funding.',sources:'FEC.gov, OpenSecrets, state election commission databases'},
+    {title:'Family Connections',desc:'Research family members, relatives, and close associates.',sources:'News archives, business registries, LinkedIn'},
+    {title:'Business Associates',desc:'Identify other people involved in shell companies or suspicious transactions.',sources:'Corporate records, ICIJ Offshore Leaks, news archives'},
+    {title:'Foreign Agent Registration',desc:'Check if this person is registered as a foreign agent under FARA.',sources:'DOJ FARA eFiling database, lobbying disclosures'},
+    {title:'Real Estate Holdings',desc:'Research property ownership and real estate transactions.',sources:'County property records, Zillow, news archives'}
+  ],
+  organization:[
+    {title:'Beneficial Ownership',desc:'Identify who actually owns or controls this organization.',sources:'Corporate registry, OpenSanctions, shareholders registry'},
+    {title:'Registered Address Verification',desc:'Confirm the address where the organization claims to be based is real.',sources:'Google Maps, street view, corporate registry'},
+    {title:'Transaction History',desc:'Research money flows in and out of this organization.',sources:'ICIJ Offshore Leaks, FinCEN filings, banking records'},
+    {title:'Board Members and Officers',desc:'Research the people who lead and manage this organization.',sources:'Corporate filings, LinkedIn, news archives'},
+    {title:'Regulatory Filings',desc:'Review annual reports, SEC filings, and regulatory documents.',sources:'SEC EDGAR, corporate registry, financial databases'},
+    {title:'Subsidiary and Affiliate Network',desc:'Map shell companies, subsidiaries, and related entities.',sources:'OpenCorporates, corporate registries, ICIJ data'},
+    {title:'Sanctions and Enforcement Actions',desc:'Check if this organization has been sanctioned or fined.',sources:'OFAC, FinCEN, SEC enforcement actions, news'}
+  ],
+  jurisdiction:[
+    {title:'Sanctions Regime',desc:'Research what international sanctions apply to this country.',sources:'OFAC, UN Security Council, EU sanctions, Treasury'},
+    {title:'Trade Restrictions',desc:'Identify limits on imports, exports, and economic activity.',sources:'WTO, Bureau of Industry and Security, tariff databases'},
+    {title:'Known Corruption Actors',desc:'List people and organizations involved in government corruption.',sources:'News archives, Transparency International, ICIJ'},
+    {title:'Kleptocratic Patterns',desc:'Identify how corruption operates in this country\'s government.',sources:'Academic papers, investigative journalism, NGO reports'},
+    {title:'Financial Secrecy',desc:'Assess the country\'s role in enabling hidden wealth and tax evasion.',sources:'Tax Justice Network Financial Secrecy Index, FATF reports'}
+  ],
+  deal:[
+    {title:'Transaction Structure',desc:'Map the parties, intermediaries, and financial flow of this deal.',sources:'SEC filings, news archives, corporate registries'},
+    {title:'Valuation Analysis',desc:'Compare stated amounts with market valuations for discrepancies.',sources:'Financial databases, comparable transactions, expert analysis'},
+    {title:'Regulatory Approvals',desc:'Identify what government approvals were required and whether they were obtained.',sources:'CFIUS filings, regulatory agency records, news archives'},
+    {title:'Source of Funds',desc:'Trace where the money came from and whether it involves sanctioned entities.',sources:'Banking records, FinCEN, ICIJ Offshore Leaks'},
+    {title:'Beneficial Parties',desc:'Identify who ultimately benefits from this transaction.',sources:'Corporate registries, UBO databases, investigative reporting'}
+  ],
+  enforcement:[
+    {title:'Legal Basis',desc:'Identify the specific laws, regulations, or executive orders under which action was taken.',sources:'Federal Register, DOJ press releases, court filings'},
+    {title:'Affected Entities',desc:'List all persons and organizations named in the enforcement action.',sources:'OFAC SDN list, court documents, FinCEN records'},
+    {title:'Compliance Status',desc:'Determine whether penalties have been paid and conditions met.',sources:'Court records, SEC enforcement tracker, news archives'},
+    {title:'Related Actions',desc:'Find other enforcement actions against the same parties or related entities.',sources:'DOJ case search, SEC enforcement, OFAC actions'}
+  ]
+};
+
+function generateChecklist(nodeId){
+  const nd=DATA.nodes.find(n=>n.id===nodeId);
+  if(!nd) return;
+  const type=nd.type||'deal';
+  const items=CHECKLISTS[type]||CHECKLISTS.deal;
+  const html=buildChecklistHTML(nd.name,type,items,nd);
+  openChecklistWindow(html);
+  trackEvent('generate_checklist',nd.name,type);
+}
+
+function buildChecklistHTML(name,type,items,nd){
+  const date=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  const neighbors=(nd&&nd._cc)||0;
+  const cluster=nd?nd.cluster:'';
+  let html=`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Investigation Checklist: ${esc(name)}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial,Helvetica,sans-serif;font-size:12pt;color:#111;background:#fff;padding:1in;line-height:1.5;max-width:8.5in;margin:0 auto}
+.header{margin-bottom:24pt;padding-bottom:12pt;border-bottom:2px solid #3D5C2F}
+.brand{font-size:9pt;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:4pt}
+h1{font-size:16pt;color:#3D5C2F;font-weight:700;margin-bottom:4pt}
+.meta{font-size:10pt;color:#666;margin-bottom:2pt}
+.item{margin-bottom:16pt;page-break-inside:avoid}
+.item-header{display:flex;align-items:flex-start;gap:8pt;margin-bottom:4pt}
+.item-header input[type=checkbox]{width:14pt;height:14pt;margin-top:2pt;flex-shrink:0;accent-color:#3D5C2F}
+.item-title{font-size:12pt;font-weight:700;color:#3D5C2F}
+.item-desc{font-size:11pt;color:#333;margin-left:22pt;margin-bottom:2pt}
+.item-sources{font-size:9pt;color:#888;margin-left:22pt}
+.item-sources span{font-weight:600;color:#666}
+.context{margin-top:18pt;padding:10pt 14pt;background:#f7f7f7;border:1px solid #e0e0e0;border-radius:4pt;font-size:10pt;color:#555;page-break-inside:avoid}
+.context strong{color:#3D5C2F}
+.footer{margin-top:24pt;padding-top:12pt;border-top:1px solid #ddd;font-size:9pt;color:#aaa;display:flex;justify-content:space-between}
+.print-btn{display:inline-block;padding:6pt 18pt;background:#3D5C2F;color:#fff;border:none;border-radius:4pt;font-size:10pt;cursor:pointer;margin-top:12pt}
+.print-btn:hover{opacity:.85}
+@media print{.print-btn{display:none}.context{background:#f7f7f7 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style></head><body>`;
+  html+=`<div class="header">
+<div class="brand">Dekleptocracy Explorer \u2014 Investigation Checklist</div>
+<h1>${esc(name)}</h1>
+<div class="meta">${type.toUpperCase()}${cluster?' \u00b7 '+cluster.charAt(0).toUpperCase()+cluster.slice(1)+' cluster':''} \u00b7 ${neighbors} connection${neighbors!==1?'s':''}</div>
+<div class="meta">Generated ${date}</div>
+</div>`;
+  items.forEach(item=>{
+    html+=`<div class="item">
+<div class="item-header"><input type="checkbox"><span class="item-title">${esc(item.title)}</span></div>
+<div class="item-desc">${esc(item.desc)}</div>
+<div class="item-sources"><span>Suggested sources:</span> ${esc(item.sources)}</div>
+</div>`;
+  });
+  // Context section with node-specific data
+  const arts=(DATA.articles||[]).filter(a=>a.entities&&a.entities.includes(nd.id));
+  if(arts.length||neighbors){
+    html+=`<div class="context">`;
+    html+=`<strong>Network Context</strong><br>`;
+    if(neighbors) html+=`This entity has ${neighbors} direct connection${neighbors!==1?'s':''} in the Dekleptocracy knowledge graph.<br>`;
+    if(arts.length) html+=`Referenced in ${arts.length} source article${arts.length!==1?'s':''} from dekleptocracy.substack.com.<br>`;
+    html+=`</div>`;
+  }
+  html+=`<button class="print-btn" onclick="window.print()">Print Checklist</button>`;
+  html+=`<div class="footer"><span>dekleptocracy.substack.com</span><span>${date}</span></div>`;
+  html+=`</body></html>`;
+  return html;
+}
+
+function openChecklistWindow(htmlContent){
+  const w=window.open('','_blank');
+  if(w){w.document.write(htmlContent);w.document.close();}
+  else{toast('Pop-up blocked. Allow pop-ups for this site.');}
+}
+
+// ========== FEATURE 3: NETWORK SNAPSHOT REPORT ==========
+function generateReport(nodeId){
+  const nd=DATA.nodes.find(n=>n.id===nodeId);
+  if(!nd) return;
+  // Gather connections
+  const conns=[];
+  DATA.edges.forEach(e=>{
+    let neighbor=null,edge=e;
+    if(e.source===nd.id) neighbor=DATA.nodes.find(n=>n.id===e.target);
+    if(e.target===nd.id) neighbor=DATA.nodes.find(n=>n.id===e.source);
+    if(neighbor) conns.push({node:neighbor,edge:edge});
+  });
+  // Cluster breakdown
+  const clBreak={};
+  conns.forEach(c=>{
+    const cl=c.node.cluster||'default';
+    if(!clBreak[cl]) clBreak[cl]={count:0,entities:[]};
+    clBreak[cl].count++;
+    clBreak[cl].entities.push(c.node);
+  });
+  // Articles
+  const arts=(DATA.articles||[]).filter(a=>a.entities&&a.entities.includes(nd.id));
+  // Investigation leads (reuse logic)
+  const leads=buildLeadsForReport(nd,conns);
+  // Investigation guide
+  const guide=CHECKLISTS[nd.type]||CHECKLISTS.deal;
+  // Build and open
+  const html=buildReportHTML(nd,conns,clBreak,arts,leads,guide);
+  const w=window.open('','_blank');
+  if(w){w.document.write(html);w.document.close();}
+  else{toast('Pop-up blocked. Allow pop-ups for this site.');}
+  trackEvent('generate_report',nd.name,nd.type);
+}
+
+function buildLeadsForReport(nd,conns){
+  const leads=[];
+  const neighborNodes=conns.map(c=>c.node);
+  const clusters=new Set();
+  neighborNodes.forEach(n=>clusters.add(n.cluster));
+  const cc=nd._cc||conns.length;
+  const clNames={sanctions:'Sanctions-Busting',crypto:'Crypto Rails',energy:'Energy Networks',princelings:'Princelings',influence:'Influence Ops'};
+  if(clusters.size>=3){
+    leads.push({title:'Cross-Cluster Bridge',desc:'This entity connects '+clusters.size+' clusters ('+[...clusters].map(c=>clNames[c]||c).join(', ')+').'});
+  }
+  if(cc>=6){
+    leads.push({title:'Hub Entity',desc:'With '+cc+' connections, this is a highly central node that may serve as a gatekeeper or intermediary.'});
+  }
+  if(nd.cluster==='sanctions'||(nd.tags&&nd.tags.includes('sanctions'))){
+    leads.push({title:'Sanctions Exposure',desc:'Connected to the sanctions cluster. Verify OFAC designation status and secondary sanctions risk.'});
+  }
+  if(nd.cluster==='crypto'||(nd.tags&&nd.tags.includes('crypto'))){
+    leads.push({title:'Crypto Trail',desc:'Crypto-connected entity. Check blockchain explorers and OpenSanctions for wallet activity.'});
+  }
+  const orgN=neighborNodes.filter(n=>n.type==='organization');
+  if(orgN.length>=2&&nd.type==='person'){
+    leads.push({title:'Beneficial Ownership',desc:'Connected to '+orgN.length+' organizations. Research corporate registration and shell company indicators.'});
+  }
+  return leads;
+}
+
+function buildReportHTML(nd,conns,clBreak,arts,leads,guide){
+  const date=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  const time=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  const clNames={sanctions:'Sanctions-Busting',crypto:'Crypto Rails',energy:'Energy Networks',princelings:'Princelings',influence:'Influence Ops'};
+  const clColors={sanctions:'#2D5016',crypto:'#FF6B52',energy:'#3D5C2F',princelings:'#FF9999',influence:'#99CCFF',default:'#888'};
+  const tags=nd.tags||[nd.cluster];
+  let h=`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Report: ${esc(nd.name)}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial,Helvetica,sans-serif;font-size:11pt;color:#222;background:#fff;padding:1in;line-height:1.55;max-width:8.5in;margin:0 auto}
+h1{font-size:18pt;color:#3D5C2F;font-weight:700;margin-bottom:4pt}
+h2{font-size:13pt;color:#FF6B52;font-weight:700;margin-top:22pt;margin-bottom:8pt;padding-bottom:4pt;border-bottom:1px solid #eee}
+.brand{font-size:8pt;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:2pt}
+.meta{font-size:10pt;color:#666;margin-bottom:2pt}
+.desc{font-size:11pt;color:#444;margin:8pt 0 4pt;line-height:1.6}
+.badge{display:inline-block;padding:2pt 8pt;border-radius:10pt;font-size:8pt;font-weight:600;color:#fff;margin-right:4pt;margin-bottom:4pt}
+table{width:100%;border-collapse:collapse;margin:8pt 0;font-size:10pt}
+th{background:#f5f5f5;text-align:left;padding:6pt 8pt;font-weight:600;font-size:9pt;text-transform:uppercase;letter-spacing:.5px;color:#555;border-bottom:2px solid #ddd}
+td{padding:6pt 8pt;border-bottom:1px solid #eee;vertical-align:top}
+tr:nth-child(even) td{background:#fafafa}
+.cluster-sec{margin-bottom:14pt;padding:10pt 14pt;background:#f9f9f9;border-radius:4pt;border-left:3px solid #888}
+.cluster-sec-title{font-size:11pt;font-weight:700;margin-bottom:4pt}
+.cluster-entity{font-size:10pt;color:#444;margin-left:12pt}
+.lead{margin-bottom:10pt;padding:8pt 12pt;background:#f5f5f5;border-left:3px solid #3D5C2F;border-radius:2pt}
+.lead-title{font-weight:700;font-size:10pt;color:#3D5C2F;margin-bottom:2pt}
+.lead-desc{font-size:10pt;color:#555}
+.guide-item{margin-bottom:8pt}
+.guide-title{font-weight:700;font-size:10pt;color:#3D5C2F}
+.guide-desc{font-size:10pt;color:#555}
+.guide-src{font-size:8pt;color:#999}
+a{color:#3D5C2F;text-decoration:none}
+a:hover{text-decoration:underline}
+.footer{margin-top:28pt;padding-top:10pt;border-top:1px solid #ddd;font-size:8pt;color:#bbb;display:flex;justify-content:space-between}
+.print-btn{display:inline-block;padding:6pt 18pt;background:#3D5C2F;color:#fff;border:none;border-radius:4pt;font-size:10pt;cursor:pointer;margin-top:14pt}
+.print-btn:hover{opacity:.85}
+@media print{.print-btn{display:none}h2{page-break-after:avoid}.cluster-sec,.lead,.guide-item{page-break-inside:avoid}tr{page-break-inside:avoid}}
+</style></head><body>`;
+
+  // Header
+  h+=`<div class="brand">Dekleptocracy Explorer \u2014 Network Snapshot Report</div>`;
+  h+=`<h1>${esc(nd.name)}</h1>`;
+  h+=`<div class="meta">${(nd.type||'').toUpperCase()} \u00b7 ${conns.length} direct connection${conns.length!==1?'s':''} \u00b7 Generated ${date} at ${time}</div>`;
+  h+=`<div style="margin:6pt 0">`;
+  tags.forEach(t=>{
+    const c=clColors[t]||clColors.default;
+    h+=`<span class="badge" style="background:${c}">${esc(clNames[t]||t)}</span>`;
+  });
+  h+=`</div>`;
+  if(nd.desc) h+=`<div class="desc">${esc(nd.desc)}</div>`;
+
+  // Connections table
+  h+=`<h2>Direct Connections (${conns.length})</h2>`;
+  if(conns.length){
+    h+=`<table><thead><tr><th>Entity</th><th>Type</th><th>Relationship</th><th>Edge Type</th></tr></thead><tbody>`;
+    conns.sort((a,b)=>a.node.name.localeCompare(b.node.name)).forEach(c=>{
+      const eType=c.edge._type||classifyEdge(c.edge,nd,c.node);
+      h+=`<tr><td>${esc(c.node.name)}</td><td>${(c.node.type||'').toUpperCase()}</td><td>${esc(c.edge.relation||'\u2014')}</td><td>${esc(eType)}</td></tr>`;
+    });
+    h+=`</tbody></table>`;
+  } else {
+    h+=`<div style="color:#999;font-size:10pt">No direct connections.</div>`;
+  }
+
+  // Cluster breakdown
+  h+=`<h2>Cluster Breakdown</h2>`;
+  Object.entries(clBreak).forEach(([cl,data])=>{
+    const color=clColors[cl]||clColors.default;
+    h+=`<div class="cluster-sec" style="border-left-color:${color}">`;
+    h+=`<div class="cluster-sec-title"><span class="badge" style="background:${color}">${esc(clNames[cl]||cl)}</span> ${data.count} connection${data.count!==1?'s':''}</div>`;
+    data.entities.forEach(n=>{
+      h+=`<div class="cluster-entity">\u2022 ${esc(n.name)} (${(n.type||'').toUpperCase()})</div>`;
+    });
+    h+=`</div>`;
+  });
+
+  // Articles
+  h+=`<h2>Source Articles (${arts.length})</h2>`;
+  if(arts.length){
+    arts.forEach(a=>{
+      h+=`<div style="margin-bottom:8pt"><a href="${esc(a.url)}" target="_blank">${esc(a.title)}</a>`;
+      if(a.date) h+=` <span style="font-size:9pt;color:#999">${esc(a.date)}</span>`;
+      if(a.snippet) h+=`<div style="font-size:9pt;color:#777;margin-top:2pt">${esc(a.snippet)}</div>`;
+      h+=`</div>`;
+    });
+  } else {
+    h+=`<div style="color:#999;font-size:10pt">No source articles indexed for this entity.</div>`;
+  }
+
+  // Investigation leads
+  if(leads.length){
+    h+=`<h2>Investigation Leads</h2>`;
+    leads.forEach(l=>{
+      h+=`<div class="lead"><div class="lead-title">${esc(l.title)}</div><div class="lead-desc">${esc(l.desc)}</div></div>`;
+    });
+  }
+
+  // Investigation guide
+  if(guide&&guide.length){
+    h+=`<h2>Investigation Guide (${(nd.type||'entity').toUpperCase()})</h2>`;
+    guide.forEach((item,i)=>{
+      h+=`<div class="guide-item"><div class="guide-title">${i+1}. ${esc(item.title)}</div><div class="guide-desc">${esc(item.desc)}</div><div class="guide-src">Sources: ${esc(item.sources)}</div></div>`;
+    });
+  }
+
+  h+=`<button class="print-btn" onclick="window.print()">Print Report</button>`;
+  h+=`<div class="footer"><span>dekleptocracy.substack.com</span><span>Report generated ${date} at ${time}</span></div>`;
+  h+=`</body></html>`;
+  return h;
+}
+
+// ========== EXTERNAL DATA INTEGRATION ==========
+// Configuration, formatters, and slot rendering for external API data.
+// Each data source is independently toggleable. Disabled sources are hidden
+// entirely — no loading spinners, no error states, no empty sections.
+//
+// COMPANION FILES (version-controlled alongside this HTML):
+//   apiConfig.js  — Master config with endpoints, rate limits, example responses,
+//                   ready-to-use fetch functions, and activation checklist.
+//   externalData.js — Detailed documentation and integration patterns.
+//
+// HOW TO CONNECT A NEW API:
+// 1. Set the source's `enabled` flag to true in extDataConfig
+// 2. Implement the fetch call inside the source's `fetch` function
+// 3. Pass the API response to the source's `format` function
+// 4. The formatted HTML is injected into the slot's body element
+//
+// See externalData.js (companion file) for detailed examples.
+
+const extDataConfig={
+  // ── Political donations (FEC API) ──
+  // Shows for: person nodes
+  // Endpoint: https://api.fec.gov/v1/schedules/schedule_a/
+  // Status: scaffolded. The existing loadFEC() in Layer 3 handles live FEC data.
+  //         This slot is for a richer, dedicated display once the API key is upgraded.
+  donations:{
+    enabled:false,
+    label:'Political Donations',
+    nodeTypes:['person'],
+    endpoint:'https://api.fec.gov/v1/schedules/schedule_a/',
+    params:{api_key:'DEMO_KEY',sort:'-contribution_receipt_amount',per_page:10},
+    // FUTURE: Replace this stub with actual fetch call
+    // fetch: async function(nodeName){ ... },
+    format:formatDonations
+  },
+  // ── Corporate filings (SEC EDGAR full-text search) ──
+  // Shows for: organization nodes
+  // Endpoint: https://efts.sec.gov/LATEST/search-index
+  // Status: scaffolded. SEC EDGAR is free, no API key required.
+  filings:{
+    enabled:false,
+    label:'Corporate Filings',
+    nodeTypes:['organization'],
+    endpoint:'https://efts.sec.gov/LATEST/search-index',
+    params:{dateRange:'custom',startdt:'2020-01-01'},
+    // FUTURE: Replace this stub with actual fetch call
+    // fetch: async function(nodeName){ ... },
+    format:formatFilings
+  },
+  // ── News mentions (placeholder for future news API) ──
+  // Shows for: all node types
+  // Endpoint: TBD — candidates include GDELT, NewsAPI, or MediaCloud
+  // Status: scaffolded. Currently uses the internal articles array as fallback.
+  news:{
+    enabled:false,
+    label:'News Mentions',
+    nodeTypes:['person','organization','deal','jurisdiction','enforcement'],
+    endpoint:null, // TBD
+    params:{},
+    // FUTURE: Replace this stub with actual fetch call
+    // fetch: async function(nodeName){ ... },
+    format:formatNews
+  }
+};
+
+// ── Data formatters ──
+// Each formatter accepts (nodeName, apiResponse) and returns an HTML string.
+// When no API is connected yet, they return example/placeholder HTML.
+
+function formatDonations(nodeName, data){
+  // When API is connected, `data` will be the parsed JSON response from FEC.
+  // Example of what real data will look like:
+  // {results: [{contributor_name:'...', committee_name:'...', contribution_receipt_amount:2800, contribution_receipt_date:'2024-03-15'}, ...]}
+  if(data&&data.results&&data.results.length>0){
+    let html='';
+    data.results.slice(0,6).forEach(function(r){
+      const name=r.committee_name||'Unknown committee';
+      const amt=r.contribution_receipt_amount||0;
+      const date=(r.contribution_receipt_date||'').slice(0,10);
+      html+=`<div class="sb-ext-row"><span class="sb-ext-name" title="${esc(name)}">${esc(name)}</span><span class="sb-ext-val">${fmt$(amt)}</span><span class="sb-ext-date">${esc(date)}</span></div>`;
+    });
+    const total=(data.pagination&&data.pagination.count)||0;
+    if(total>6) html+=`<a class="sb-ext-more" href="https://www.fec.gov/data/receipts/?contributor_name=${encodeURIComponent(nodeName)}" target="_blank" rel="noopener noreferrer">${total} total records \u2192</a>`;
+    return html;
+  }
+  // Placeholder when no data is loaded yet
+  return '<div class="sb-ext-error">Connect FEC API to see political donation records.</div>';
+}
+
+function formatFilings(nodeName, data){
+  // When API is connected, `data` will be the parsed JSON from SEC EDGAR.
+  // Example of what real data will look like:
+  // {hits: {hits: [{_source: {file_date:'2024-01-15', form_type:'10-K', entity_name:'...', file_num:'...'}}]}}
+  if(data&&data.hits&&data.hits.hits&&data.hits.hits.length>0){
+    let html='';
+    data.hits.hits.slice(0,6).forEach(function(h){
+      const s=h._source||{};
+      html+=`<div class="sb-ext-row"><span class="sb-ext-name">${esc(s.form_type||'Filing')} \u2014 ${esc(s.entity_name||nodeName)}</span><span class="sb-ext-date">${esc((s.file_date||'').slice(0,10))}</span></div>`;
+    });
+    return html;
+  }
+  return '<div class="sb-ext-error">Connect SEC EDGAR to see regulatory filings.</div>';
+}
+
+function formatNews(nodeName, data){
+  // When API is connected, `data` will be the parsed JSON from the news provider.
+  // Example of what real data will look like:
+  // {articles: [{title:'...', source:{name:'...'}, publishedAt:'2024-06-01', url:'...'}]}
+  if(data&&data.articles&&data.articles.length>0){
+    let html='';
+    data.articles.slice(0,5).forEach(function(a){
+      html+=`<div class="sb-ext-row"><a class="sb-ext-name" href="${esc(a.url)}" target="_blank" rel="noopener noreferrer" style="color:#3D5C2F;text-decoration:none">${esc(a.title)}</a><span class="sb-ext-date">${esc((a.publishedAt||'').slice(0,10))}</span></div>`;
+    });
+    return html;
+  }
+  return '<div class="sb-ext-error">Connect a news API to see recent media mentions.</div>';
+}
+
+// ── Slot renderer ──
+// Called from on() when a node is selected. Shows/hides slots based on node type
+// and config. Only enabled sources with matching node types are displayed.
+
+function renderExtDataSlots(nd){
+  Object.entries(extDataConfig).forEach(function(entry){
+    var key=entry[0], cfg=entry[1];
+    var slotEl=document.getElementById('ext-'+key);
+    var bodyEl=document.getElementById('ext-'+key+'-body');
+    var badgeEl=document.getElementById('ext-'+key+'-badge');
+    if(!slotEl||!bodyEl) return;
+    // Only show if enabled AND node type matches
+    var show=cfg.enabled&&cfg.nodeTypes.indexOf(nd.type)!==-1;
+    slotEl.classList.toggle('enabled',show);
+    if(!show) return;
+    // Update badge
+    if(badgeEl){
+      badgeEl.textContent='live';
+      badgeEl.className='sb-ext-badge sb-ext-badge-live';
+    }
+    // Show loading state
+    bodyEl.innerHTML='<div class="sb-ext-loading">Loading\u2026</div>';
+    // FUTURE: This is where the actual API call goes.
+    // Replace the setTimeout below with:
+    //   cfg.fetch(nd.name).then(data => { bodyEl.innerHTML = cfg.format(nd.name, data); })
+    //                      .catch(err => { bodyEl.innerHTML = '<div class="sb-ext-error">Data unavailable. ' + err.message + '</div>'; });
+    //
+    // For now, show the placeholder after a brief simulated delay:
+    setTimeout(function(){
+      bodyEl.innerHTML=cfg.format(nd.name, null);
+    }, 300);
+  });
+}
+
+// ========== ALGORITHMS ==========
+// Pathfinding and graph analysis utilities — separate from UI code.
+
+const _pathCache={};
+
+/**
+ * findPath(sourceId, targetId, graph?)
+ * BFS shortest-path between two nodes.
+ * @param {number} sourceId - start node id
+ * @param {number} targetId - end node id
+ * @param {object} [graph]  - optional {nodes,edges}; defaults to DATA
+ * @returns {number[]|null} array of node ids from source to target, or null
+ */
+function findPath(sourceId, targetId, graph){
+  const g=graph||DATA;
+  if(!g||!g.edges) return null;
+  // Same node
+  if(sourceId===targetId) return [sourceId];
+  // Check cache
+  const ck=sourceId+'->'+targetId;
+  const ckr=targetId+'->'+sourceId;
+  if(_pathCache[ck]) return _pathCache[ck].slice();
+  if(_pathCache[ckr]) return _pathCache[ckr].slice().reverse();
+  // Build adjacency list on demand
+  const adj={};
+  g.edges.forEach(function(e){
+    if(!adj[e.source]) adj[e.source]=[];
+    if(!adj[e.target]) adj[e.target]=[];
+    adj[e.source].push(e.target);
+    adj[e.target].push(e.source);
+  });
+  // Verify both nodes exist in the graph
+  if(!adj[sourceId]&&sourceId!==targetId) {_pathCache[ck]=null;return null;}
+  // BFS
+  const visited=new Set();
+  const parent={};
+  const queue=[sourceId];
+  visited.add(sourceId);
+  parent[sourceId]=null;
+  var found=false;
+  while(queue.length>0){
+    var current=queue.shift();
+    if(current===targetId){found=true;break;}
+    var neighbors=adj[current]||[];
+    for(var i=0;i<neighbors.length;i++){
+      var nb=neighbors[i];
+      if(!visited.has(nb)){
+        visited.add(nb);
+        parent[nb]=current;
+        queue.push(nb);
+      }
+    }
+  }
+  if(!found){_pathCache[ck]=null;return null;}
+  // Trace path backwards from target to source
+  var path=[];
+  var step=targetId;
+  while(step!==null){
+    path.push(step);
+    step=parent[step];
+  }
+  path.reverse();
+  _pathCache[ck]=path;
+  return path.slice();
+}
+
+/** Clear the path cache (call after graph data changes). */
+function clearPathCache(){
+  for(var k in _pathCache) delete _pathCache[k];
+}
+
+// Console test helper — run testFindPath() in browser console
+function testFindPath(){
+  var n=DATA.nodes,e=DATA.edges;
+  console.group('%c findPath tests','color:#3D5C2F;font-weight:bold');
+  // Test 1: same node
+  var t1=findPath(n[0].id,n[0].id);
+  console.log('Same node:',t1,'—',t1&&t1.length===1?'PASS':'FAIL');
+  // Test 2: directly connected pair
+  if(e.length>0){
+    var t2=findPath(e[0].source,e[0].target);
+    console.log('Direct edge '+e[0].source+'→'+e[0].target+':',t2,'—',t2&&t2.length===2?'PASS':'FAIL');
+  }
+  // Test 3: two-hop path (find a pair that are NOT directly connected but share a neighbor)
+  var found2hop=false;
+  for(var i=0;i<n.length&&!found2hop;i++){
+    var a=n[i].id;
+    var aN=new Set();e.forEach(function(x){if(x.source===a)aN.add(x.target);if(x.target===a)aN.add(x.source);});
+    for(var j=i+1;j<n.length&&!found2hop;j++){
+      var b=n[j].id;
+      if(aN.has(b)) continue; // directly connected, skip
+      var t3=findPath(a,b);
+      if(t3&&t3.length>=3){
+        var names=t3.map(function(id){var nd=n.find(function(x){return x.id===id;});return nd?nd.name:id;});
+        console.log('Multi-hop '+a+'→'+b+' ('+t3.length+' nodes):',names.join(' → '),'— PASS');
+        found2hop=true;
+      }
+    }
+  }
+  if(!found2hop) console.log('Multi-hop: no indirect pair found in graph');
+  // Test 4: cache hit
+  if(e.length>0){
+    var t4a=findPath(e[0].source,e[0].target);
+    var t4b=findPath(e[0].source,e[0].target);
+    console.log('Cache hit:',JSON.stringify(t4a)===JSON.stringify(t4b)?'PASS':'FAIL');
+  }
+  // Test 5: nonexistent node
+  var t5=findPath(999999,999998);
+  console.log('Nonexistent nodes:',t5,'—',t5===null?'PASS':'FAIL');
+  console.groupEnd();
+  return 'Tests complete. Check results above.';
+}
+
+// ========== UTILITIES ==========
+function esc(s){
+  if(!s) return '';
+  const d=document.createElement('div');d.textContent=s;return d.innerHTML;
+}
+
+// ========== INIT ==========
+document.addEventListener('DOMContentLoaded',()=>boot());
+</script>
+</body>
+</html>
