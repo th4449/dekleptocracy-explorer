@@ -920,6 +920,13 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
         </div>
         <div class="sb-section-body" id="sb-l2-articles"></div>
       </div>
+      <div class="sb-section" id="sb-l2-investigate-section">
+        <div class="sb-section-header" onclick="toggleSection('sb-l2-investigate-section')">
+          <span class="sb-section-label">Investigate Further</span>
+          <span class="sb-section-toggle">&#9660;</span>
+        </div>
+        <div class="sb-section-body" id="sb-l2-investigate"></div>
+      </div>
       <div class="sb-section" id="sb-l2-centrality-section">
         <div class="sb-section-header" onclick="toggleSection('sb-l2-centrality-section')">
           <span class="sb-section-label">Centrality Metrics</span>
@@ -2027,6 +2034,8 @@ function on(id){
       <div class="sb-article-date">${esc(a.date)}</div>
     </div>`
   ).join('')||'<div class="sb-empty">No source articles indexed.</div>';
+  // Layer 2: Investigate Further links
+  renderInvestigateLinks(nd);
   // Layer 2: Centrality Metrics + Cluster Breakdown + Cross-Cluster
   const cm=computeCentrality(id);
   const cb=nd._clusterBreakdown||{sanctions:0,crypto:0,energy:0,princelings:0,influence:0};
@@ -3006,11 +3015,14 @@ function renderManual(){
 <div class="help-section"><div class="help-h2">The Sidebar</div>
 <div class="help-p">When you click a node, the sidebar shows three progressive layers of information.</div>
 <div class="help-p"><strong>Layer 1 — Basic Facts</strong> shows the node name, type, description, cluster badge, and connection count. This appears immediately.</div>
-<div class="help-p"><strong>Layer 2 — Enriched Context</strong> contains collapsible sections for key connections (direct neighbors), mentioned articles, centrality metrics, cluster breakdown, and cross-cluster connections.</div>
+<div class="help-p"><strong>Layer 2 — Enriched Context</strong> contains collapsible sections for key connections (direct neighbors), mentioned articles, investigation links to external OSINT databases, centrality metrics, cluster breakdown, and cross-cluster connections.</div>
 <div class="help-p"><strong>Layer 3 — Investigation Guides</strong> has two modes. "Corruption Flow Tracing" lets you select a connected node and shows step-by-step tracing methodology. "How to Investigate This" shows investigation steps tailored to the node type (person, organization, country, or network). Layer 3 also contains pathfinding, comparison, investigation leads, and export tools described below.</div></div>
 <div class="help-section"><div class="help-h2">Article View</div>
 <div class="help-p">In Layer 2, the "Mentioned in Articles" section lists source articles. Click any article title to activate Article View. Instead of opening the article in a new tab, the map highlights every entity mentioned in that article with a coral red outline and fades everything else. Edges between article entities are highlighted in coral red.</div>
 <div class="help-p">The sidebar switches to a "Viewing Article" panel showing the article title (clickable to open in a new tab), the entity count, and a list of all mentioned entities with their types. Click any entity name to select it and return to normal view. Click "Clear View" to dismiss the article highlighting.</div></div>
+<div class="help-section"><div class="help-h2">Investigate Further</div>
+<div class="help-p">In Layer 2, the "Investigate Further" section provides direct links to external OSINT databases and investigation tools. Each link pre-fills the entity name into the external tool's search query and opens in a new tab. Links are filtered by node type so you only see databases relevant to the entity you are viewing.</div>
+<div class="help-p">Available tools include ICIJ Offshore Leaks (Panama Papers, Pandora Papers, FinCEN Files), SEC EDGAR (US securities filings), the FARA database (foreign agent registrations, shown for person nodes), UK Companies House (shown for organization nodes), CourtListener (federal court records via RECAP), OpenCorporates (company data from 200+ jurisdictions), Google Scholar (academic papers and legal filings), and OCCRP Aleph (cross-referenced leaks and registries from the Organized Crime and Corruption Reporting Project).</div></div>
 <div class="help-section"><div class="help-h2">Pathfinding</div>
 <div class="help-p">In Layer 3, the "Find a Path" section lets you trace the shortest connection between the current node and any other node in the graph. Select a target from the dropdown and the path will be highlighted on the map in coral red.</div></div>
 <div class="help-section"><div class="help-h2">Comparison Mode</div>
@@ -3058,6 +3070,7 @@ const FAQ_DATA=[
   {q:'What is the Network Snapshot Report?',a:'Select a node and click "Generate Report" in Layer 3. A comprehensive report opens in a new tab showing the entity summary, all direct connections in a table, cluster breakdown, source articles, contextual investigation leads, and a type-specific investigation guide. The report is styled for professional printing and PDF export.'},
   {q:'What is Popular Searches?',a:'The Explorer tracks your search terms locally in your browser (not on any server). The most frequently searched terms appear on the Welcome screen as clickable pills so you can quickly return to entities you investigate often. You can clear this data by clearing your browser\'s localStorage.'},
   {q:'How does the Watchlist work?',a:'Click "Watch this entity" in Layer 1 when viewing any node to add it to your personal watchlist. The button changes to "Watching" with a checkmark. Your watchlist appears on the Welcome screen with each entity\'s name, type, and the date you added it. Click any name to jump to that node. Click × to remove it. Use "Export CSV" to download your watchlist as a spreadsheet. Everything is stored in your browser\'s localStorage — nothing is sent to any server.'},
+  {q:'What is the Investigate Further section?',a:'The "Investigate Further" section in Layer 2 provides direct links to eight external OSINT databases including ICIJ Offshore Leaks, SEC EDGAR, the FARA foreign agent database, UK Companies House, CourtListener federal court records, OpenCorporates, Google Scholar, and OCCRP Aleph. Each link pre-fills the entity name into the search query and opens in a new tab. Links are filtered by node type so person nodes see FARA while organization nodes see Companies House.'},
   {q:'What is Article View?',a:'When viewing a node, Layer 2 shows articles that mention it. Click any article title to activate Article View. The map highlights every entity mentioned in that article with a coral red outline and fades everything else. The sidebar shows the article title, entity count, and a clickable list of all entities. Click "Clear View" to return to normal. This lets you see which entities a specific piece of reporting covers.'},
   {q:'Is this data biased?',a:'The graph reflects documented connections from investigative reporting. It does not make legal conclusions. All edges cite source articles. Users should verify claims through the external investigation tools provided in Layer 3.'},
   {q:'Can I embed this in my own website?',a:'Yes. The Explorer supports an embed mode. Add ?embed=true to the URL to hide the sidebar and show a compact view suitable for iframes.'}
@@ -3083,6 +3096,7 @@ const TUT_STEPS=[
   {title:'Watch an Entity',desc:'Below the cluster badge, click "Watch this entity" to add it to your personal watchlist. The button changes to "Watching" with a checkmark. Go back to the Welcome screen to see your watchlist, or export it as CSV.',target:'#sb-watch-wrap',action:'Click the Watch button.'},
   {title:'Expand Connections (Layer 2)',desc:'Below the basic facts, collapsible sections show key connections, mentioned articles, and centrality metrics. Click the headers to expand or collapse them.',target:'#sb-l2-conns-section',action:'Click "Key Connections" to expand it.'},
   {title:'View an Article on the Map',desc:'In the "Mentioned in Articles" section, click any article title. Instead of opening the article, the map highlights every entity mentioned in it. A sidebar panel shows the article title and a list of all entities. Click "Clear View" to return to normal.',target:'#sb-l2-articles-section',action:'Click an article title to activate Article View.'},
+  {title:'Investigate Further with OSINT Tools',desc:'Below the articles, the "Investigate Further" section links to external databases like ICIJ Offshore Leaks, SEC EDGAR, FARA, CourtListener, and more. Each link pre-fills the entity name. Links are filtered by node type so you only see relevant tools.',target:'#sb-l2-investigate-section',action:'Click any investigation link to open it in a new tab.'},
   {title:'Try "How to Investigate This"',desc:'In the Investigation Guides section, toggle to "How to Investigate This" mode. It shows step-by-step investigation methodology with external tool links tailored to the node type.',target:'#sb-l3-section',action:'Click the "How to Investigate This" toggle.'},
   {title:'Try Corruption Flow Tracing',desc:'Switch to "Corruption Flow Tracing" mode. Select a connected node to trace the corruption flow between them. The system classifies the edge type and shows relevant tracing steps.',target:'#sb-l3-section',action:'Select a connection to trace.'},
   {title:'Find a Path Between Nodes',desc:'Use the "Find a Path" dropdown to select any node in the graph. The shortest path will be highlighted in coral red on the map.',target:'#sb-path-section',action:'Select a target node from the dropdown.'},
@@ -4162,6 +4176,77 @@ function formatNews(nodeName, data){
     return html;
   }
   return '<div class="sb-ext-error">Connect a news API to see recent media mentions.</div>';
+}
+
+// ── Investigate Further links ──
+// Renders filtered OSINT investigation links in Layer 2, between Articles and Centrality.
+// Each link pre-fills the node name into the external tool's search URL.
+// Links are filtered by node type so users only see relevant databases.
+
+const INVESTIGATE_LINKS=[
+  {id:'IC',label:'ICIJ Offshore Leaks',
+   desc:'Panama Papers, Pandora Papers, FinCEN Files',
+   url:function(enc){return 'https://offshoreleaks.icij.org/search?q='+enc;},
+   types:['person','organization','deal','jurisdiction','enforcement'],
+   color:'#1a5a7a',bg:'rgba(26,90,122,.1)'},
+  {id:'SE',label:'SEC EDGAR',
+   desc:'US securities filings and disclosures',
+   url:function(enc){return 'https://efts.sec.gov/LATEST/search-index?q=%22'+enc+'%22&dateRange=custom&startdt=2020-01-01';},
+   types:['person','organization'],
+   color:'#3D5C2F',bg:'rgba(61,92,47,.1)'},
+  {id:'FA',label:'FARA Database',
+   desc:'Foreign agent registrations (DOJ)',
+   url:function(enc){return 'https://efile.fara.gov/ords/fara/f?p=185:130:::::P130_DATERANGE:N';},
+   types:['person'],
+   color:'#8b1a1a',bg:'rgba(139,26,26,.1)'},
+  {id:'UK',label:'UK Companies House',
+   desc:'Company directors, filings, and ownership (UK)',
+   url:function(enc){return 'https://find-and-update.company-information.service.gov.uk/search?q='+enc;},
+   types:['organization'],
+   color:'#2D5016',bg:'rgba(45,80,22,.1)'},
+  {id:'CL',label:'CourtListener',
+   desc:'Federal court records via RECAP archive',
+   url:function(enc){return 'https://www.courtlistener.com/?q='+enc+'&type=r';},
+   types:['person','organization'],
+   color:'#6e4b00',bg:'rgba(110,75,0,.1)'},
+  {id:'OC',label:'OpenCorporates',
+   desc:'Company data from 200+ jurisdictions',
+   url:function(enc){return 'https://opencorporates.com/companies?q='+enc;},
+   types:['person','organization'],
+   color:'#c4401c',bg:'rgba(196,64,28,.1)'},
+  {id:'GS',label:'Google Scholar',
+   desc:'Academic papers, legal filings, policy documents',
+   url:function(enc){return 'https://scholar.google.com/scholar?q='+enc;},
+   types:['person','organization','deal','jurisdiction','enforcement'],
+   color:'#4285f4',bg:'rgba(66,133,244,.1)'},
+  {id:'AL',label:'OCCRP Aleph',
+   desc:'Cross-referenced leaks, registries, and court records',
+   url:function(enc){return 'https://aleph.occrp.org/search?q='+enc;},
+   types:['person','organization','deal','jurisdiction','enforcement'],
+   color:'#e05555',bg:'rgba(224,85,85,.1)'}
+];
+
+function renderInvestigateLinks(nd){
+  var wrap=document.getElementById('sb-l2-investigate');
+  if(!wrap) return;
+  // Clean node name: strip suffixes like "/ CZ" and parentheticals like "(Crypto Czar)"
+  var name=nd.name.replace(/\s*\/.*$/,'').replace(/\s*\(.*?\)/g,'').trim();
+  var enc=encodeURIComponent(name);
+  // Filter links by node type
+  var links=INVESTIGATE_LINKS.filter(function(lk){
+    return lk.types.indexOf(nd.type)!==-1;
+  });
+  if(!links.length){
+    wrap.innerHTML='<div class="sb-empty">No investigation tools available for this entity type.</div>';
+    return;
+  }
+  wrap.innerHTML=links.map(function(lk){
+    var href=lk.url(enc);
+    return '<a class="sb-inv-btn" href="'+href+'" target="_blank" rel="noopener noreferrer">'+
+      '<div class="sb-inv-icon" style="background:'+lk.bg+';color:'+lk.color+'">'+lk.id+'</div>'+
+      '<div><div class="sb-inv-label">'+esc(lk.label)+'</div>'+
+      '<div class="sb-inv-desc">'+esc(lk.desc)+'</div></div></a>';
+  }).join('');
 }
 
 // ── Slot renderer ──
