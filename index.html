@@ -956,7 +956,7 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
       </div>
       <div class="sb-ext-slot" id="ext-filings">
         <div class="sb-ext-header" onclick="toggleSection('ext-filings')">
-          <span class="sb-ext-label">Corporate Filings</span>
+          <span class="sb-ext-label">Corporate Registry</span>
           <span class="sb-ext-badge sb-ext-badge-off" id="ext-filings-badge">off</span>
           <span class="sb-ext-toggle">&#9660;</span>
         </div>
@@ -2103,6 +2103,8 @@ function on(id){
   checkSanctions(nd);
   // OFAC SDN local list check (uses ext-sanctions slot)
   checkOFAC(nd);
+  // OpenCorporates company lookup (uses ext-filings slot, renamed to Corporate Registry)
+  checkCorporate(nd);
   // Layer 3: Investigation Guides — mode toggle + both modes
   const encName=encodeURIComponent(nd.name);
   // Render mode toggle
@@ -4517,6 +4519,128 @@ function checkOFAC(nd){
     }
     html+='<a class="sb-ext-more" href="'+ofacSearchUrl+'" target="_blank" rel="noopener noreferrer">Search OFAC SDN list \u2192</a>';
     body.innerHTML=html;
+  });
+}
+
+// ── OpenCorporates Company Lookup ──
+// Auto-triggers for organization nodes. Manual button for person nodes.
+// Free tier: 500 requests/day, no API key required, CORS enabled.
+// Results cached in sessionStorage by node ID.
+
+function checkCorporate(nd){
+  var slot=document.getElementById('ext-filings');
+  var body=document.getElementById('ext-filings-body');
+  var badge=document.getElementById('ext-filings-badge');
+  if(!slot||!body) return;
+  // Hide for jurisdiction, enforcement, deal nodes
+  if(nd.type==='jurisdiction'||nd.type==='enforcement'||nd.type==='deal'){
+    slot.classList.remove('enabled');
+    return;
+  }
+  // Clean name for search
+  var name=nd.name.replace(/\s*\/.*$/,'').replace(/\s*\(.*?\)/g,'').trim();
+  var enc=encodeURIComponent(name);
+  var searchUrl='https://opencorporates.com/companies?q='+enc;
+  // Person nodes: show manual search button only
+  if(nd.type==='person'){
+    slot.classList.add('enabled');
+    slot.classList.remove('collapsed');
+    if(badge){badge.textContent='manual';badge.className='sb-ext-badge sb-ext-badge-off';}
+    body.innerHTML='<a class="sb-inv-btn" href="https://opencorporates.com/officers?q='+enc+'" target="_blank" rel="noopener noreferrer">'+
+      '<div class="sb-inv-icon" style="background:rgba(196,64,28,.1);color:#c4401c">OC</div>'+
+      '<div><div class="sb-inv-label">Search Corporate Officers</div>'+
+      '<div class="sb-inv-desc">Find directorships and officer roles for '+esc(name)+'</div></div></a>';
+    return;
+  }
+  // Organization nodes: auto-fetch
+  slot.classList.add('enabled');
+  slot.classList.remove('collapsed');
+  // Check sessionStorage cache
+  var cacheKey='ocorp-'+nd.id;
+  try{
+    var cached=sessionStorage.getItem(cacheKey);
+    if(cached){
+      var cacheData=JSON.parse(cached);
+      body.innerHTML=cacheData.html;
+      if(badge){badge.textContent=cacheData.badgeText;badge.className=cacheData.badgeClass;}
+      return;
+    }
+  }catch(e){}
+  // Show loading
+  body.innerHTML='<div class="sb-ext-loading">Searching corporate registries\u2026</div>';
+  if(badge){badge.textContent='searching';badge.className='sb-ext-badge sb-ext-badge-live';}
+  // Fetch from OpenCorporates
+  var apiUrl='https://api.opencorporates.com/v0.4/companies/search?q='+enc+'&format=json&per_page=3&order=score';
+  var ctrl=new AbortController();
+  var timer=setTimeout(function(){ctrl.abort();},12000);
+  fetch(apiUrl,{signal:ctrl.signal}).then(function(resp){
+    clearTimeout(timer);
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    return resp.json();
+  }).then(function(data){
+    var results=data&&data.results&&data.results.companies?data.results.companies:[];
+    var total=data&&data.results?data.results.total_count||0:0;
+    var html='';
+    var badgeText='';
+    var badgeClass='';
+    if(results.length===0){
+      badgeText='none';
+      badgeClass='sb-ext-badge sb-ext-badge-off';
+      html='<div style="font-size:var(--txt-xs);color:var(--color-text-muted);padding:4px 0">No corporate registry matches found for "'+esc(name)+'"</div>';
+    } else {
+      badgeText=total>3?'3 of '+total.toLocaleString():results.length+' found';
+      badgeClass='sb-ext-badge sb-ext-badge-live';
+      results.forEach(function(item){
+        var c=item.company||{};
+        var cName=c.name||'Unknown';
+        var jurisdiction=c.jurisdiction_code?(c.jurisdiction_code+'').toUpperCase():'';
+        var status=c.current_status||c.status||'';
+        var incDate=c.incorporation_date||'';
+        var addr=c.registered_address_in_full||c.registered_address||'';
+        var ocUrl=c.opencorporates_url||searchUrl;
+        // Format incorporation date
+        if(incDate&&incDate.length>=7){
+          var parts=incDate.split('-');
+          var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+          var mi=parseInt(parts[1],10)-1;
+          if(mi>=0&&mi<12) incDate=months[mi]+' '+parts[0];
+        }
+        html+='<div style="padding:8px 0;border-bottom:1px solid var(--color-divider)">';
+        html+='<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px">';
+        html+='<a href="'+esc(ocUrl)+'" target="_blank" rel="noopener noreferrer" style="font-size:var(--txt-xs);font-weight:500;color:var(--color-text);text-decoration:none;flex:1;min-width:0">';
+        html+=esc(cName);
+        if(jurisdiction) html+=' <span style="color:var(--color-text-faint);font-family:var(--font-mono);font-weight:400">('+esc(jurisdiction)+')</span>';
+        html+='</a></div>';
+        // Status and incorporation
+        var meta=[];
+        if(status) meta.push(status);
+        if(incDate) meta.push('Inc. '+incDate);
+        if(meta.length){
+          html+='<div style="font-size:.6rem;color:var(--color-text-faint);font-family:var(--font-mono);margin-top:2px">'+esc(meta.join(' \u00b7 '))+'</div>';
+        }
+        // Address
+        if(addr){
+          if(addr.length>100) addr=addr.slice(0,97)+'\u2026';
+          html+='<div style="font-size:.6rem;color:var(--color-text-muted);margin-top:2px;line-height:1.4">'+esc(addr)+'</div>';
+        }
+        html+='</div>';
+      });
+      // Remove last border
+      html=html.replace(/border-bottom:1px solid var\(--color-divider\)"><\/div>$/,'"><\/div>');
+    }
+    html+='<a class="sb-ext-more" href="'+searchUrl+'" target="_blank" rel="noopener noreferrer">Search OpenCorporates \u2192</a>';
+    body.innerHTML=html;
+    if(badge){badge.textContent=badgeText;badge.className=badgeClass;}
+    // Cache
+    try{
+      sessionStorage.setItem(cacheKey,JSON.stringify({html:html,badgeText:badgeText,badgeClass:badgeClass}));
+    }catch(e){}
+  }).catch(function(err){
+    clearTimeout(timer);
+    var msg=err.name==='AbortError'?'Timed out':'Unavailable';
+    body.innerHTML='<div class="sb-ext-error">Corporate registry lookup '+msg.toLowerCase()+'. '+
+      '<a class="sb-ext-more" href="'+searchUrl+'" target="_blank" rel="noopener noreferrer">Search OpenCorporates manually \u2192</a></div>';
+    if(badge){badge.textContent='error';badge.className='sb-ext-badge sb-ext-badge-err';}
   });
 }
 
