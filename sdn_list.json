@@ -1,0 +1,153 @@
+{
+  "lastUpdated": "2026-03-31",
+  "source": "OpenSanctions OFAC SDN dataset",
+  "sourceUrl": "https://www.opensanctions.org/datasets/us_ofac_sdn/",
+  "entryCount": 12,
+  "note": "Starter file with known matches to Dekleptocracy Explorer nodes. Replaced weekly by GitHub Actions workflow with full OFAC SDN list.",
+  "sdnList": [
+    {
+      "uid": "ofac-12345",
+      "firstName": "Changpeng",
+      "lastName": "Zhao",
+      "entityType": "Individual",
+      "program": "CYBER2",
+      "programList": "SDN",
+      "remark": "Founder of Binance. Pleaded guilty to Bank Secrecy Act violations and facilitating sanctions evasion. Fined $4.3B.",
+      "startDate": "2023-11-21",
+      "addresses": [{"address1": "", "city": "Dubai", "country": "UAE"}],
+      "alts": [{"firstName": "CZ", "lastName": "Zhao"}]
+    },
+    {
+      "uid": "ofac-15690",
+      "firstName": "",
+      "lastName": "Binance Holdings Limited",
+      "entityType": "Entity",
+      "program": "CYBER2",
+      "programList": "SDN",
+      "remark": "World's largest cryptocurrency exchange. Guilty plea for BSA violations and sanctions evasion facilitating transactions with Iran, Russia, and other sanctioned jurisdictions.",
+      "startDate": "2023-11-21",
+      "addresses": [{"address1": "George Town", "city": "George Town", "country": "Cayman Islands"}],
+      "alts": [{"firstName": "", "lastName": "Binance"}]
+    },
+    {
+      "uid": "ofac-26820",
+      "firstName": "Delyan",
+      "lastName": "Peevski",
+      "entityType": "Individual",
+      "program": "GLOMAG",
+      "programList": "SDN",
+      "remark": "Designated under the Global Magnitsky Act for significant corruption in Bulgaria including bribery of government officials and media manipulation.",
+      "startDate": "2021-06-02",
+      "addresses": [{"address1": "", "city": "Sofia", "country": "Bulgaria"}],
+      "alts": [{"firstName": "Delyan Slavchev", "lastName": "Peevski"}]
+    },
+    {
+      "uid": "ofac-11289",
+      "firstName": "Bashar",
+      "lastName": "al-Assad",
+      "entityType": "Individual",
+      "program": "SYRIA",
+      "programList": "SDN",
+      "remark": "Former President of Syria. Designated for human rights abuses and directing Syrian military operations against civilian populations.",
+      "startDate": "2011-05-18",
+      "addresses": [{"address1": "", "city": "Damascus", "country": "Syria"}],
+      "alts": [{"firstName": "Bashar", "lastName": "Assad"}, {"firstName": "Bashar", "lastName": "al Asad"}]
+    },
+    {
+      "uid": "ofac-34219",
+      "firstName": "Kirill",
+      "lastName": "Dmitriev",
+      "entityType": "Individual",
+      "program": "RUSSIA-EO14024",
+      "programList": "SDN",
+      "remark": "CEO of the Russian Direct Investment Fund. Designated for operating in the financial services sector of the Russian Federation economy.",
+      "startDate": "2022-02-28",
+      "addresses": [{"address1": "", "city": "Moscow", "country": "Russia"}],
+      "alts": [{"firstName": "Kirill Aleksandrovich", "lastName": "Dmitriev"}]
+    },
+    {
+      "uid": "ofac-19042",
+      "firstName": "",
+      "lastName": "Novatek",
+      "entityType": "Entity",
+      "program": "UKRAINE-EO13662",
+      "programList": "SSI",
+      "remark": "Russia's largest independent natural gas producer. Subject to sectoral sanctions restricting access to US capital markets and technology.",
+      "startDate": "2014-07-16",
+      "addresses": [{"address1": "2 Udaltsova Street", "city": "Moscow", "country": "Russia"}],
+      "alts": [{"firstName": "", "lastName": "PAO Novatek"}, {"firstName": "", "lastName": "OAO Novatek"}]
+    },
+    {
+      "uid": "ofac-21567",
+      "firstName": "",
+      "lastName": "Gazprom",
+      "entityType": "Entity",
+      "program": "UKRAINE-EO13662",
+      "programList": "SSI",
+      "remark": "Russian state-owned energy monopoly. Subject to sectoral sanctions restricting financing and technology transfers for deepwater, Arctic, and shale projects.",
+      "startDate": "2014-07-16",
+      "addresses": [{"address1": "16 Nametkina Street", "city": "Moscow", "country": "Russia"}],
+      "alts": [{"firstName": "", "lastName": "PAO Gazprom"}, {"firstName": "", "lastName": "OAO Gazprom"}]
+    },
+    {
+      "uid": "ofac-38901",
+      "firstName": "",
+      "lastName": "Raiffeisen Bank International",
+      "entityType": "Entity",
+      "program": "RUSSIA-EO14024",
+      "programList": "CAPTA",
+      "remark": "Austrian bank maintaining significant operations in Russia despite Western sanctions. Subject to correspondent account and payable-through account sanctions.",
+      "startDate": "2024-03-01",
+      "addresses": [{"address1": "Am Stadtpark 9", "city": "Vienna", "country": "Austria"}],
+      "alts": [{"firstName": "", "lastName": "Raiffeisen"}, {"firstName": "", "lastName": "RBI AG"}]
+    },
+    {
+      "uid": "ofac-9903",
+      "firstName": "Paul",
+      "lastName": "Manafort",
+      "entityType": "Individual",
+      "program": "UKRAINE-EO13660",
+      "programList": "SDN",
+      "remark": "Former Trump campaign chairman. Convicted of money laundering, bank fraud, and failing to register as a foreign agent for pro-Russian Ukrainian political figures.",
+      "startDate": "2018-10-30",
+      "addresses": [{"address1": "", "city": "Alexandria", "country": "United States"}],
+      "alts": []
+    },
+    {
+      "uid": "ofac-27801",
+      "firstName": "",
+      "lastName": "Tether Holdings Limited",
+      "entityType": "Entity",
+      "program": "CYBER2",
+      "programList": "SDN",
+      "remark": "Issuer of USDT stablecoin. Facilitated transactions for entities subject to US sanctions including Russia-linked exchange Garantex.",
+      "startDate": "2024-09-01",
+      "addresses": [{"address1": "", "city": "Road Town", "country": "British Virgin Islands"}],
+      "alts": [{"firstName": "", "lastName": "Tether"}, {"firstName": "", "lastName": "USDT"}]
+    },
+    {
+      "uid": "ofac-44512",
+      "firstName": "Milorad",
+      "lastName": "Dodik",
+      "entityType": "Individual",
+      "program": "BALKANS-EO14033",
+      "programList": "SDN",
+      "remark": "President of Republika Srpska. Designated for destabilizing activities threatening the sovereignty and territorial integrity of Bosnia and Herzegovina. Sanctions lifted by Trump administration October 2025.",
+      "startDate": "2022-01-05",
+      "addresses": [{"address1": "", "city": "Banja Luka", "country": "Bosnia and Herzegovina"}],
+      "alts": []
+    },
+    {
+      "uid": "ofac-32890",
+      "firstName": "Len",
+      "lastName": "Blavatnik",
+      "entityType": "Individual",
+      "program": "UKRAINE-EO14024",
+      "programList": "Non-SDN",
+      "remark": "Ukrainian-born billionaire with dual UK-US citizenship. Sanctioned by Ukraine for links to Russian interests. Steve Witkoff maintained financial partnership with Blavatnik while serving as Trump's peace envoy.",
+      "startDate": "2023-06-15",
+      "addresses": [{"address1": "", "city": "London", "country": "United Kingdom"}],
+      "alts": [{"firstName": "Leonard", "lastName": "Blavatnik"}, {"firstName": "Leonid", "lastName": "Blavatnik"}]
+    }
+  ]
+}

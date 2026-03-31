@@ -946,6 +946,14 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
         </div>
         <div class="sb-ext-body" id="ext-donations-body"></div>
       </div>
+      <div class="sb-ext-slot" id="ext-sanctions">
+        <div class="sb-ext-header" onclick="toggleSection('ext-sanctions')">
+          <span class="sb-ext-label">OFAC SDN Status</span>
+          <span class="sb-ext-badge sb-ext-badge-off" id="ext-sanctions-badge">off</span>
+          <span class="sb-ext-toggle">&#9660;</span>
+        </div>
+        <div class="sb-ext-body" id="ext-sanctions-body"></div>
+      </div>
       <div class="sb-ext-slot" id="ext-filings">
         <div class="sb-ext-header" onclick="toggleSection('ext-filings')">
           <span class="sb-ext-label">Corporate Filings</span>
@@ -2093,6 +2101,8 @@ function on(id){
   renderExtDataSlots(nd);
   // OpenSanctions live API check (uses ext-donations slot, renamed to Sanctions Check)
   checkSanctions(nd);
+  // OFAC SDN local list check (uses ext-sanctions slot)
+  checkOFAC(nd);
   // Layer 3: Investigation Guides — mode toggle + both modes
   const encName=encodeURIComponent(nd.name);
   // Render mode toggle
@@ -4346,6 +4356,167 @@ function checkSanctions(nd){
     html+='<a class="sb-ext-more" href="'+fallbackUrl+'" target="_blank" rel="noopener noreferrer">Search manually on OpenSanctions \u2192</a></div>';
     body.innerHTML=html;
     if(badge){badge.textContent=badgeText;badge.className=badgeClass;}
+  });
+}
+
+// ── OFAC SDN Local List Check ──
+// Fetches sdn_list.json once, caches in memory, matches node names locally.
+// No API key needed. No rate limits. Instant results on node click.
+// Data updated weekly via GitHub Actions workflow.
+
+var _sdnCache=null; // in-memory cache of the full SDN list
+var _sdnLoading=false; // prevent duplicate fetches
+var _sdnCallbacks=[]; // queue callbacks while loading
+
+function loadSDNList(cb){
+  // Already loaded
+  if(_sdnCache){cb(_sdnCache);return;}
+  // Queue callback if loading in progress
+  _sdnCallbacks.push(cb);
+  if(_sdnLoading) return;
+  _sdnLoading=true;
+  fetch('./sdn_list.json').then(function(r){
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    return r.json();
+  }).then(function(data){
+    _sdnCache=data;
+    _sdnLoading=false;
+    var entries=(data.sdnList||[]).length;
+    console.log('[OFAC SDN] List loaded: '+entries+' entries');
+    _sdnCallbacks.forEach(function(fn){fn(data);});
+    _sdnCallbacks=[];
+  }).catch(function(err){
+    _sdnLoading=false;
+    console.warn('[OFAC SDN] Failed to load sdn_list.json:',err.message);
+    _sdnCallbacks.forEach(function(fn){fn(null);});
+    _sdnCallbacks=[];
+  });
+}
+
+function matchSDN(name, sdnData){
+  if(!sdnData||!sdnData.sdnList) return [];
+  // Clean search name: lowercase, strip suffixes
+  var clean=name.replace(/\s*\/.*$/,'').replace(/\s*\(.*?\)/g,'').trim().toLowerCase();
+  // Build search tokens (split on spaces, filter short words)
+  var tokens=clean.split(/\s+/).filter(function(t){return t.length>=3;});
+  if(!tokens.length) return [];
+  var matches=[];
+  sdnData.sdnList.forEach(function(entry){
+    // Build full name for matching
+    var fullName=((entry.lastName||'')+' '+(entry.firstName||'')).trim().toLowerCase();
+    if(!fullName) return;
+    // Check primary name: all tokens must appear
+    var primaryMatch=tokens.every(function(t){return fullName.indexOf(t)!==-1;});
+    if(primaryMatch){
+      matches.push({entry:entry,score:95,via:'primary'});
+      return;
+    }
+    // Check aliases
+    if(entry.alts&&entry.alts.length>0){
+      for(var i=0;i<entry.alts.length;i++){
+        var altName=((entry.alts[i].lastName||'')+' '+(entry.alts[i].firstName||'')).trim().toLowerCase();
+        if(altName&&tokens.every(function(t){return altName.indexOf(t)!==-1;})){
+          matches.push({entry:entry,score:80,via:'alias: '+altName});
+          return;
+        }
+      }
+    }
+    // Partial match: if entity lastName closely matches any significant token
+    var lastName=(entry.lastName||'').toLowerCase();
+    if(lastName.length>=4){
+      var lastTokens=clean.split(/\s+/);
+      for(var j=0;j<lastTokens.length;j++){
+        if(lastTokens[j].length>=4&&lastName===lastTokens[j]){
+          matches.push({entry:entry,score:60,via:'partial'});
+          return;
+        }
+      }
+    }
+  });
+  // Sort by score descending
+  matches.sort(function(a,b){return b.score-a.score;});
+  return matches;
+}
+
+function checkOFAC(nd){
+  var slot=document.getElementById('ext-sanctions');
+  var body=document.getElementById('ext-sanctions-body');
+  var badge=document.getElementById('ext-sanctions-badge');
+  if(!slot||!body) return;
+  // Hide for enforcement nodes
+  if(nd.type==='enforcement'){
+    slot.classList.remove('enabled');
+    return;
+  }
+  // Show slot
+  slot.classList.add('enabled');
+  slot.classList.remove('collapsed');
+  // Show loading
+  body.innerHTML='<div class="sb-ext-loading">Checking OFAC SDN list\u2026</div>';
+  if(badge){badge.textContent='loading';badge.className='sb-ext-badge sb-ext-badge-live';}
+  var name=nd.name;
+  var enc=encodeURIComponent(name.replace(/\s*\/.*$/,'').replace(/\s*\(.*?\)/g,'').trim());
+  var ofacSearchUrl='https://sanctionssearch.ofac.treas.gov/';
+  loadSDNList(function(data){
+    if(!data){
+      // SDN list not available
+      body.innerHTML='<div class="sb-ext-error">OFAC SDN list not loaded. '+
+        '<a class="sb-ext-more" href="'+ofacSearchUrl+'" target="_blank" rel="noopener noreferrer">Search OFAC manually \u2192</a></div>';
+      if(badge){badge.textContent='unavailable';badge.className='sb-ext-badge sb-ext-badge-err';}
+      return;
+    }
+    var matches=matchSDN(name,data);
+    // Filter to strong matches only (score >= 60)
+    var strong=matches.filter(function(m){return m.score>=60;});
+    var html='';
+    if(strong.length===0){
+      // No matches
+      if(badge){badge.textContent='clear';badge.className='sb-ext-badge sb-ext-badge-clear';}
+      html='<div style="display:flex;align-items:center;gap:6px;padding:4px 0">'+
+        '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#2e6e22;flex-shrink:0"></span>'+
+        '<span style="font-size:var(--txt-xs);color:#2e6e22;font-weight:500">Not on OFAC SDN list</span></div>';
+      html+='<div style="font-size:.6rem;color:var(--color-text-faint);margin-top:2px">'+
+        'Checked against '+(data.sdnList||[]).length.toLocaleString()+' OFAC Specially Designated Nationals entries'+
+        (data.lastUpdated?' (updated '+data.lastUpdated+')':'')+'</div>';
+    } else {
+      // Matches found
+      if(badge){badge.textContent=strong.length+' match'+(strong.length!==1?'es':'');badge.className='sb-ext-badge sb-ext-badge-hit';}
+      html='<div style="display:flex;align-items:center;gap:6px;padding:4px 0">'+
+        '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#c4401c;flex-shrink:0"></span>'+
+        '<span style="font-size:var(--txt-xs);color:#c4401c;font-weight:600">'+strong.length+' OFAC SDN match'+(strong.length!==1?'es':'')+' found</span></div>';
+      // Show top 5
+      strong.slice(0,5).forEach(function(m){
+        var e=m.entry;
+        var entName=((e.firstName||'')+' '+(e.lastName||'')).trim()||e.lastName||'Unknown';
+        var entType=e.entityType||'Unknown';
+        var program=e.program||'';
+        var year=e.startDate?(e.startDate+'').slice(0,4):'';
+        var remark=e.remark||'';
+        // Truncate remark
+        if(remark.length>120) remark=remark.slice(0,117)+'\u2026';
+        html+='<div class="sb-ext-row" style="flex-direction:column;align-items:flex-start;gap:2px;padding:6px 0">';
+        html+='<div style="display:flex;align-items:center;justify-content:space-between;width:100%">';
+        html+='<span class="sb-ext-name" style="font-weight:500" title="'+esc(entName)+'">'+esc(entName)+'</span>';
+        html+='<span class="sb-ext-val" style="color:#c4401c">'+esc(m.score+'%')+'</span>';
+        html+='</div>';
+        var meta=[];
+        if(entType) meta.push(entType);
+        if(program) meta.push(program);
+        if(year) meta.push('designated '+year);
+        if(meta.length){
+          html+='<div style="font-size:.6rem;color:var(--color-text-faint);font-family:var(--font-mono)">'+esc(meta.join(' \u00b7 '))+'</div>';
+        }
+        if(remark){
+          html+='<div style="font-size:.6rem;color:var(--color-text-muted);line-height:1.4;margin-top:1px">'+esc(remark)+'</div>';
+        }
+        html+='</div>';
+      });
+      if(strong.length>5){
+        html+='<div style="font-size:.6rem;color:var(--color-text-faint);padding:4px 0">+'+(strong.length-5)+' more</div>';
+      }
+    }
+    html+='<a class="sb-ext-more" href="'+ofacSearchUrl+'" target="_blank" rel="noopener noreferrer">Search OFAC SDN list \u2192</a>';
+    body.innerHTML=html;
   });
 }
 
