@@ -2180,45 +2180,74 @@ async function loadFEC(name, nodeType){
   if(nodeType==='jurisdiction'||nodeType==='enforcement'){wrap.innerHTML='';return;}
   const searchName=name.replace(/\s*\/.*$/,'').replace(/\s*\(.*?\)/g,'').trim();
   const encN=encodeURIComponent(searchName);
-  const fecSearchUrl=`https://www.fec.gov/data/receipts/?contributor_name=${encN}`;
-  wrap.innerHTML='<div style="font-size:var(--txt-xs);color:#999;font-family:var(--font-mono);padding:var(--s2) 0;animation:pulse 1.4s ease-in-out infinite">Loading FEC data…</div>';
+  const fecSearchUrl='https://www.fec.gov/data/receipts/?contributor_name='+encN;
+  wrap.innerHTML='<div style="font-size:var(--txt-xs);color:#999;font-family:var(--font-mono);padding:var(--s2) 0;animation:pulse 1.4s ease-in-out infinite">Loading FEC data\u2026</div>';
   try {
-    const resp=await fetchWithTimeout(`https://api.fec.gov/v1/schedules/schedule_a/?contributor_name=${encN}&sort=-contribution_receipt_amount&per_page=8&api_key=${FEC_KEY}`,9000);
+    const resp=await fetchWithTimeout('https://api.fec.gov/v1/schedules/schedule_a/?contributor_name='+encN+'&sort=-contribution_receipt_amount&per_page=10&api_key='+FEC_KEY,9000);
     if(!resp.ok) throw new Error('HTTP '+resp.status);
     const data=await resp.json();
     const rows=data.results||[];
     const total=(data.pagination&&data.pagination.count)||0;
     if(rows.length===0){
-      const resp2=await fetchWithTimeout(`https://api.fec.gov/v1/committees/?q=${encN}&sort=-receipts&per_page=3&api_key=${FEC_KEY}`,9000);
+      // Fallback: try committee search for PACs and orgs
+      const resp2=await fetchWithTimeout('https://api.fec.gov/v1/committees/?q='+encN+'&sort=-receipts&per_page=3&api_key='+FEC_KEY,9000);
       if(!resp2.ok) throw new Error('HTTP '+resp2.status);
       const d2=await resp2.json();
       const committees=d2.results||[];
       if(committees.length===0){
-        wrap.innerHTML=`<a class="sb-inv-btn" href="${fecSearchUrl}" target="_blank" rel="noopener noreferrer">
-          <div class="sb-inv-icon sb-inv-icon-fec">FEC</div>
-          <div><div class="sb-inv-label">FEC Records</div><div class="sb-inv-desc">No records found. Search FEC directly.</div></div></a>`;
+        wrap.innerHTML='<a class="sb-inv-btn" href="'+fecSearchUrl+'" target="_blank" rel="noopener noreferrer">'+
+          '<div class="sb-inv-icon sb-inv-icon-fec">FEC</div>'+
+          '<div><div class="sb-inv-label">FEC Records</div><div class="sb-inv-desc">No records found. Search FEC directly.</div></div></a>';
         return;
       }
-      let html='';
+      var chtml='';
       committees.forEach(function(c){
-        html+=`<a class="sb-inv-btn" href="https://www.fec.gov/data/committees/?q=${encN}" target="_blank" rel="noopener noreferrer">
-          <div class="sb-inv-icon sb-inv-icon-fec">FEC</div>
-          <div><div class="sb-inv-label">${esc(c.name||'Committee')}</div><div class="sb-inv-desc">Raised ${fmt$(c.total_receipts||0)} · Spent ${fmt$(c.total_disbursements||0)}</div></div></a>`;
+        chtml+='<a class="sb-inv-btn" href="https://www.fec.gov/data/committees/?q='+encN+'" target="_blank" rel="noopener noreferrer">'+
+          '<div class="sb-inv-icon sb-inv-icon-fec">FEC</div>'+
+          '<div><div class="sb-inv-label">'+esc(c.name||'Committee')+'</div>'+
+          '<div class="sb-inv-desc">Raised '+fmt$(c.total_receipts||0)+' \u00b7 Spent '+fmt$(c.total_disbursements||0)+'</div></div></a>';
       });
-      wrap.innerHTML=html;
+      wrap.innerHTML=chtml;
       return;
     }
+    // Show header with total count
     var totalAmt=0;
     for(var i=0;i<rows.length;i++) totalAmt+=(rows[i].contribution_receipt_amount||0);
-    var html=`<a class="sb-inv-btn" href="${fecSearchUrl}" target="_blank" rel="noopener noreferrer">
-      <div class="sb-inv-icon sb-inv-icon-fec">FEC</div>
-      <div><div class="sb-inv-label">FEC Political Donations</div><div class="sb-inv-desc">${total.toLocaleString()} records · Top ${rows.length} total ${fmt$(totalAmt)}</div></div></a>`;
+    var html='<div style="display:flex;align-items:center;gap:6px;margin-bottom:var(--s2)">';
+    html+='<div class="sb-inv-icon sb-inv-icon-fec" style="width:22px;height:22px;font-size:.6rem;flex-shrink:0">FEC</div>';
+    html+='<div><div style="font-size:var(--txt-xs);font-weight:600;color:var(--color-text)">Political Contributions</div>';
+    html+='<div style="font-size:.6rem;color:var(--color-text-faint);font-family:var(--font-mono)">'+total.toLocaleString()+' records \u00b7 '+fmt$(totalAmt)+' shown</div></div></div>';
+    // Show top 5 donations inline
+    var top5=rows.slice(0,5);
+    top5.forEach(function(r){
+      var committee=r.committee_name||r.committee&&r.committee.name||'Unknown committee';
+      var amt=r.contribution_receipt_amount||0;
+      var date=(r.contribution_receipt_date||'').slice(0,10);
+      // Format date as Mon YYYY if possible
+      if(date.length>=7){
+        var parts=date.split('-');
+        var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        var mi=parseInt(parts[1],10)-1;
+        if(mi>=0&&mi<12) date=months[mi]+' '+parts[0];
+      }
+      html+='<div class="sb-ext-row">';
+      html+='<span class="sb-ext-name" title="'+esc(committee)+'">'+esc(committee)+'</span>';
+      html+='<span class="sb-ext-val">'+fmt$(amt)+'</span>';
+      html+='<span class="sb-ext-date">'+esc(date)+'</span>';
+      html+='</div>';
+    });
+    if(rows.length>5){
+      html+='<div style="font-size:.6rem;color:var(--color-text-faint);padding:2px 0">+'+(total-5)+' more record'+(total-5!==1?'s':'')+'</div>';
+    }
+    // View all link
+    html+='<a class="sb-ext-more" href="'+fecSearchUrl+'" target="_blank" rel="noopener noreferrer">View all on FEC.gov \u2192</a>';
     wrap.innerHTML=html;
   } catch(err){
     var msg=err.name==='AbortError'?'Timed out':'Unavailable';
-    wrap.innerHTML=`<a class="sb-inv-btn" href="${fecSearchUrl}" target="_blank" rel="noopener noreferrer">
-      <div class="sb-inv-icon sb-inv-icon-fec">FEC</div>
-      <div><div class="sb-inv-label">FEC Political Donations</div><div class="sb-inv-desc">${msg}. Search FEC directly.</div></div></a>`;
+    wrap.innerHTML='<a class="sb-inv-btn" href="'+fecSearchUrl+'" target="_blank" rel="noopener noreferrer">'+
+      '<div class="sb-inv-icon sb-inv-icon-fec">FEC</div>'+
+      '<div><div class="sb-inv-label">FEC Political Donations</div>'+
+      '<div class="sb-inv-desc">'+msg+'. Search FEC directly.</div></div></a>';
   }
 }
 
