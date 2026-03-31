@@ -1,0 +1,49 @@
+name: Update OFAC SDN List
+
+on:
+  schedule:
+    # Every Monday at 2:00 AM UTC
+    - cron: '0 2 * * 1'
+  workflow_dispatch:
+    # Allow manual trigger from GitHub Actions tab
+
+jobs:
+  update-sdn:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Download and transform OFAC SDN data
+        run: node scripts/transform-ofac-data.js
+
+      - name: Check for changes
+        id: check
+        run: |
+          if git diff --quiet sdn_list.json 2>/dev/null; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No changes detected in SDN list."
+          else
+            NEW_COUNT=$(node -e "const d=JSON.parse(require('fs').readFileSync('sdn_list.json','utf8'));console.log(d.entryCount||d.sdnList.length)")
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "count=$NEW_COUNT" >> $GITHUB_OUTPUT
+            echo "SDN list updated: $NEW_COUNT entries."
+          fi
+
+      - name: Commit and push if changed
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          DATE=$(date +%Y-%m-%d)
+          COUNT=${{ steps.check.outputs.count }}
+          git add sdn_list.json
+          git commit -m "Update OFAC SDN list — $DATE — $COUNT entries"
+          git push
