@@ -318,6 +318,9 @@ a{color:inherit;text-decoration:none}
 .sb-ext-badge{font-size:.55rem;font-family:var(--font-mono);padding:2px 6px;border-radius:var(--radius-full);font-weight:600}
 .sb-ext-badge-live{background:rgba(61,92,47,.1);color:#3D5C2F}
 .sb-ext-badge-off{background:#f0f0f0;color:#999}
+.sb-ext-badge-clear{background:rgba(46,110,34,.12);color:#2e6e22}
+.sb-ext-badge-hit{background:rgba(196,64,28,.12);color:#c4401c}
+.sb-ext-badge-err{background:#f0f0f0;color:#999}
 .sb-ext-toggle{color:#3D5C2F;font-size:10px;transition:transform .2s ease;line-height:1}
 .sb-ext-slot.collapsed .sb-ext-toggle{transform:rotate(-90deg)}
 .sb-ext-body{background:#F5F5F5;padding:var(--s3) var(--s4);border-top:1px solid #e0e0e0}
@@ -937,7 +940,7 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
       <!-- External data slots (conditionally rendered by node type) -->
       <div class="sb-ext-slot" id="ext-donations">
         <div class="sb-ext-header" onclick="toggleSection('ext-donations')">
-          <span class="sb-ext-label">Political Donations</span>
+          <span class="sb-ext-label">Sanctions Check</span>
           <span class="sb-ext-badge sb-ext-badge-off" id="ext-donations-badge">off</span>
           <span class="sb-ext-toggle">&#9660;</span>
         </div>
@@ -2088,6 +2091,8 @@ function on(id){
     ${xcHtml}`;
   // External data slots (conditionally rendered by node type and config)
   renderExtDataSlots(nd);
+  // OpenSanctions live API check (uses ext-donations slot, renamed to Sanctions Check)
+  checkSanctions(nd);
   // Layer 3: Investigation Guides — mode toggle + both modes
   const encName=encodeURIComponent(nd.name);
   // Render mode toggle
@@ -4176,6 +4181,143 @@ function formatNews(nodeName, data){
     return html;
   }
   return '<div class="sb-ext-error">Connect a news API to see recent media mentions.</div>';
+}
+
+// ── OpenSanctions Live API ──
+// Checks sanctions/watchlist status via api.opensanctions.org on node click.
+// Results cached in sessionStorage by node ID to avoid repeated API calls.
+// Uses the ext-donations slot (renamed to "Sanctions Check" in HTML).
+// Badge colors: green = no match, red = matches found, gray = error/unavailable.
+
+var OPENSANCTIONS_KEY='19f535776fcfda069e99c3b4d054a358';
+
+function checkSanctions(nd){
+  var slot=document.getElementById('ext-donations');
+  var body=document.getElementById('ext-donations-body');
+  var badge=document.getElementById('ext-donations-badge');
+  if(!slot||!body) return;
+  // Hide for enforcement nodes (they are the enforcers, not the targets)
+  if(nd.type==='enforcement'){
+    slot.classList.remove('enabled');
+    return;
+  }
+  // Show the slot
+  slot.classList.add('enabled');
+  slot.classList.remove('collapsed');
+  // Clean node name
+  var name=nd.name.replace(/\s*\/.*$/,'').replace(/\s*\(.*?\)/g,'').trim();
+  var enc=encodeURIComponent(name);
+  var fallbackUrl='https://www.opensanctions.org/search/?q='+enc;
+  // Check sessionStorage cache
+  var cacheKey='osanc-'+nd.id;
+  try{
+    var cached=sessionStorage.getItem(cacheKey);
+    if(cached){
+      var cacheData=JSON.parse(cached);
+      body.innerHTML=cacheData.html;
+      if(badge){
+        badge.textContent=cacheData.badgeText;
+        badge.className='sb-ext-badge '+cacheData.badgeClass;
+      }
+      return;
+    }
+  }catch(e){}
+  // Show loading
+  body.innerHTML='<div class="sb-ext-loading">Checking sanctions lists\u2026</div>';
+  if(badge){badge.textContent='checking';badge.className='sb-ext-badge sb-ext-badge-live';}
+  // Determine schema based on node type
+  var schema=(nd.type==='person')?'Person':'Company';
+  // Build request
+  var reqBody=JSON.stringify({
+    schema:schema,
+    properties:{name:[name]}
+  });
+  var ctrl=new AbortController();
+  var timer=setTimeout(function(){ctrl.abort();},12000);
+  fetch('https://api.opensanctions.org/match/default',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':'ApiKey '+OPENSANCTIONS_KEY
+    },
+    body:reqBody,
+    signal:ctrl.signal
+  }).then(function(resp){
+    clearTimeout(timer);
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    return resp.json();
+  }).then(function(data){
+    // Parse results — the /match endpoint returns {responses:[{results:[...]}]}
+    var results=[];
+    if(data.responses&&data.responses.length>0){
+      data.responses.forEach(function(r){
+        if(r.results) results=results.concat(r.results);
+      });
+    }
+    // Also handle flat results array (API format may vary)
+    if(!results.length&&data.results){
+      results=data.results;
+    }
+    // Filter to meaningful matches (score > 0.5)
+    var strong=results.filter(function(r){return(r.score||0)>0.5;});
+    var html='';
+    var badgeText='';
+    var badgeClass='';
+    if(strong.length===0){
+      // No matches
+      badgeText='clear';
+      badgeClass='sb-ext-badge sb-ext-badge-clear';
+      html='<div style="display:flex;align-items:center;gap:6px;padding:4px 0">'+
+        '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#2e6e22;flex-shrink:0"></span>'+
+        '<span style="font-size:var(--txt-xs);color:#2e6e22;font-weight:500">No watchlist matches found</span></div>';
+      html+='<div style="font-size:.6rem;color:var(--color-text-faint);margin-top:2px">Checked OFAC SDN, EU, UN, and 40+ sanctions lists via OpenSanctions</div>';
+    } else {
+      // Matches found
+      badgeText=strong.length+' match'+(strong.length!==1?'es':'');
+      badgeClass='sb-ext-badge sb-ext-badge-hit';
+      html='<div style="display:flex;align-items:center;gap:6px;padding:4px 0">'+
+        '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#c4401c;flex-shrink:0"></span>'+
+        '<span style="font-size:var(--txt-xs);color:#c4401c;font-weight:600">'+strong.length+' watchlist match'+(strong.length!==1?'es':'')+' found</span></div>';
+      // Show each match
+      strong.slice(0,5).forEach(function(r){
+        var caption=r.caption||r.name||'Unknown entity';
+        var score=r.score?Math.round(r.score*100)+'%':'';
+        var datasets=(r.datasets||[]).join(', ');
+        if(!datasets&&r.dataset) datasets=r.dataset;
+        html+='<div class="sb-ext-row" style="flex-direction:column;align-items:flex-start;gap:2px;padding:6px 0">';
+        html+='<div style="display:flex;align-items:center;justify-content:space-between;width:100%">';
+        html+='<span class="sb-ext-name" style="font-weight:500">'+esc(caption)+'</span>';
+        if(score) html+='<span class="sb-ext-val" style="color:#c4401c">'+score+'</span>';
+        html+='</div>';
+        if(datasets){
+          html+='<div style="font-size:.6rem;color:var(--color-text-faint);line-height:1.4">'+esc(datasets)+'</div>';
+        }
+        html+='</div>';
+      });
+      if(strong.length>5){
+        html+='<div style="font-size:.6rem;color:var(--color-text-faint);padding:4px 0">+'+(strong.length-5)+' more match'+(strong.length-5!==1?'es':'')+'</div>';
+      }
+    }
+    // Always add link to full profile
+    html+='<a class="sb-ext-more" href="'+fallbackUrl+'" target="_blank" rel="noopener noreferrer">View on OpenSanctions \u2192</a>';
+    body.innerHTML=html;
+    if(badge){badge.textContent=badgeText;badge.className=badgeClass;}
+    // Cache result
+    try{
+      sessionStorage.setItem(cacheKey,JSON.stringify({
+        html:html,badgeText:badgeText,badgeClass:badgeClass
+      }));
+    }catch(e){}
+  }).catch(function(err){
+    clearTimeout(timer);
+    var msg=err.name==='AbortError'?'Timed out':'Unavailable';
+    var badgeText='error';
+    var badgeClass='sb-ext-badge sb-ext-badge-err';
+    var html='<div class="sb-ext-error">Sanctions check '+msg.toLowerCase()+'. ';
+    html+='<a class="sb-ext-more" href="'+fallbackUrl+'" target="_blank" rel="noopener noreferrer">Search manually on OpenSanctions \u2192</a></div>';
+    body.innerHTML=html;
+    if(badge){badge.textContent=badgeText;badge.className=badgeClass;}
+  });
 }
 
 // ── Investigate Further links ──
