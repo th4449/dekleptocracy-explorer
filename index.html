@@ -2613,9 +2613,12 @@ function dg(){
       badge.select('text').attr('fill',color);
     }
     // Label background
-    g.select('.label-bg').attr('fill',dark?'rgba(0,0,0,.55)':'rgba(255,255,255,.75)');
+    // Phase 1: Smart label visibility — hide by default, show on hover/select/path/article/found
+    // Labels visible when: hovered, selected, neighbor of selected, in path, in article view, found, or hub node (6+ connections)
+    var showLabel=isHover||isSelected||isFound||isInPath||isInArticle||(hlSet&&hlSet.has(n.id))||n._cc>=6;
+    g.select('.label-bg').attr('fill',dark?'rgba(0,0,0,.55)':'rgba(255,255,255,.75)').attr('opacity',showLabel?1:0);
     // Label text
-    g.select('.graph-label').attr('fill',dark?'rgba(220,220,218,.9)':'rgba(26,25,21,.85)');
+    g.select('.graph-label').attr('fill',dark?'rgba(220,220,218,.9)':'rgba(26,25,21,.85)').attr('opacity',showLabel?1:0);
   });
 
   // Zoom indicator
