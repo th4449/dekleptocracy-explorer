@@ -4008,7 +4008,8 @@
       "url": "https://dekleptocracy.substack.com/p/not-in-our-name",
       "entities": [
         1,
-        13
+        13,
+        122
       ],
       "clusters": [
         "sanctions"
@@ -4024,7 +4025,8 @@
         1,
         38,
         39,
-        74
+        74,
+        2
       ],
       "clusters": [
         "influence",
@@ -4188,7 +4190,9 @@
         1,
         33,
         100,
-        110
+        110,
+        34,
+        22
       ],
       "clusters": [
         "crypto",
@@ -4281,7 +4285,8 @@
       "url": "https://dekleptocracy.substack.com/p/orbans-own-child-abuse-scandal",
       "entities": [
         38,
-        74
+        74,
+        1
       ],
       "clusters": [
         "influence"
@@ -4609,7 +4614,8 @@
         1,
         30,
         54,
-        70
+        70,
+        97
       ],
       "clusters": [
         "influence",
@@ -4624,7 +4630,8 @@
       "url": "https://dekleptocracy.substack.com/p/vermonts-critical-role-in-trumps",
       "entities": [
         1,
-        97
+        97,
+        66
       ],
       "clusters": [
         "sanctions"
@@ -4798,7 +4805,8 @@
         1,
         38,
         74,
-        94
+        94,
+        2
       ],
       "clusters": [
         "influence",
@@ -5475,7 +5483,8 @@
         1,
         30,
         76,
-        115
+        115,
+        97
       ],
       "clusters": [
         "influence",
@@ -6029,7 +6038,9 @@
       "url": "https://dekleptocracy.substack.com/p/why-alan-j-kuperman-is-wrong-on-trump-292",
       "entities": [
         1,
-        2
+        2,
+        122,
+        4
       ],
       "clusters": [
         "sanctions",
@@ -6044,7 +6055,8 @@
       "url": "https://dekleptocracy.substack.com/p/why-alan-j-kuperman-is-wrong-on-trump",
       "entities": [
         1,
-        2
+        2,
+        122
       ],
       "clusters": [
         "sanctions",
@@ -6360,7 +6372,9 @@
       "entities": [
         13,
         84,
-        2
+        2,
+        1,
+        38
       ],
       "clusters": [
         "sanctions"
@@ -6375,7 +6389,9 @@
       "entities": [
         13,
         51,
-        93
+        93,
+        38,
+        12
       ],
       "clusters": [
         "energy",
@@ -6409,7 +6425,9 @@
       "entities": [
         1,
         13,
-        2
+        2,
+        4,
+        122
       ],
       "clusters": [
         "sanctions",
@@ -6424,7 +6442,8 @@
       "url": "https://dekleptocracy.substack.com/p/in-brief-november-20-2024-trump-teases-maximum-pressure-local-corruption-intersects-with-partisan-politics-across-america-and-more",
       "entities": [
         1,
-        13
+        13,
+        38
       ],
       "clusters": [
         "sanctions",
@@ -6439,7 +6458,9 @@
       "url": "https://dekleptocracy.substack.com/p/after-the-election-a-time-for-vigilance-against-corruption-at-home-and-abroad-dekleptocracy-report-29-14-november-2024",
       "entities": [
         1,
-        13
+        13,
+        3,
+        38
       ],
       "clusters": [
         "sanctions",
@@ -6454,7 +6475,9 @@
       "url": "https://dekleptocracy.substack.com/p/we-need-a-clear-policy-on-ukraine-not-oligarchic-intrigue-on-tuesday-tdr-28-31-october-2024",
       "entities": [
         1,
-        13
+        13,
+        122,
+        4
       ],
       "clusters": [
         "sanctions",
@@ -6470,7 +6493,8 @@
       "entities": [
         13,
         16,
-        19
+        19,
+        1
       ],
       "clusters": [
         "sanctions"
@@ -6501,7 +6525,8 @@
       "url": "https://dekleptocracy.substack.com/p/how-osint-can-save-the-world-tdr-27-23-october-2024",
       "entities": [
         13,
-        16
+        16,
+        1
       ],
       "clusters": [
         "sanctions"
@@ -6516,7 +6541,8 @@
       "entities": [
         19,
         13,
-        16
+        16,
+        1
       ],
       "clusters": [
         "sanctions"
