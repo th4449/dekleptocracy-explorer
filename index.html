@@ -2566,10 +2566,15 @@ function ig(){
   // D3 zoom
   d3Zoom=d3.zoom().scaleExtent([0.3,3]).on('zoom',function(event){
     g.attr('transform',event.transform);
+    var prevZ=gz;
     gz=event.transform.k;
     go={x:event.transform.x,y:event.transform.y};
     const zl=document.getElementById('zoom-level');
     if(zl) zl.textContent=Math.round(gz*100)+'%';
+    // Phase 4: update visibility when crossing zoom thresholds
+    var prevT=prevZ<0.7?0:prevZ<1.3?1:2;
+    var curT=gz<0.7?0:gz<1.3?1:2;
+    if(prevT!==curT) dg();
   });
   svg.call(d3Zoom);
 
@@ -2598,9 +2603,23 @@ function dg(){
     esim.forEach(e=>{if(e.source===gHighlight) hlSet.add(e.target);if(e.target===gHighlight) hlSet.add(e.source);});
   }
 
+  // Phase 4: Zoom-dependent detail — compute which nodes are visible at current zoom
+  // gz < 0.7: hubs only (6+), gz 0.7-1.3: hubs + medium (3+), gz > 1.3: all
+  var zoomMinCC=0;
+  if(gz<0.7) zoomMinCC=6;
+  else if(gz<1.3) zoomMinCC=3;
+  var _zoomVis=new Set();
+  nsim.forEach(function(n){
+    var active=(hlSet&&hlSet.has(n.id))||gHoverNode===n.id||gFoundNode===n.id;
+    if(active||n._cc>=zoomMinCC) _zoomVis.add(n.id);
+  });
+
   // ── Update edges ──
   svgEdges.each(function(e){
     const line=d3.select(this);
+    // Phase 4: hide edges where either endpoint is zoom-hidden
+    if(!_zoomVis.has(e.source)||!_zoomVis.has(e.target)){line.attr('display','none');return;}
+    line.attr('display',null);
     const isArticleEdge=articleMode&&gArticleEdges&&(gArticleEdges.has(e.source+'-'+e.target)||gArticleEdges.has(e.target+'-'+e.source));
     const isPathEdge=pathMode&&gPathEdges&&(gPathEdges.has(e.source+'-'+e.target)||gPathEdges.has(e.target+'-'+e.source));
     const isHl=!pathMode&&!articleMode&&hlSet&&(hlSet.has(e.source)&&hlSet.has(e.target));
@@ -2629,6 +2648,9 @@ function dg(){
   // ── Update nodes ──
   svgNodes.each(function(n){
     const g=d3.select(this);
+    // Phase 4: hide nodes below zoom threshold
+    if(!_zoomVis.has(n.id)){g.attr('display','none');return;}
+    g.attr('display',null);
     const color=nc(n);
     const isHover=gHoverNode===n.id;
     const isSelected=gHighlight===n.id;
