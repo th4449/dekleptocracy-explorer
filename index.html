@@ -729,6 +729,10 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
 .gleg-links .gli{display:flex;align-items:center;gap:4px}
 .gleg-links .gll{width:18px;height:2px;border-radius:1px;flex-shrink:0}
 .gll-dash{background:repeating-linear-gradient(90deg,#99CCFF 0 5px,transparent 5px 8px)}
+/* ── Phase 5: Collapsible cluster synthetic nodes ── */
+.synth-node{cursor:pointer;transition:opacity .15s ease}
+.synth-node:hover{opacity:.85}
+.synth-edge{pointer-events:none}
 /* ── Popular searches ── */
 .sb-popular{margin-top:var(--s3);padding-top:var(--s3);border-top:1px solid var(--color-divider)}
 .sb-popular-title{font-size:var(--txt-xs);font-weight:600;color:#3D5C2F;text-transform:uppercase;letter-spacing:.06em;margin-bottom:var(--s2)}
@@ -1381,6 +1385,7 @@ let DATA=JSON.parse(JSON.stringify(DEMO)),ctf='all',ccf='all',cns='',gaf='all',g
 let gd=false,gds={x:0,y:0},raf,nsim=[],esim=[],gHighlight=null,gFoundNode=null;
 let gPathNodes=null,gPathEdges=null; // pathway analysis highlighting
 let gArticleNodes=null,gArticleEdges=null; // article-to-network view highlighting
+var gCollapsed={}; // Phase 5: collapsed cluster names → {x, y, count}
 
 const TC={sanctions:'tr',crypto:'to',energy:'tg',princelings:'tb',influence:'tn'};
 const TI={person:'user',organization:'building-2',deal:'handshake',jurisdiction:'globe',enforcement:'scale'};
@@ -2558,6 +2563,9 @@ function ig(){
   }).on('click',function(event,d){
     event.stopPropagation();
     gHighlight=gHighlight===d.id?null:d.id;gFoundNode=null;dg();on(d.id);
+  }).on('dblclick',function(event,d){
+    event.stopPropagation();
+    if(d.cluster) toggleCluster(d.cluster);
   });
 
   // Click background to deselect
@@ -2587,6 +2595,85 @@ function ig(){
   console.log('[D3 Graph] Rendered %d nodes, %d edges',nsim.length,esim.length);
 }
 
+// Phase 5: Collapsible clusters — toggle cluster between collapsed/expanded
+function toggleCluster(clusterName){
+  if(gCollapsed[clusterName]){
+    // Expand: remove synthetic node and edges
+    d3.select('#synth-'+clusterName).remove();
+    d3.selectAll('.synth-edge-'+clusterName).remove();
+    delete gCollapsed[clusterName];
+  } else {
+    // Collapse: compute centroid
+    var clusterNodes=nsim.filter(function(n){return n.cluster===clusterName;});
+    if(clusterNodes.length<2) return;
+    var cx=d3.mean(clusterNodes,function(d){return d.x;});
+    var cy=d3.mean(clusterNodes,function(d){return d.y;});
+    gCollapsed[clusterName]={x:cx,y:cy,count:clusterNodes.length};
+    var color=CLUSTER_COLORS[clusterName]||CLUSTER_COLORS.default;
+    var label=clusterName.charAt(0).toUpperCase()+clusterName.slice(1);
+    var graphRoot=d3.select('.graph-root');
+    // Draw cross-cluster edges from synthetic node to outside neighbors
+    var clusterIds=new Set(clusterNodes.map(function(n){return n.id;}));
+    var nodeMap={};nsim.forEach(function(n){nodeMap[n.id]=n;});
+    var drawnTo=new Set();
+    esim.forEach(function(e){
+      var srcIn=clusterIds.has(e.source),tgtIn=clusterIds.has(e.target);
+      if(srcIn&&!tgtIn){
+        var tgt=nodeMap[e.target];
+        if(tgt&&!drawnTo.has(e.target)&&!gCollapsed[tgt.cluster]){
+          drawnTo.add(e.target);
+          graphRoot.append('line').attr('class','synth-edge synth-edge-'+clusterName)
+            .attr('x1',cx).attr('y1',cy).attr('x2',tgt.x).attr('y2',tgt.y)
+            .attr('stroke',color).attr('stroke-width',1.5).attr('stroke-opacity',0.25)
+            .attr('stroke-dasharray','4 3');
+        }
+      } else if(!srcIn&&tgtIn){
+        var src=nodeMap[e.source];
+        if(src&&!drawnTo.has(e.source)&&!gCollapsed[src.cluster]){
+          drawnTo.add(e.source);
+          graphRoot.append('line').attr('class','synth-edge synth-edge-'+clusterName)
+            .attr('x1',cx).attr('y1',cy).attr('x2',src.x).attr('y2',src.y)
+            .attr('stroke',color).attr('stroke-width',1.5).attr('stroke-opacity',0.25)
+            .attr('stroke-dasharray','4 3');
+        }
+      }
+    });
+    // Draw synthetic summary node on top
+    var synth=graphRoot.append('g')
+      .attr('id','synth-'+clusterName)
+      .attr('class','synth-node')
+      .attr('transform','translate('+cx+','+cy+')');
+    synth.append('circle').attr('r',30).attr('fill',color).attr('fill-opacity',0.15)
+      .attr('stroke',color).attr('stroke-width',2.5).attr('stroke-dasharray','6 3');
+    synth.append('text').text(clusterNodes.length)
+      .attr('text-anchor','middle').attr('dominant-baseline','central')
+      .attr('font-size','16px').attr('font-weight','700').attr('fill',color)
+      .attr('font-family','IBM Plex Mono,monospace');
+    synth.append('text').text(label)
+      .attr('y',44).attr('text-anchor','middle')
+      .attr('font-size','10px').attr('font-weight','500').attr('fill',color)
+      .attr('font-family','IBM Plex Sans,sans-serif');
+    synth.append('text').text('dbl-click to expand')
+      .attr('y',56).attr('text-anchor','middle')
+      .attr('font-size','7px').attr('fill',color).attr('opacity',0.5)
+      .attr('font-family','IBM Plex Mono,monospace');
+    synth.on('dblclick',function(event){
+      event.stopPropagation();
+      toggleCluster(clusterName);
+    });
+  }
+  dg();
+}
+
+function expandAllClusters(){
+  Object.keys(gCollapsed).forEach(function(cl){
+    d3.select('#synth-'+cl).remove();
+    d3.selectAll('.synth-edge-'+cl).remove();
+  });
+  gCollapsed={};
+  dg();
+}
+
 function dg(){
   if(!svgEdges||!svgNodes) return;
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
@@ -2605,11 +2692,13 @@ function dg(){
 
   // Phase 4: Zoom-dependent detail — compute which nodes are visible at current zoom
   // gz < 0.7: hubs only (6+), gz 0.7-1.3: hubs + medium (3+), gz > 1.3: all
+  // Phase 5: nodes in collapsed clusters are always hidden
   var zoomMinCC=0;
   if(gz<0.7) zoomMinCC=6;
   else if(gz<1.3) zoomMinCC=3;
   var _zoomVis=new Set();
   nsim.forEach(function(n){
+    if(gCollapsed[n.cluster]) return; // Phase 5: collapsed cluster
     var active=(hlSet&&hlSet.has(n.id))||gHoverNode===n.id||gFoundNode===n.id;
     if(active||n._cc>=zoomMinCC) _zoomVis.add(n.id);
   });
@@ -2695,6 +2784,7 @@ function zg(f){
 }
 function rg(){
   gz=1;go={x:0,y:0};gFoundNode=null;gHighlight=null;gHoverNode=null;gPathNodes=null;gPathEdges=null;
+  gCollapsed={}; // Phase 5: expand all clusters on reset
   const fi=document.getElementById('graph-find');if(fi) fi.value='';
   const svg=d3.select('#gc');
   if(d3Zoom) svg.call(d3Zoom.transform,d3.zoomIdentity);
