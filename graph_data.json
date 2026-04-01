@@ -3401,6 +3401,20 @@
       "source_url": "https://dekleptocracy.substack.com/p/crypto-corruption-tracker-712",
       "amount": "$59M Q4 loss; stock fell from $14 to $0.81",
       "date": "2026-03"
+    },
+    {
+      "source": 124,
+      "target": 17,
+      "relation": "Huione Group processed $39.6B through stablecoin infrastructure; stablecoins account for 84% of illicit crypto volume",
+      "source_url": "https://dekleptocracy.substack.com/p/crypto-corruption-tracker-712",
+      "date": "2025"
+    },
+    {
+      "source": 124,
+      "target": 60,
+      "relation": "Huione Group served as laundering infrastructure for crypto crime networks including those linked to Binance ecosystem",
+      "source_url": "https://dekleptocracy.substack.com/p/crypto-corruption-tracker-712",
+      "date": "2025"
     }
   ],
   "articles": [
@@ -3913,13 +3927,21 @@
       "url": "https://dekleptocracy.substack.com/p/trumps-most-valuable-enabler",
       "entities": [
         1,
-        54
+        9,
+        35,
+        77,
+        78,
+        103,
+        46,
+        47,
+        79,
+        10
       ],
       "clusters": [
         "influence",
         "crypto"
       ],
-      "snippet": "Elon Musk is Trump's most valuable enabler."
+      "snippet": "David Sacks oversees AI and crypto policy while holding stakes in 449 AI companies and 20 crypto firms. His venture fund Craft Ventures owns 7.8% of BitGo, custodian of the Trump family USD1 stablecoin. The White House granted Sacks a blanket ethics waiver. At least four portfolio companies won contracts totaling over $735M. World Liberty Financial raised $550M in token sales plus a $500M UAE investment."
     },
     {
       "id": 24,
@@ -4036,12 +4058,18 @@
       "date": "2026-01-28",
       "url": "https://dekleptocracy.substack.com/p/the-disinformation-to-death-pipeline",
       "entities": [
-        1
+        1,
+        7,
+        54,
+        37,
+        17,
+        96,
+        112
       ],
       "clusters": [
         "influence"
       ],
-      "snippet": "How disinformation campaigns fuel real-world harm."
+      "snippet": "Two Americans killed in Minneapolis by federal agents sent to act on a viral YouTube video orchestrated by Republican operatives. VP Vance called it journalism. Rumble, owned by Vance, Peter Thiel, and backed by Tether in which Howard Lutnick has a stake, spread the propaganda. Elon Musk amplified it. FBI Director Kash Patel surged resources to Minnesota. State investigators found children at nine of ten targeted daycares. No fraud charges were filed."
     },
     {
       "id": 30,
