@@ -1928,6 +1928,38 @@
         "sanctions_exposure": 30,
         "financial_opacity": 15
       }
+    },
+    {
+      "id": 123,
+      "name": "Justin Sun",
+      "type": "person",
+      "desc": "Crypto entrepreneur and major Trump family business partner. Invested heavily in World Liberty Financial. The SEC had an active fraud case against Sun that was dismissed under Chairman Paul Atkins just 11 days before the SEC enforcement chief resigned in protest. Senator Blumenthal demanded records of all communications between SEC leadership and Sun.",
+      "tags": [
+        "crypto",
+        "influence"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 80,
+        "sanctions_exposure": 70,
+        "financial_opacity": 90
+      }
+    },
+    {
+      "id": 124,
+      "name": "Huione Group",
+      "type": "organization",
+      "desc": "Cambodian conglomerate identified as one of the largest crypto money laundering operations in history. Processed $39.6 billion in 2025 before being designated by FinCEN. Operated laundering-as-a-service for fraud proceeds, North Korean hack funds, and terrorist financing. Represents the criminal infrastructure enabled by the stablecoin ecosystem that the Trump administration is deregulating.",
+      "tags": [
+        "crypto",
+        "sanctions"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 95,
+        "sanctions_exposure": 95,
+        "financial_opacity": 95
+      }
     }
   ],
   "edges": [
@@ -3324,6 +3356,50 @@
       "target": 118,
       "relation": "Ukraine drone technology targeted for acquisition by Powerus",
       "source_url": "https://dekleptocracy.substack.com/p/the-1000-drone-that-could-have-saved",
+      "date": "2026-03"
+    },
+    {
+      "source": 123,
+      "target": 35,
+      "relation": "major investor and business partner of World Liberty Financial",
+      "source_url": "https://dekleptocracy.substack.com/p/crypto-corruption-tracker-712",
+      "date": "2025"
+    },
+    {
+      "source": 123,
+      "target": 1,
+      "relation": "business partner of Trump family; SEC fraud case dismissed under Trump-appointed SEC chair",
+      "source_url": "https://dekleptocracy.substack.com/p/crypto-corruption-tracker-712",
+      "date": "2026-03"
+    },
+    {
+      "source": 21,
+      "target": 123,
+      "relation": "SEC under Atkins dropped fraud case against Sun 11 days before enforcement chief resigned",
+      "source_url": "https://dekleptocracy.substack.com/p/crypto-corruption-tracker-712",
+      "date": "2026-03"
+    },
+    {
+      "source": 22,
+      "target": 21,
+      "relation": "Fairshake spent $271M on elections putting crypto-friendly regulators including Atkins in power",
+      "source_url": "https://dekleptocracy.substack.com/p/crypto-corruption-tracker-712",
+      "amount": "$271M deployed in 2026 races",
+      "date": "2026-03"
+    },
+    {
+      "source": 43,
+      "target": 123,
+      "relation": "SEC dismissed fraud case against Justin Sun under political pressure",
+      "source_url": "https://dekleptocracy.substack.com/p/crypto-corruption-tracker-712",
+      "date": "2026-03"
+    },
+    {
+      "source": 108,
+      "target": 107,
+      "relation": "American Bitcoin lost 90% of value; Eric Trump oversees the company",
+      "source_url": "https://dekleptocracy.substack.com/p/crypto-corruption-tracker-712",
+      "amount": "$59M Q4 loss; stock fell from $14 to $0.81",
       "date": "2026-03"
     }
   ],
@@ -6403,6 +6479,32 @@
         "influence"
       ],
       "snippet": "Trump rejected Ukraine cheap drone interceptors that have been battle-tested against Iranian Shahed drones. His sons then invested in companies planning to acquire the same Ukrainian technology and resell it to the Pentagon at a markup. Six US soldiers died from the exact drones Ukraine offered to stop."
+    },
+    {
+      "id": 159,
+      "title": "Crypto Corruption Tracker — Week of March 25 to 31",
+      "date": "2026-03-31",
+      "url": "https://dekleptocracy.substack.com/p/crypto-corruption-tracker-712",
+      "entities": [
+        1,
+        21,
+        22,
+        33,
+        34,
+        35,
+        43,
+        60,
+        63,
+        107,
+        108,
+        123,
+        124
+      ],
+      "clusters": [
+        "crypto",
+        "influence"
+      ],
+      "snippet": "SEC enforcement chief resigned after clashing with crypto lobbyist-turned-chairman Paul Atkins over cases tied to Trump family partners. SEC dropped fraud case against Justin Sun 11 days before she left. Fairshake PAC has $221M for 2026 midterms. Labor Dept proposed opening 401(k) plans to crypto. American Bitcoin lost 90% of its value. Huione Group processed $39.6B in laundered crypto before being designated by FinCEN."
     }
   ]
 }
