@@ -4077,7 +4077,9 @@
       "date": "2026-01-27",
       "url": "https://dekleptocracy.substack.com/p/hungary-blocks-eu-statement-on-greenland",
       "entities": [
-        38
+        38,
+        1,
+        2
       ],
       "clusters": [
         "influence"
@@ -4616,7 +4618,8 @@
       "date": "2025-11-20",
       "url": "https://dekleptocracy.substack.com/p/vermonts-critical-role-in-trumps",
       "entities": [
-        1
+        1,
+        97
       ],
       "clusters": [
         "sanctions"
@@ -5303,7 +5306,8 @@
       "url": "https://dekleptocracy.substack.com/p/canada-can-silence-truth-social",
       "entities": [
         1,
-        11
+        11,
+        96
       ],
       "clusters": [
         "influence",
@@ -5392,7 +5396,8 @@
       "url": "https://dekleptocracy.substack.com/p/teachers-pensions-prop-up-trumps",
       "entities": [
         1,
-        11
+        11,
+        96
       ],
       "clusters": [
         "influence",
@@ -5754,7 +5759,8 @@
       "entities": [
         6,
         13,
-        44
+        44,
+        2
       ],
       "clusters": [
         "sanctions",
@@ -6009,7 +6015,7 @@
       "url": "https://dekleptocracy.substack.com/p/why-alan-j-kuperman-is-wrong-on-trump-292",
       "entities": [
         1,
-        13
+        2
       ],
       "clusters": [
         "sanctions",
@@ -6024,7 +6030,7 @@
       "url": "https://dekleptocracy.substack.com/p/why-alan-j-kuperman-is-wrong-on-trump",
       "entities": [
         1,
-        13
+        2
       ],
       "clusters": [
         "sanctions",
@@ -6087,7 +6093,8 @@
       "entities": [
         99,
         13,
-        16
+        16,
+        2
       ],
       "clusters": [
         "sanctions"
@@ -6121,7 +6128,8 @@
         1,
         13,
         16,
-        6
+        6,
+        2
       ],
       "clusters": [
         "sanctions",
@@ -6181,7 +6189,8 @@
         98,
         13,
         1,
-        29
+        29,
+        2
       ],
       "clusters": [
         "energy",
@@ -6311,7 +6320,8 @@
         1,
         54,
         83,
-        94
+        94,
+        2
       ],
       "clusters": [
         "influence"
@@ -6325,7 +6335,8 @@
       "url": "https://dekleptocracy.substack.com/p/one-less-kleptocracy-dekleptocracy-report-32-18-december-2024",
       "entities": [
         13,
-        84
+        84,
+        2
       ],
       "clusters": [
         "sanctions"
@@ -6373,7 +6384,8 @@
       "url": "https://dekleptocracy.substack.com/p/the-war-in-ukraine-is-a-proving-ground-for-us-democracy-dekleptocracy-report-30-25-november-2024",
       "entities": [
         1,
-        13
+        13,
+        2
       ],
       "clusters": [
         "sanctions",
@@ -6449,7 +6461,8 @@
       "entities": [
         13,
         52,
-        29
+        29,
+        2
       ],
       "clusters": [
         "sanctions",
