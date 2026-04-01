@@ -889,6 +889,7 @@ pre{background:var(--color-surface-offset);border:1px solid var(--color-border);
     <div id="sb-article-view" class="sb-artview">
       <div class="sb-artview-header">
         <span class="sb-artview-label">Viewing Article</span>
+        <span class="sb-artview-close" onclick="copyHighlightLink()" style="background:#3D5C2F">Share Link</span>
         <span class="sb-artview-close" onclick="clearArticleView()">Clear View</span>
       </div>
       <div class="sb-artview-body" id="sb-artview-body"></div>
@@ -1398,7 +1399,7 @@ async function boot(){
   init();
   handleHash();
   // Re-init graph after layout settles (ensures canvas gets correct dimensions)
-  setTimeout(()=>ig(),100);
+  setTimeout(function(){ig();handleUrlParams();},100);
   // Embed mode
   if(new URLSearchParams(location.search).get('embed')==='true'){
     document.getElementById('app').classList.add('embed-mode');
@@ -2992,9 +2993,120 @@ function handleHash(){
 }
 window.addEventListener('hashchange',handleHash);
 
+// ========== SUBSTACK DEEP LINKING ==========
+// URL parameters for linking from Substack articles into the Explorer.
+//
+// Supported parameters:
+//   ?node=ID           Select a node and open its sidebar detail
+//   ?article=ID        Activate article view by article ID (highlight all entities)
+//   ?article_url=URL   Activate article view by article URL
+//   ?highlight=1,2,3   Highlight specific node IDs on the map
+//   ?cluster=NAME      Filter graph to a specific cluster
+//   ?zoom=LEVEL        Set initial zoom level (0.3 to 3)
+//   ?embed=true        Embed mode (hides sidebar, compact topbar)
+//
+// Examples for Substack posts:
+//   See the network: https://dekleptocracy-explorer.vercel.app/?article=6
+//   Explore Kushner:  https://dekleptocracy-explorer.vercel.app/?node=2
+//   Key players:      https://dekleptocracy-explorer.vercel.app/?highlight=2,3,46,47
+//   Crypto cluster:   https://dekleptocracy-explorer.vercel.app/?cluster=crypto
+
+function handleUrlParams(){
+  var params=new URLSearchParams(location.search);
+  // ?cluster=NAME — filter graph to cluster
+  var cluster=params.get('cluster');
+  if(cluster&&['sanctions','crypto','energy','princelings','influence'].indexOf(cluster)!==-1){
+    gaf=cluster;
+    document.querySelectorAll('#gfb .fbtn').forEach(function(b){
+      b.classList.toggle('active',b.textContent.toLowerCase().indexOf(cluster)!==-1);
+    });
+    ig();
+  }
+  // ?zoom=LEVEL — set zoom level
+  var zoom=parseFloat(params.get('zoom'));
+  if(zoom&&zoom>=0.3&&zoom<=3&&d3Zoom){
+    var svg=d3.select('#gc');
+    var W=+svg.attr('width')||800,H=+svg.attr('height')||600;
+    svg.call(d3Zoom.transform,d3.zoomIdentity.translate(W/2*(1-zoom),H/2*(1-zoom)).scale(zoom));
+  }
+  // ?node=ID — select node and open detail
+  var nodeId=parseInt(params.get('node'));
+  if(nodeId&&DATA.nodes.find(function(n){return n.id===nodeId;})){
+    gHighlight=nodeId;
+    dg();
+    on(nodeId);
+    // Center on the node
+    var nd=nsim.find(function(n){return n.id===nodeId;});
+    if(nd&&d3Zoom){
+      var svg2=d3.select('#gc');
+      var W2=+svg2.attr('width')||800,H2=+svg2.attr('height')||600;
+      var z=zoom||1.2;
+      svg2.transition().duration(400).call(d3Zoom.transform,d3.zoomIdentity.translate(W2/2-nd.x*z,H2/2-nd.y*z).scale(z));
+    }
+  }
+  // ?article=ID — activate article view by ID
+  var articleId=parseInt(params.get('article'));
+  if(articleId){
+    var art=DATA.articles.find(function(a){return a.id===articleId;});
+    if(art&&art.url) activateArticleView(art.url);
+  }
+  // ?article_url=URL — activate article view by URL
+  var articleUrl=params.get('article_url');
+  if(articleUrl) activateArticleView(articleUrl);
+  // ?highlight=1,2,3 — highlight specific node IDs
+  var hlParam=params.get('highlight');
+  if(hlParam&&!articleId&&!articleUrl){
+    var ids=hlParam.split(',').map(function(s){return parseInt(s.trim());}).filter(function(id){
+      return id&&DATA.nodes.find(function(n){return n.id===id;});
+    });
+    if(ids.length>0){
+      // Use article view mechanism for multi-node highlighting
+      gArticleNodes=new Set(ids);
+      gArticleEdges=new Set();
+      DATA.edges.forEach(function(e){
+        if(gArticleNodes.has(e.source)&&gArticleNodes.has(e.target)){
+          gArticleEdges.add(e.source+'-'+e.target);
+          gArticleEdges.add(e.target+'-'+e.source);
+        }
+      });
+      // Build sidebar panel
+      var entityList=ids.map(function(id){return DATA.nodes.find(function(n){return n.id===id;});}).filter(Boolean);
+      var body=document.getElementById('sb-artview-body');
+      if(body){
+        var html='<div class="sb-artview-title">Highlighted Entities</div>';
+        html+='<div class="sb-artview-count">'+entityList.length+' entit'+(entityList.length===1?'y':'ies')+' highlighted via URL</div>';
+        entityList.forEach(function(n){
+          html+='<div class="sb-artview-entity" onclick="clearArticleView();on('+n.id+')"><span class="sb-artview-ename">'+esc(n.name)+'</span><span class="sb-artview-etype">'+esc(n.type)+'</span></div>';
+        });
+        body.innerHTML=html;
+      }
+      document.getElementById('sb-article-view').classList.add('active');
+      document.getElementById('sb-welcome').classList.add('hidden');
+      sv('graph');
+      setTimeout(function(){dg();},60);
+    }
+  }
+}
+
+// ── Share link generators ──
+// These produce URLs that Substack authors can paste into their posts.
+
 function copyNodeLink(id){
-  const url=location.origin+location.pathname+'#node/'+id;
-  navigator.clipboard.writeText(url).then(()=>toast('Link copied to clipboard'));
+  var url=location.origin+location.pathname+'?node='+id;
+  navigator.clipboard.writeText(url).then(function(){toast('Node link copied');});
+}
+
+function copyArticleLink(articleId){
+  var url=location.origin+location.pathname+'?article='+articleId;
+  navigator.clipboard.writeText(url).then(function(){toast('Article view link copied');});
+}
+
+function copyHighlightLink(){
+  // Copy a link highlighting all currently visible article/highlight nodes
+  if(!gArticleNodes||gArticleNodes.size===0){toast('No entities highlighted');return;}
+  var ids=[...gArticleNodes].join(',');
+  var url=location.origin+location.pathname+'?highlight='+ids;
+  navigator.clipboard.writeText(url).then(function(){toast('Highlight link copied');});
 }
 
 // ========== EMBED CODE ==========
@@ -3247,6 +3359,14 @@ function renderManual(){
 <div class="help-p">When viewing a node, click "Watch this entity" in Layer 1 to add it to your personal watchlist. The button changes to "Watching" with a checkmark. Click again to remove it.</div>
 <div class="help-p">Your watchlist appears on the Welcome screen with all watched entities listed by name, type, and the date you added them. Click any name to jump directly to that node. Click the × button to remove an entry.</div>
 <div class="help-p">Use the "Export CSV" button to download your watchlist as a spreadsheet-ready file with columns for node ID, name, type, and date added. The watchlist is stored in your browser's localStorage and persists across sessions.</div></div>
+<div class="help-section"><div class="help-h2">Substack Deep Linking</div>
+<div class="help-p">The Explorer supports URL parameters that let Substack articles link directly into specific views. Add these parameters to the Explorer URL to create deep links.</div>
+<div class="help-p"><span class="help-kbd">?node=ID</span> Opens directly to a specific entity with its sidebar detail panel. Example: ?node=2 opens to Jared Kushner.</div>
+<div class="help-p"><span class="help-kbd">?article=ID</span> Activates article view, highlighting every entity mentioned in that article on the map. Example: ?article=6 highlights all entities from "The $10 Billion Fee and the Network."</div>
+<div class="help-p"><span class="help-kbd">?highlight=1,2,3</span> Highlights specific entities by their IDs with coral outlines. Useful for custom selections that do not correspond to a single article. Example: ?highlight=2,3,46,47 highlights Kushner, Saudi PIF, Sheikh Tahnoon, and MGX.</div>
+<div class="help-p"><span class="help-kbd">?cluster=NAME</span> Filters the graph to show only nodes in a specific cluster. Valid values are sanctions, crypto, energy, princelings, and influence.</div>
+<div class="help-p"><span class="help-kbd">?zoom=LEVEL</span> Sets the initial zoom level from 0.3 (zoomed out) to 3 (zoomed in). Default is 1.</div>
+<div class="help-p">Parameters can be combined: ?article=6&amp;embed=true creates an embeddable article view. The "Copy Substack deep link" button in article view and the "Copy shareable link" button in node detail generate these URLs automatically.</div></div>
 <div class="help-section"><div class="help-h2">Keyboard Shortcuts</div>
 <div class="help-p"><span class="help-kbd">Esc</span> Close panels, overlays, help modal, or active tutorial</div>
 <div class="help-p"><span class="help-kbd">Ctrl+Shift+A</span> Toggle admin mode (data editing)</div></div>
@@ -3274,7 +3394,8 @@ const FAQ_DATA=[
   {q:'What is the Investigate Further section?',a:'The "Investigate Further" section in Layer 2 provides direct links to eight external OSINT databases including ICIJ Offshore Leaks, SEC EDGAR, the FARA foreign agent database, UK Companies House, CourtListener federal court records, OpenCorporates, Google Scholar, and OCCRP Aleph. Each link pre-fills the entity name into the search query and opens in a new tab. Links are filtered by node type so person nodes see FARA while organization nodes see Companies House.'},
   {q:'What is Article View?',a:'When viewing a node, Layer 2 shows articles that mention it. Click any article title to activate Article View. The map highlights every entity mentioned in that article with a coral red outline and fades everything else. The sidebar shows the article title, entity count, and a clickable list of all entities. Click "Clear View" to return to normal. This lets you see which entities a specific piece of reporting covers.'},
   {q:'Is this data biased?',a:'The graph reflects documented connections from investigative reporting. It does not make legal conclusions. All edges cite source articles. Users should verify claims through the external investigation tools provided in Layer 3.'},
-  {q:'Can I embed this in my own website?',a:'Yes. The Explorer supports an embed mode. Add ?embed=true to the URL to hide the sidebar and show a compact view suitable for iframes.'}
+  {q:'How do I link from a Substack article to the Explorer?',a:'Use URL parameters. Add ?article=ID to highlight all entities from a specific article (find the ID in the articles table). Add ?node=ID to open directly to an entity. Add ?highlight=1,2,3 to highlight specific entities by ID. These work in Substack posts as regular hyperlinks. The "Copy Substack deep link" button in article view and "Copy shareable link" in node detail generate these URLs automatically.'},
+  {q:'Can I embed this in my own website?',a:'Yes. The Explorer supports an embed mode. Add ?embed=true to the URL to hide the sidebar and show a compact view suitable for iframes. Combine with other parameters like ?article=6&embed=true for an embedded article view.'}
 ];
 
 function renderFAQ(){
@@ -3497,6 +3618,7 @@ function activateArticleView(articleUrl){
   if(body){
     let html=`<div class="sb-artview-title"><a href="${esc(articleUrl)}" target="_blank" rel="noopener noreferrer">${esc(article.title)}</a></div>`;
     html+=`<div class="sb-artview-count">${entityList.length} entit${entityList.length===1?'y':'ies'} mentioned in this article</div>`;
+    html+=`<div class="sb-link-row" onclick="copyArticleLink(${article.id})" style="margin-bottom:var(--s2)"><i data-lucide="link" style="width:11px;height:11px"></i> Copy Substack deep link for this article</div>`;
     entityList.forEach(n=>{
       html+=`<div class="sb-artview-entity" onclick="clearArticleView();on(${n.id})">
         <span class="sb-artview-ename">${esc(n.name)}</span>
