@@ -2459,6 +2459,40 @@ function ig(){
   svg.selectAll('*').remove();
   const g=svg.append('g').attr('class','graph-root');
 
+  // Phase 3: Cluster visual boundaries — draw convex hulls behind everything
+  var clusterGroups={};
+  nsim.forEach(function(n){
+    var cl=n.cluster||'default';
+    if(!clusterGroups[cl]) clusterGroups[cl]=[];
+    clusterGroups[cl].push(n);
+  });
+  var hullPad=45; // padding around outermost nodes
+  Object.keys(clusterGroups).forEach(function(cl){
+    var nodes=clusterGroups[cl];
+    var color=CLUSTER_COLORS[cl]||CLUSTER_COLORS.default;
+    if(nodes.length<2) return; // skip single-node clusters
+    // Generate padded points: 8 points around each node at hullPad distance
+    var padded=[];
+    nodes.forEach(function(n){
+      for(var a=0;a<8;a++){
+        var angle=a*Math.PI/4;
+        padded.push([n.x+Math.cos(angle)*hullPad,n.y+Math.sin(angle)*hullPad]);
+      }
+    });
+    var hull=d3.polygonHull(padded);
+    if(!hull) return;
+    // Draw smooth hull path
+    g.append('path')
+      .attr('class','cluster-hull')
+      .attr('d',d3.line().curve(d3.curveCatmullRomClosed)(hull))
+      .attr('fill',color)
+      .attr('fill-opacity',0.06)
+      .attr('stroke',color)
+      .attr('stroke-opacity',0.12)
+      .attr('stroke-width',1)
+      .attr('pointer-events','none');
+  });
+
   // Edges
   svgEdges=g.selectAll('.graph-edge').data(esim).join('line')
     .attr('class','graph-edge')
