@@ -63,7 +63,7 @@ const apiConfig = {
       contributor_name: "{nodeName}",
       sort: "-contribution_receipt_amount",
       per_page: 10,
-      api_key: "DEMO_KEY"   // DEMO_KEY = 30 req/hr. Replace with registered key.
+      api_key: "Q3WQDxDkTNkhyjO2cc1sRfwqn5coUtWqFzGOLkSD"   // DEMO_KEY = 30 req/hr. Replace with registered key.
     },
     responseFormatter: "formatFECDonations",
     rateLimit: 30,  // requests per minute (DEMO_KEY limit is 30/hour)
@@ -73,7 +73,7 @@ const apiConfig = {
       q: "{nodeName}",
       sort: "-receipts",
       per_page: 3,
-      api_key: "DEMO_KEY"
+      api_key: "Q3WQDxDkTNkhyjO2cc1sRfwqn5coUtWqFzGOLkSD"
     },
     notes: "Falls back to committee search for PACs and organizations. Strip suffixes like '/ CZ' or '(Crypto Czar)' from names before querying."
   },
@@ -186,7 +186,7 @@ const apiConfig = {
 const exampleResponses = {
 
   // ── FEC Political Donations ──
-  // GET https://api.fec.gov/v1/schedules/schedule_a/?contributor_name=Peter+Thiel&sort=-contribution_receipt_amount&per_page=3&api_key=DEMO_KEY
+  // GET https://api.fec.gov/v1/schedules/schedule_a/?contributor_name=Peter+Thiel&sort=-contribution_receipt_amount&per_page=3&api_key=Q3WQDxDkTNkhyjO2cc1sRfwqn5coUtWqFzGOLkSD
   politicalDonations: {
     api_version: "1.0",
     pagination: {
@@ -236,7 +236,7 @@ const exampleResponses = {
   },
 
   // ── FEC Committee Fallback ──
-  // GET https://api.fec.gov/v1/committees/?q=Trump+Media&sort=-receipts&per_page=3&api_key=DEMO_KEY
+  // GET https://api.fec.gov/v1/committees/?q=Trump+Media&sort=-receipts&per_page=3&api_key=Q3WQDxDkTNkhyjO2cc1sRfwqn5coUtWqFzGOLkSD
   politicalDonations_committeeFallback: {
     api_version: "1.0",
     pagination: { count: 2, page: 1, pages: 1, per_page: 3 },

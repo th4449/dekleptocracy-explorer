@@ -90,7 +90,7 @@ async function fetchDonations(nodeName) {
     contributor_name: searchName,
     sort: '-contribution_receipt_amount',
     per_page: '10',
-    api_key: 'DEMO_KEY' // Replace with registered key for production
+    api_key: 'Q3WQDxDkTNkhyjO2cc1sRfwqn5coUtWqFzGOLkSD' // Replace with registered key for production
   });
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 9000);
