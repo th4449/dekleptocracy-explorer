@@ -1960,6 +1960,23 @@
         "sanctions_exposure": 95,
         "financial_opacity": 95
       }
+    },
+    {
+      "id": 125,
+      "name": "Polymarket",
+      "type": "organization",
+      "desc": "Crypto-based political prediction market owned by Peter Thiel Founders Fund. Donald Trump Jr. sits on advisory board and 1789 Capital has invested millions. DOJ and CFTC ended investigations without charges in July 2025. Traders with apparent advance knowledge of classified military operations have repeatedly profited on the platform. $529 million wagered on Iran strike timing. Suspected insider traders used 38 loosely disguised accounts routed through Coinbase and Robinhood to amass $2.14 million on secret US military strikes.",
+      "tags": [
+        "crypto",
+        "princelings",
+        "influence"
+      ],
+      "cluster": "crypto",
+      "risk": {
+        "foreign_entanglement": 60,
+        "sanctions_exposure": 40,
+        "financial_opacity": 90
+      }
     }
   ],
   "edges": [
@@ -3415,6 +3432,34 @@
       "relation": "Huione Group served as laundering infrastructure for crypto crime networks including those linked to Binance ecosystem",
       "source_url": "https://dekleptocracy.substack.com/p/crypto-corruption-tracker-712",
       "date": "2025"
+    },
+    {
+      "source": 7,
+      "target": 125,
+      "relation": "Founders Fund owns Polymarket",
+      "source_url": "https://dekleptocracy.substack.com/p/the-war-dividend",
+      "date": "2025"
+    },
+    {
+      "source": 106,
+      "target": 125,
+      "relation": "advisory board member; 1789 Capital invested millions in Polymarket",
+      "source_url": "https://dekleptocracy.substack.com/p/the-war-dividend",
+      "date": "2026"
+    },
+    {
+      "source": 119,
+      "target": 125,
+      "relation": "1789 Capital invested in Polymarket",
+      "source_url": "https://dekleptocracy.substack.com/p/the-war-dividend",
+      "date": "2026"
+    },
+    {
+      "source": 125,
+      "target": 34,
+      "relation": "insider trading routed through Coinbase accounts",
+      "source_url": "https://dekleptocracy.substack.com/p/american-princelings-898",
+      "date": "2026-03"
     }
   ],
   "articles": [
@@ -6596,6 +6641,74 @@
         "influence"
       ],
       "snippet": "SEC enforcement chief resigned after clashing with crypto lobbyist-turned-chairman Paul Atkins over cases tied to Trump family partners. SEC dropped fraud case against Justin Sun 11 days before she left. Fairshake PAC has $221M for 2026 midterms. Labor Dept proposed opening 401(k) plans to crypto. American Bitcoin lost 90% of its value. Huione Group processed $39.6B in laundered crypto before being designated by FinCEN."
+    },
+    {
+      "id": 160,
+      "title": "The War Dividend",
+      "date": "2026-04-06",
+      "url": "https://dekleptocracy.substack.com/p/the-war-dividend",
+      "entities": [
+        1,
+        7,
+        11,
+        30,
+        106,
+        119,
+        125
+      ],
+      "clusters": [
+        "crypto",
+        "princelings",
+        "influence"
+      ],
+      "snippet": "A mystery crypto wallet called the Trump insider whale placed $109 million in short positions before Trump issued a 48-hour ultimatum to Iran. The wallet has a 100% win rate on geopolitical trades since October 2025, profiting $160-200M on one trade alone. White House officials sold Trump Media stock before tariff announcements. $529 million wagered on Polymarket around Iran strikes. Don Jr sits on Polymarket advisory board. 1789 Capital invested in the platform."
+    },
+    {
+      "id": 161,
+      "title": "American Princelings — April 3, 2026",
+      "date": "2026-04-03",
+      "url": "https://dekleptocracy.substack.com/p/american-princelings-898",
+      "entities": [
+        1,
+        2,
+        3,
+        4,
+        7,
+        11,
+        17,
+        23,
+        34,
+        35,
+        37,
+        103,
+        106,
+        107,
+        111,
+        119,
+        122,
+        125
+      ],
+      "clusters": [
+        "crypto",
+        "princelings",
+        "energy",
+        "influence"
+      ],
+      "snippet": "Liberation Day anniversary: 89,000 manufacturing jobs lost, $166B in tariff refunds owed. Kushner Affinity Partners surged to $6.2B (99% non-US investors). USD1 stablecoin hit $4.4B in circulation. Vietnam got tariffs slashed after approving $1.5B Trump golf resort. Polymarket insider trading on Iran strikes continued through 38 disguised accounts. Oil past $111/barrel. Cantor Fitzgerald earned record $1B revenue while Lutnick runs Commerce."
+    },
+    {
+      "id": 162,
+      "title": "How Blanket Clemency Became a Threat to Public Safety",
+      "date": "2026-04-01",
+      "url": "https://dekleptocracy.substack.com/p/how-blanket-clemency-became-a-threat",
+      "entities": [
+        1,
+        30
+      ],
+      "clusters": [
+        "influence"
+      ],
+      "snippet": "Trump pardoned nearly 1,600 January 6th defendants without background checks. At least 33 have been rearrested including 6 for child sex offenses. Andrew Paul Johnson used his pardon as a grooming tool before sexually abusing two children. Daniel Tocci had 100,000 child abuse images discovered during J6 investigation. Jack Smith told Congress more crimes from pardoned rioters should be expected."
     }
   ]
 }
